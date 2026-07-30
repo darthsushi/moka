@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { Button, Skeleton, toast } from '@heroui/react';
 
 import { isNotNil } from '@/helpers/ramda.helpers';
-import { useAuth } from '@/hooks/useAuth';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useCreatePlacement } from '@/hooks/useCreatePlacement';
+import { useAuth, useLanguage } from '@/hooks/contexts';
+import { useCreatePlacement } from '@/hooks/placements';
 import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
 import { PROFILES } from '@/settings/keys.settings';
 
@@ -16,7 +15,7 @@ function OwnerButton() {
 
   const { language } = useLanguage();
   const { profile, loading: isAuthLoading } = useAuth();
-  const {  create: createPlacement, isLoading: isCreatingPlacement  } = useCreatePlacement();
+  const { create: createPlacement, isLoading: isCreatingPlacement } = useCreatePlacement();
 
   const BUTTONS_LABELS = SYSTEM_LANG[language].BUTTONS;
   const ERRORS_LABELS = SYSTEM_LANG[language].ERRORS;

@@ -9,8 +9,7 @@ import {
 
 import { not } from '@/helpers/ramda.helpers';
 import { classNameParser } from '@/helpers/utilities.helpers';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useUI } from '@/hooks/useUI.hook';
+import { useLanguage, useUI } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
 
 import Icon from '../icons/Icon.ui';

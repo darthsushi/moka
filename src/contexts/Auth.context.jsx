@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect } from 'react';
-import { authService } from '../services/auth.service.js';
-import { profileService } from '../services/profile.service.js';
+
+import { authService } from '@/services/auth.service.js';
+import { profileService } from '@/services/profile.service.js';
 
 export const AuthContext = createContext(null);
 

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 
-import { storageService } from '../services/storage.service';
-import { placementsService } from '../services/placements.service';
-
-import { not } from '../helpers/ramda.helpers';
-import { useAuth } from './useAuth';
+import { not } from '@/helpers/ramda.helpers';
+import { useAuth } from '@/hooks/contexts';
+import { storageService } from '@/services/storage.service';
+import { placementsService } from '@/services/placements.service';
 
 export const useCreatePlacement = () => {
   const [isLoading, setIsLoading] = useState(false);

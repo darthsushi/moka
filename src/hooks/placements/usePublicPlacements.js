@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { placementsService } from '../services/placements.service';
+import { placementsService } from '@/services/placements.service';
 
 export const usePublicPlacements = () => {
   const [placements, setPlacements] = useState([]);

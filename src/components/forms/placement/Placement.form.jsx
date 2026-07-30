@@ -6,7 +6,7 @@ import {
   SYSTEM as SYSTEM_LANGS
 } from '@/settings/langs.settings';
 import { isNil, noop } from '@/helpers/ramda.helpers';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguage } from '@/hooks/contexts';
 
 import StrutctureDataStep from './elements/StructureDataStep';
 import CoordinatesStep from './elements/CoordinatesStep';

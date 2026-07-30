@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Card, Chip, Description, Tooltip, Typography } from '@heroui/react';
 
 import { SYSTEM } from '@/settings/langs.settings';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguage } from '@/hooks/contexts';
 
 import { Dialog, Icon } from '@/components/ui';
 

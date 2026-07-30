@@ -4,7 +4,7 @@ import {
   AVAILABLE_LANGUAGES,
   SYSTEM as SYSTEM_LANG
 } from '@/settings/langs.settings';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguage } from '@/hooks/contexts';
 
 import Icon from '../../icons/Icon.ui';
 

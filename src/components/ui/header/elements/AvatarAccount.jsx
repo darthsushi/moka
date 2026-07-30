@@ -16,8 +16,7 @@ import {
 } from '@heroui/react';
 
 import { isNotNil, not } from '@/helpers/ramda.helpers';
-import { useAuth } from '@/hooks/useAuth';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useAuth, useLanguage } from '@/hooks/contexts';
 import { PROFILES } from '@/settings/keys.settings';
 import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
 

@@ -13,7 +13,7 @@ import {
 } from '@heroui/react';
 
 import { isEmpty, isNotNil, noop, not } from '@/helpers/ramda.helpers';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
 import Icon from '../icons/Icon.ui';
