@@ -1,7 +1,8 @@
 import { Toast } from '@heroui/react';
-import SideBar from './components/ui/SideBar.ui';
-import Header from './components/ui/header';
-import { HomePage } from './components/views/home';
+
+import { SideBar, Header } from '@/components/ui';
+import { HomePage } from '@/components/views';
+
 import './App.css';
 
 function App() {

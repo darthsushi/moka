@@ -21,7 +21,7 @@ importers:
         specifier: 4.3.0
         version: 4.3.0(vite@8.0.12(jiti@2.7.0))
       motion:
-        specifier: ^12.42.2
+        specifier: 12.42.2
         version: 12.42.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       ramda:
         specifier: 0.32.0
@@ -33,7 +33,7 @@ importers:
         specifier: 19.2.6
         version: 19.2.6(react@19.2.6)
       react-hook-form:
-        specifier: ^7.81.0
+        specifier: 7.81.0
         version: 7.81.0(react@19.2.6)
       tailwindcss:
         specifier: 4.3.0

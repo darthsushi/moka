@@ -1,9 +1,10 @@
 import { Button, Form, SearchField } from '@heroui/react';
-import { useLanguage } from '../../../../hooks/useLanguage';
-import { useUI } from '../../../../hooks/useUI.hook';
-import { SYSTEM as SYSTEM_LANGS } from '../../../../settings/langs.settings';
-import { not } from '../../../../helpers/ramda.helpers';
-import Icon from '../../../icons';
+
+import { not } from '@/helpers/ramda.helpers';
+import { useLanguage, useUI } from '@/hooks/contexts';
+import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
+
+import { Icon } from '@/components/ui';
 
 function FilterBar() {
   const { language } = useLanguage();

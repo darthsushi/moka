@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
-import { usePublicPlacements } from '../../../../hooks/usePublicPlacements';
-import { useUI } from '../../../../hooks/useUI.hook';
+
+import { useUI } from '@/hooks/contexts';
+import { usePublicPlacements } from '@/hooks/placements';
+
 import FilterBar from './FilterBar';
 import PlacementItemCard from './PlacementItemCard';
 

@@ -1,9 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect } from 'react';
 
-import { isNil, not } from '../helpers/ramda.helpers';
-import { THEME as DEFAULT_THEME } from '../settings/defaults.settings';
-import { STORAGE } from '../settings/keys.settings';
+import { isNil, not } from '@/helpers/ramda.helpers';
+import { THEME as DEFAULT_THEME } from '@/settings/defaults.settings';
+import { STORAGE } from '@/settings/keys.settings';
 
 export const UIContext = createContext();
 

@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect } from 'react';
 
-import { LANG as DEFAULT_LANG } from '../settings/defaults.settings';
-import { STORAGE } from '../settings/keys.settings';
+import { LANG as DEFAULT_LANG } from '@/settings/defaults.settings';
+import { STORAGE } from '@/settings/keys.settings';
 
 export const LanguageContext = createContext(null);
 
