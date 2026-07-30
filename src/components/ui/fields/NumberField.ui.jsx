@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { FieldError, Label, NumberField } from '@heroui/react';
 
-import { isEmpty, isNotNil, noop } from '../../../helpers/ramda.helpers';
-import Icon from '../../icons';
+import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
+
+import Icon from '../icons/Icon.ui';
 
 function NumberInputField({
   control,

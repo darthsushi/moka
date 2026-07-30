@@ -15,14 +15,13 @@ import {
   toast
 } from '@heroui/react';
 
-import { isNotNil, not } from '../../../helpers/ramda.helpers';
-import { PROFILES } from '../../../settings/keys.settings';
-import { SYSTEM as SYSTEM_LANG } from '../../../settings/langs.settings';
+import { isNotNil, not } from '@/helpers/ramda.helpers';
+import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
+import { PROFILES } from '@/settings/keys.settings';
+import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
 
-import { useAuth } from '../../../hooks/useAuth';
-import { useLanguage } from '../../../hooks/useLanguage';
-
-import { Dialog } from '../dialog';
+import Dialog from '../../dialog/Dialog.ui';
 
 function AvatarAccount() {
   const { signIn, loading, user, signOut, profile } = useAuth();

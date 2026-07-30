@@ -1,19 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 
 import {
   FORMS as FORMS_LANGS,
   SYSTEM as SYSTEM_LANGS
-} from '../../../settings/langs.settings';
-import { isNil, noop } from '../../../helpers/ramda.helpers';
+} from '@/settings/langs.settings';
+import { isNil, noop } from '@/helpers/ramda.helpers';
+import { useLanguage } from '@/hooks/useLanguage';
 
-import { useLanguage } from '../../../hooks/useLanguage';
+import StrutctureDataStep from './elements/StructureDataStep';
+import CoordinatesStep from './elements/CoordinatesStep';
+import FacesDataStep from './elements/FacesDataStep';
+import DescriptionStep from './elements/DescriptionStep';
 
-import StrutctureDataStep from './sections/StructureDataStep';
-import CoordinatesStep from './sections/CoordinatesStep';
-import StructureSizeStep from './sections/FacesDataStep';
-import DescriptionStep from './sections/DescriptionStep';
-import { useEffect } from 'react';
 
 function PlacementForm({
   isEditing = false,
@@ -113,7 +112,7 @@ function PlacementForm({
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
           >
-            <StructureSizeStep
+            <FacesDataStep
               isEditing={ isEditing }
               placement={ currentPlacement }
               formLabels={ FORM_LABELS }

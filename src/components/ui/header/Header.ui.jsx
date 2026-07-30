@@ -1,7 +1,6 @@
-
-import LanguageButton from './LanguageButton.ui';
-import AvatarAccount from './AvatarAccount.ui';
-import OwnerButton from './OwnerButton.ui';
+import LanguageButton from './elements/LanguageButton';
+import AvatarAccount from './elements/AvatarAccount';
+import OwnerButton from './elements/OwnerButton';
 
 function Header() {
   

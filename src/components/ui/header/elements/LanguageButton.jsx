@@ -1,10 +1,12 @@
 import { Button, Header, Dropdown, Label } from '@heroui/react';
+
 import {
   AVAILABLE_LANGUAGES,
   SYSTEM as SYSTEM_LANG
-} from '../../../settings/langs.settings';
-import { useLanguage } from '../../../hooks/useLanguage';
-import Icon from '../../icons';
+} from '@/settings/langs.settings';
+import { useLanguage } from '@/hooks/useLanguage';
+
+import Icon from '../../icons/Icon.ui';
 
 function LanguageButton() {
   const { language, setLanguage } = useLanguage();

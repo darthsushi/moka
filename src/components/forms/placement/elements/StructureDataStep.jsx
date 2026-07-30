@@ -9,10 +9,10 @@ import {
   Typography
 } from '@heroui/react';
 
-import { OOH_TYPES } from '../../../../settings/keys.settings';
-import { isValidHeight } from '../../../../helpers/validators.helper';
+import { isValidHeight } from '@/helpers/validators.helper';
+import { OOH_TYPES } from '@/settings/keys.settings';
 
-import { SelectField, MetersField } from '../../../ui/fields';
+import { SelectField, MetersField } from '@/components/ui';
 
 const TYPE_X_FACES = {
   UNIPOLE_BILLBOARD: [1, 2, 3, 4],

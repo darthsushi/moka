@@ -1,6 +1,7 @@
 import { useController } from 'react-hook-form';
 import { Input, Label, Slider, Surface } from '@heroui/react';
-import { noop } from '../../../helpers/ramda.helpers';
+
+import { noop } from '@/helpers/ramda.helpers';
 
 function RangeField({
   control,

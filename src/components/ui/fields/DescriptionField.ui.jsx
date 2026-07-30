@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { FieldError, Label, TextArea, TextField } from '@heroui/react';
 
-import { isEmpty, isNotNil, noop } from '../../../helpers/ramda.helpers';
+import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
 
 function DescriptionField({
   control,

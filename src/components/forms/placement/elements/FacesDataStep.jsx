@@ -10,10 +10,10 @@ import {
   Typography,
 } from '@heroui/react';
 
-import { isPositiveNumber, isValidHeight } from '../../../../helpers/validators.helper';
-import { isNil } from '../../../../helpers/ramda.helpers';
+import { isNil } from '@/helpers/ramda.helpers';
+import { isPositiveNumber, isValidHeight } from '@/helpers/validators.helper';
 
-import { ImageField, MetersField, NumberField, RangeField } from '../../../ui/fields';
+import { ImageField, MetersField, NumberField, RangeField } from '@/components/ui';
 
 const normalizeFaces = (actualFaces, actualValues) => {
   const newFaceArray = [];

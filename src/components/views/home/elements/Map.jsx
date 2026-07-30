@@ -1,4 +1,4 @@
-import { useUI } from '../../../../hooks/useUI.hook';
+import { useUI } from '@/hooks/useUI.hook';
 
 function Map() {
   const { isMapOpen } = useUI();

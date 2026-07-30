@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { Button, Skeleton, toast } from '@heroui/react';
 
-import { SYSTEM as SYSTEM_LANG } from '../../../settings/langs.settings';
-import { PROFILES } from '../../../settings/keys.settings';
-import { isNotNil } from '../../../helpers/ramda.helpers';
+import { isNotNil } from '@/helpers/ramda.helpers';
+import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useCreatePlacement } from '@/hooks/useCreatePlacement';
+import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
+import { PROFILES } from '@/settings/keys.settings';
 
-import { useAuth } from '../../../hooks/useAuth';
-import { useLanguage } from '../../../hooks/useLanguage';
-import { useCreatePlacement } from '../../../hooks/useCreatePlacement';
-
-import { Dialog } from '../dialog';
-import { PlacementForm } from '../../forms/placement';
+import { Placement } from '@/components/forms';
+import Dialog from '../../dialog/Dialog.ui';
 
 function OwnerButton() {
   const [isModalOpen, setIsModalOpen] = useState(() => false);
@@ -48,7 +47,7 @@ function OwnerButton() {
             iconName="magnify-full-screen"
             isLoading={ isCreatingPlacement }
           > 
-            <PlacementForm
+            <Placement
               placement={ {} }
               isEditing={ false }
               isPending={ isCreatingPlacement }

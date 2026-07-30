@@ -1,30 +1,29 @@
-import { useController } from 'react-hook-form';
 import { useEffect } from 'react';
-import { FieldError, InputGroup, Label, TextField } from '@heroui/react';
+import { useController } from 'react-hook-form';
+import { FieldError, Label, TextField, Input } from '@heroui/react';
 
-import { SYSTEM as SYSTEM_LANGS } from '../../../settings/langs.settings';
-import { isEmpty, isNotNil, noop } from '../../../helpers/ramda.helpers';
+import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
 
-import { useLanguage } from '../../../hooks/useLanguage';
-
-function MetersField({
-  label,
-  name,
+function InputField({
   control,
-  placeholder,
   defaultValue,
-  isReadOnly,
-  autoFocus,
+  label,
   max,
+  maxLength,
   min,
+  minLength,
+  name,
+  placeholder,
+  type = 'text',
+  autoFocus = false,
   isRequired = false,
   isDisabled = false,
+  isReadOnly = false,
   errors = {},
   onChange = noop,
   registerError = noop,
   validate = () => true,
 }) {
-  const { language } = useLanguage();
   const {
     field,
     fieldState: { invalid, error },
@@ -37,19 +36,19 @@ function MetersField({
       disabled: isDisabled,
       max,
       min,
-      validate
+      maxLength,
+      minLength,
+      validate,
     },
   });
 
-  const SYSTEM_LABELS = SYSTEM_LANGS[language];
-
   const handleOnChange = (actualValue) => {
     field.onChange(actualValue);
-    onChange(actualValue, field.name);
+    onChange(actualValue);
   };
 
   useEffect(
-    () => { registerError(isNotNil(error) ? { ...error, field: error.ref.name } : { field: name, ref: null }) },
+    () => { registerError(isNotNil(error) ? { ...error, field: error.ref?.name } : { field: name, ref: null }) },
     [error, name, registerError]
   );
 
@@ -64,23 +63,24 @@ function MetersField({
       isInvalid={ invalid }
       placeholder={ placeholder || '' }
       isDisabled={ isDisabled }
+      type={ type }
       isReadOnly={ isReadOnly }
       autoFocus={ autoFocus }
+      maxLength={ maxLength }
+      minLength={ minLength }
+      max={ max }
+      min={ min }
     >
       <Label>
         { label }
       </Label>
-      <InputGroup>
-        <InputGroup.Input 
-          type="number"
-          className="w-[50%]"
-          max={ max }
-          min={ min }
-        />
-        <InputGroup.Suffix>
-          { SYSTEM_LABELS.WORDS.METERS }
-        </InputGroup.Suffix>
-      </InputGroup>
+      <Input
+        placeholder={ placeholder || '' }
+        maxLength={ maxLength }
+        minLength={ minLength }
+        max={ max }
+        min={ min }
+      />
       { isNotNil(error) &&
         <FieldError>
           { 
@@ -94,4 +94,4 @@ function MetersField({
   );
 };
 
-export default MetersField;
+export default InputField;

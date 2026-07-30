@@ -1,7 +1,7 @@
 
-import { Button, Fieldset, FieldGroup, Form, Spinner, Surface } from '@heroui/react';
 import { useForm } from 'react-hook-form';
-import { DescriptionField, SelectField } from '../../../ui/fields';
+import { Button, Fieldset, FieldGroup, Form, Spinner, Surface } from '@heroui/react';
+import { DescriptionField, SelectField } from '@/components/ui';
 
 function DescriptionStep({
     placement,

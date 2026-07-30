@@ -7,14 +7,13 @@ import {
   Tooltip
 } from '@heroui/react';
 
-import {  not } from '../../helpers/ramda.helpers';
-import { classNameParser } from '../../helpers/utilities.helpers';
-import { SYSTEM as SYSTEM_LANG } from '../../settings/langs.settings';
+import { not } from '@/helpers/ramda.helpers';
+import { classNameParser } from '@/helpers/utilities.helpers';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useUI } from '@/hooks/useUI.hook';
+import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
 
-import { useLanguage } from '../../hooks/useLanguage';
-import { useUI } from '../../hooks/useUI.hook';
-
-import Icon from '../icons';
+import Icon from '../icons/Icon.ui';
 
 function SideBar() {
   const { language } = useLanguage();

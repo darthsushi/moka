@@ -1,23 +1,24 @@
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
-import { FieldError, Label, ListBox, Select } from '@heroui/react';
+import { FieldError, InputGroup, Label, TextField } from '@heroui/react';
 
-import { SYSTEM as SYSTEM_LANGS } from '../../../settings/langs.settings';
-import { isEmpty, isNotNil, noop } from '../../../helpers/ramda.helpers';
+import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
+import { useLanguage } from '@/hooks/useLanguage';
+import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
-import { useLanguage } from '../../../hooks/useLanguage';
-
-function SelectField({
-  control,
-  defaultValue,
+function MetersField({
   label,
   name,
+  control,
   placeholder,
-  autoFocus = false,
+  defaultValue,
+  isReadOnly,
+  autoFocus,
+  max,
+  min,
   isRequired = false,
   isDisabled = false,
   errors = {},
-  options = [],
   onChange = noop,
   registerError = noop,
   validate = () => true,
@@ -33,6 +34,8 @@ function SelectField({
     rules: {
       required: isRequired,
       disabled: isDisabled,
+      max,
+      min,
       validate
     },
   });
@@ -41,16 +44,16 @@ function SelectField({
 
   const handleOnChange = (actualValue) => {
     field.onChange(actualValue);
-    onChange(actualValue);
+    onChange(actualValue, field.name);
   };
 
   useEffect(
-    () => { registerError(isNotNil(error) ? { ...error, field: error.ref?.name } : { field: name, ref: null }) },
+    () => { registerError(isNotNil(error) ? { ...error, field: error.ref.name } : { field: name, ref: null }) },
     [error, name, registerError]
   );
 
   return (
-    <Select
+    <TextField
       fullWidth
       onChange={ handleOnChange }
       onBlur={ field.onBlur }
@@ -58,35 +61,25 @@ function SelectField({
       name={ field.name }
       inputRef={ field.ref }
       isInvalid={ invalid }
-      placeholder={ placeholder || SYSTEM_LABELS.DEFAULTS['SELECT_ONE'] }
+      placeholder={ placeholder || '' }
       isDisabled={ isDisabled }
+      isReadOnly={ isReadOnly }
       autoFocus={ autoFocus }
     >
       <Label>
         { label }
       </Label>
-      <Select.Trigger>
-        <Select.Value />
-        <Select.Indicator />
-      </Select.Trigger>
-      <Select.Popover>
-        <ListBox>
-          {
-            options.map((option, index) => {
-              return (
-                <ListBox.Item
-                  key={ index }
-                  id={ option.id || option }
-                  textValue={ option.label  || option }
-                >
-                  { option.label  || option }
-                  <ListBox.ItemIndicator />
-                </ListBox.Item>
-              )
-            })
-          }
-        </ListBox>
-      </Select.Popover>
+      <InputGroup>
+        <InputGroup.Input 
+          type="number"
+          className="w-[50%]"
+          max={ max }
+          min={ min }
+        />
+        <InputGroup.Suffix>
+          { SYSTEM_LABELS.WORDS.METERS }
+        </InputGroup.Suffix>
+      </InputGroup>
       { isNotNil(error) &&
         <FieldError>
           { 
@@ -96,8 +89,8 @@ function SelectField({
           }
         </FieldError>
       }
-    </Select>
+    </TextField>
   );
 };
 
-export default SelectField;
+export default MetersField;

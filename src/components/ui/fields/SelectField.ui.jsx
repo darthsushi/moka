@@ -1,29 +1,27 @@
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
-import { FieldError, Label, TextField, Input } from '@heroui/react';
+import { FieldError, Label, ListBox, Select } from '@heroui/react';
 
-import { isEmpty, isNotNil, noop } from '../../../helpers/ramda.helpers';
+import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
+import { useLanguage } from '@/hooks/useLanguage';
+import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
-function InputField({
+function SelectField({
   control,
   defaultValue,
   label,
-  max,
-  maxLength,
-  min,
-  minLength,
   name,
   placeholder,
-  type = 'text',
   autoFocus = false,
   isRequired = false,
   isDisabled = false,
-  isReadOnly = false,
   errors = {},
+  options = [],
   onChange = noop,
   registerError = noop,
   validate = () => true,
 }) {
+  const { language } = useLanguage();
   const {
     field,
     fieldState: { invalid, error },
@@ -34,13 +32,11 @@ function InputField({
     rules: {
       required: isRequired,
       disabled: isDisabled,
-      max,
-      min,
-      maxLength,
-      minLength,
-      validate,
+      validate
     },
   });
+
+  const SYSTEM_LABELS = SYSTEM_LANGS[language];
 
   const handleOnChange = (actualValue) => {
     field.onChange(actualValue);
@@ -53,7 +49,7 @@ function InputField({
   );
 
   return (
-    <TextField
+    <Select
       fullWidth
       onChange={ handleOnChange }
       onBlur={ field.onBlur }
@@ -61,26 +57,35 @@ function InputField({
       name={ field.name }
       inputRef={ field.ref }
       isInvalid={ invalid }
-      placeholder={ placeholder || '' }
+      placeholder={ placeholder || SYSTEM_LABELS.DEFAULTS['SELECT_ONE'] }
       isDisabled={ isDisabled }
-      type={ type }
-      isReadOnly={ isReadOnly }
       autoFocus={ autoFocus }
-      maxLength={ maxLength }
-      minLength={ minLength }
-      max={ max }
-      min={ min }
     >
       <Label>
         { label }
       </Label>
-      <Input
-        placeholder={ placeholder || '' }
-        maxLength={ maxLength }
-        minLength={ minLength }
-        max={ max }
-        min={ min }
-      />
+      <Select.Trigger>
+        <Select.Value />
+        <Select.Indicator />
+      </Select.Trigger>
+      <Select.Popover>
+        <ListBox>
+          {
+            options.map((option, index) => {
+              return (
+                <ListBox.Item
+                  key={ index }
+                  id={ option.id || option }
+                  textValue={ option.label  || option }
+                >
+                  { option.label  || option }
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              )
+            })
+          }
+        </ListBox>
+      </Select.Popover>
       { isNotNil(error) &&
         <FieldError>
           { 
@@ -90,8 +95,8 @@ function InputField({
           }
         </FieldError>
       }
-    </TextField>
+    </Select>
   );
 };
 
-export default InputField;
+export default SelectField;

@@ -12,11 +12,11 @@ import {
   Typography
 } from '@heroui/react';
 
-import { SYSTEM as SYSTEM_LANGS } from '../../../settings/langs.settings';
-import { isEmpty, isNotNil, noop, not } from '../../../helpers/ramda.helpers';
+import { isEmpty, isNotNil, noop, not } from '@/helpers/ramda.helpers';
+import { useLanguage } from '@/hooks/useLanguage';
+import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
-import { useLanguage } from '../../../hooks/useLanguage';
-import Icon from '../../icons';
+import Icon from '../icons/Icon.ui';
 
 function ImagesVisualizer({ images = [], removeImage, systemLabels }) {
 

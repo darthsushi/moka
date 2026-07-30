@@ -1,16 +1,12 @@
-import { Chip } from '@heroui/react';
-import { Card } from '@heroui/react';
-import { SYSTEM } from '../../../../settings/langs.settings';
-import { useLanguage } from '../../../../hooks/useLanguage';
-import Icon from '../../../icons';
-import { Typography } from '@heroui/react';
-import { Description } from '@heroui/react';
-import { Button } from '@heroui/react';
-import { Tooltip } from '@heroui/react';
-import { Dialog } from '../../../ui/dialog';
 import { useState } from 'react';
+import { Button, Card, Chip, Description, Tooltip, Typography } from '@heroui/react';
 
-function getSize(position, facesLength) {
+import { SYSTEM } from '@/settings/langs.settings';
+import { useLanguage } from '@/hooks/useLanguage';
+
+import { Dialog, Icon } from '@/components/ui';
+
+const getSize = (position, facesLength) => {
   const isEven = facesLength % 2 === 0;
 
   return isEven

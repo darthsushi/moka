@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import {
   Alert,
   Button,
@@ -10,15 +12,12 @@ import {
   Tooltip,
   Typography
 } from '@heroui/react';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 
-import { isValidCoodinates } from '../../../../helpers/validators.helper';
-import { isNil, isNotNil, not } from '../../../../helpers/ramda.helpers';
+import { isNil, isNotNil, not } from '@/helpers/ramda.helpers';
+import { isValidCoodinates } from '@/helpers/validators.helper';
 
-import { TextField } from '../../../ui/fields';
-import { Animations } from '../../../animations';
-import Icon from '../../../icons';
+import { Animations } from '@/components/animations';
+import { Icon, TextField } from '@/components/ui';
 
 const getSingleStringCoor = ({ latitude, longitude }) => {
   if (isNil(latitude) || isNil(longitude)) {

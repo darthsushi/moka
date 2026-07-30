@@ -1,5 +1,5 @@
-import './index.css';
-import { isNil } from '../../helpers/ramda.helpers.js';
+import './Icon.ui.css';
+import { isNil } from '@/helpers/ramda.helpers';
 
 import AddLocation from './svg-icons/AddLocation.svg.jsx';
 import ArrowDropDown from './svg-icons/ArrowDropDown.svg.jsx';

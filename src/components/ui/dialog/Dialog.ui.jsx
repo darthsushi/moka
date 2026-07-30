@@ -1,6 +1,7 @@
 import { Modal } from '@heroui/react';
-import { isNotNil, noop } from '../../../helpers/ramda.helpers';
-import Icon from '../../icons';
+import { isNotNil, noop } from '@/helpers/ramda.helpers';
+
+import Icon from '../icons/Icon.ui';
 
 function Dialog({
   children = null,
