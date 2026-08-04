@@ -23,6 +23,7 @@ export const useCreatePlacement = () => {
     setIsLoading(true);
     setError(null);
 
+    // TODO: Use hasRole or hasAnyRole
     const isOwner = (profile.roles || []).includes('owner');
 
     try {

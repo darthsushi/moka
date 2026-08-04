@@ -22,14 +22,22 @@ const getPriorityProperty = (actualObject = {}, priorityKeys) => {
     : null;
 }; 
 
-function getRequiredParams(requiredParamIds = [], paramValues = {}) {
+const getRequiredParams = (requiredParamIds = [], paramValues = {}) => {
   return Array.isArray(requiredParamIds)
       ? requiredParamIds.map(paramId => paramValues[paramId].value)
       : [];
 };
 
+const canAccessModule = (module, isAuthenticated, roles = []) => {
+  if (module.requiresAuth && not(isAuthenticated)) return false;
+  if (not(module.roles?.length)) return true;
+
+  return module.roles.some(role => roles.includes(role));
+};
+
 export {
   canUseParameters,
+  canAccessModule,
   classNameParser,
   getPriorityProperty,
   getRequiredParams

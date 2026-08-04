@@ -9,6 +9,7 @@ export default {
   },
   SIDEBAR: {
     HOME: 'Inicio',
+    INVENTORY: 'Inventario'
   },
   TOOLTIPS: {
     SWITCH_DARK: 'Cambiar a modo oscuro',

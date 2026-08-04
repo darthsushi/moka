@@ -13,6 +13,7 @@ import Edit from './svg-icons/Edit.svg.jsx';
 import FindImage from './svg-icons/FindImage.svg.jsx';
 import HomeIcon from './svg-icons/Home.svg.jsx';
 import Image from './svg-icons/Image.svg.jsx';
+import Inventory from './svg-icons/inventory.svg';
 import LanguageIcon from './svg-icons/Language.svg.jsx';
 import MagnifyFullScreen from './svg-icons/MagnifyFullScreen.svg.jsx';
 import MoreHoriz from './svg-icons/MoreHoriz.svg.jsx';
@@ -42,6 +43,7 @@ function Icon({ name, filled }) {
     'filter': Filter,
     'find-image': FindImage,
     'home': HomeIcon,
+    'inventory': Inventory,
     'image': Image,
     'language': LanguageIcon,
     'light-mode': LightMode,
