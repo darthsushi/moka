@@ -11,6 +11,7 @@ import {
 } from '@heroui/react';
 
 import { isNil } from '@/helpers/ramda.helpers';
+import { parseDayRange } from '@/helpers/utilities.helpers';
 import { isPositiveNumber, isValidHeight } from '@/helpers/validators.helper';
 
 import { ImageField, MetersField, NumberField, RangeField } from '@/components/ui';
@@ -42,7 +43,7 @@ const buildStepObjects = (actualPlacement) => {
     acc[`display_width_face_${index + 1}`] = item.display_width;
     acc[`display_height_face_${index + 1}`] = item.display_height;
     acc[`period_price_face_${index + 1}`] = item.period_price;
-    acc[`day_range_face_${index + 1}`] = item.day_range || [30, 90];
+    acc[`day_range_face_${index + 1}`] = parseDayRange(item.day_range) || [30, 90];
     acc[`images_face_${index + 1}`] = item.images || [];
 
     return acc;

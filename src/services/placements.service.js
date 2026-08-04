@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { serializeDayRange } from '@/helpers/utilities.helpers';
 
 export const placementsService = {
   async createPlacement(formattedData, userId) {
@@ -15,8 +16,9 @@ export const placementsService = {
 
     if (placementError) throw placementError;
 
-    const facesToInsert = faces.map(actualFace => ({
-      ...actualFace,
+    const facesToInsert = faces.map(face => ({
+      ...face,
+      day_range: serializeDayRange(face.day_range),
       placement_id: placement.id 
     }));
 
