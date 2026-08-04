@@ -7,7 +7,7 @@ import { useCreatePlacement } from '@/hooks/placements';
 import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
 import { PROFILES } from '@/settings/keys.settings';
 
-import { Placement } from '@/components/forms';
+import { PlacementForm } from '@/components/forms';
 import Dialog from '../../dialog/Dialog.ui';
 
 function OwnerButton() {
@@ -46,7 +46,7 @@ function OwnerButton() {
             iconName="magnify-full-screen"
             isLoading={ isCreatingPlacement }
           > 
-            <Placement
+            <PlacementForm
               placement={ {} }
               isEditing={ false }
               isPending={ isCreatingPlacement }

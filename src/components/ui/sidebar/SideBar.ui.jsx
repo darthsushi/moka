@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Button,
   Label,
@@ -8,13 +9,16 @@ import {
 } from '@heroui/react';
 
 import { not } from '@/helpers/ramda.helpers';
-import { classNameParser } from '@/helpers/utilities.helpers';
-import { useLanguage, useUI } from '@/hooks/contexts';
+import { canAccessModule, classNameParser } from '@/helpers/utilities.helpers';
+import { useAuth, useLanguage, useUI } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
+import { NAVIGATION_ITEMS } from '@/settings/navigation.settings';
 
 import Icon from '../icons/Icon.ui';
+import Logo from '../brand/Logo.ui';
 
 function SideBar() {
+  const { isAuthenticated, roles } = useAuth();
   const { language } = useLanguage();
   const {
     isSidebarOpen,
@@ -23,8 +27,16 @@ function SideBar() {
     toggleTheme,
   } = useUI();
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const SIDEBAR_LANG = SYSTEM_LANG[language].SIDEBAR;
   const TOOLTIPS_LANG = SYSTEM_LANG[language].TOOLTIPS;
+
+  const navigationItems = NAVIGATION_ITEMS.filter(
+    item => canAccessModule(item, isAuthenticated, roles)
+  );
+
 
   const SIDE_BAR_CLASS = [
     isSidebarOpen ? 'w-[280px] md:w-[350px]' : 'w-[50px] md:w-[100px]',
@@ -52,21 +64,11 @@ function SideBar() {
     'grid p-1 gap-1 rounded-3xl mt-1'
   ];
 
-  const LOGO = isSidebarOpen ? './assets/moka/letters.svg' : './assets/moka/logo.png';
-
   return (
-    <nav
-      className={ classNameParser(SIDE_BAR_CLASS) }
-    >
-      <div
-        className="w-full h-auto flex flex-col items-center"
-      >
-        <div className="w-full h-18 flex justify-center py-2">
-          <img src={ LOGO } className="h-full" />
-        </div>
-        <div
-          className="w-full min-h-2 pt-2"
-        >
+    <nav className={ classNameParser(SIDE_BAR_CLASS) } >
+      <div className="w-full h-auto flex flex-col items-center">
+        <Logo small={ not(isSidebarOpen) } />
+        <div className="w-full min-h-2 pt-2">
           <Surface
             className="w-full"
             variant="transparent"
@@ -75,43 +77,54 @@ function SideBar() {
               aria-label="side-bar"
               className="w-full p-2 text-gray-600"
               selectionMode="none"
-              onAction={(key) => alert(`Ir a: ${key}`)}
+              onAction={ (key) => navigate(String(key)) }
             >
-              <ListBox.Section>
-                <ListBox.Item
-                  id="/home"
-                  textValue={ SIDEBAR_LANG.HOME }
-                  className={ classNameParser(LIST_ITEM_CLASS) }
-                >
-                  <Tooltip isDisabled={ isSidebarOpen }>
-                    <Tooltip.Trigger>
-                      <div
-                        className={ classNameParser(ICON_CLASS) }
+              <ListBox.Section className="flex flex-col gap-1">
+                { 
+                  navigationItems.map(item => {
+                    const label = SIDEBAR_LANG[item.label];
+                    const isActive = location.pathname === item.path;
+
+                    return (
+                      <ListBox.Item
+                        key={ item.id }
+                        id={ item.path }
+                        textValue={ label }
+                        className={ 
+                          classNameParser([
+                            ...LIST_ITEM_CLASS,
+                            isActive && 'bg-default'
+                          ])
+                        }
                       >
-                        <Icon
-                          filled
-                          name='home' 
-                        />
-                      </div>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      placement="left"
-                    >
-                      { SIDEBAR_LANG.HOME }
-                    </Tooltip.Content>
-                  </Tooltip>
-                  { isSidebarOpen &&
-                    <div
-                      className={ classNameParser(LABEL_CLASS) }
-                    >
-                      <Label
-                        className="text-base"
-                      >
-                        { SIDEBAR_LANG.HOME }
-                      </Label>
-                    </div>
-                  }
-                </ListBox.Item>
+                        <Tooltip isDisabled={ isSidebarOpen }>
+                          <Tooltip.Trigger>
+                            <div
+                              className={ classNameParser(ICON_CLASS) }
+                            >
+                              <Icon
+                                filled
+                                name={ item.icon }
+                              />
+                            </div>
+                          </Tooltip.Trigger>
+                          <Tooltip.Content
+                            placement="left"
+                          >
+                            { label }
+                          </Tooltip.Content>
+                        </Tooltip>
+                        { isSidebarOpen &&
+                          <div className={ classNameParser(LABEL_CLASS) }>
+                            <Label className="text-base">
+                              { label }
+                            </Label>
+                          </div>
+                        }
+                      </ListBox.Item>
+                    );
+                  }) 
+                }
               </ListBox.Section>
             </ListBox>
           </Surface>

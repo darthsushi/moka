@@ -10,6 +10,7 @@ export default {
   },
   SIDEBAR: {
     HOME: 'home',
+    INVENTORY: 'Inventory'
   },
   TOOLTIPS: {
     SWITCH_DARK: 'Switch to dark mode',
