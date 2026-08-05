@@ -45,7 +45,11 @@ export default {
     CHOCE_LANGUAGE: 'Selecciona tu idioma',
     FIND_BY_PLACEMENT: 'Buscar título, código, ubicación...',
     AVAILABLE_FACES: 'cara(s) disponible(s)',
-    ADD_SUCCESS_MESSAGE: 'El elemento se ha agregado correctamente'
+    ADD_SUCCESS_MESSAGE: 'El elemento se ha agregado correctamente',
+    NOTHING_TO_SHOW: 'No hay nada por aquí',
+    GOOD_MORNING: 'Buenos días',
+    GOOD_AFTERNOON: 'Buenas tardes',
+    GOOD_NIGHT: 'Buenas noches'
   },
   PLACEMENT: {
     TYPES: {
@@ -64,5 +68,6 @@ export default {
     UP_TO: 'por hasta',
     IN: 'en',
     METERS: 'Metros',
+    HI: 'Hola'
   }
 };

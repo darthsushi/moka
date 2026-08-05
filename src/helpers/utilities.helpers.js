@@ -21,6 +21,12 @@ const classNameParser = (classNameArray = []) => {
   return classNameArray.join(' ')
 };
 
+const getGreeting = (hour = new Date().getHours()) => {
+  if (hour < 6 || hour >= 20) return 'GOOD_NIGHT';
+  if (hour < 12) return 'GOOD_MORNING';
+  return 'GOOD_AFTERNOON';
+};
+
 const getPriorityProperty = (actualObject = {}, priorityKeys) => {
   const winningKey = find((key) => not(isNil(actualObject[key])))(priorityKeys)
 
@@ -66,6 +72,7 @@ export {
   canUseParameters,
   canAccessModule,
   classNameParser,
+  getGreeting,
   getPriorityProperty,
   getRequiredParams,
   getUnlistedPlacementUrl,
