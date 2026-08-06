@@ -1,4 +1,4 @@
-import { Button, Header, Dropdown, Label } from '@heroui/react';
+import { Button, Header, Dropdown, Label, Tooltip } from '@heroui/react';
 
 import {
   AVAILABLE_LANGUAGES,
@@ -15,14 +15,19 @@ function LanguageButton() {
 
   return (
     <Dropdown>
-      <Button
-        isIconOnly
-        size="lg"
-        variant="secondary"
-        aria-label="Menu"
-      >
-        <Icon name='language' />
-      </Button>
+      <Tooltip>
+        <Button
+          size="lg"
+          variant="outline"
+          aria-label="Menu"
+          className="text-xl"
+        >
+          <Icon name='language' />
+        </Button>
+        <Tooltip.Content>
+          { SYSTEM_LABELS.TEXTS.CHOCE_LANGUAGE }
+        </Tooltip.Content>
+      </Tooltip>
       <Dropdown.Popover className="min-w-[256px]">
         <Dropdown.Menu
           selectedKeys={ [language] }

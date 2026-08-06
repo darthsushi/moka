@@ -5,6 +5,7 @@ import { SYSTEM } from '@/settings/langs.settings';
 import { useLanguage } from '@/hooks/contexts';
 
 import { Dialog, Icon } from '@/components/ui';
+import { isNotNil } from 'ramda';
 
 const getSize = (position, facesLength) => {
   const isEven = facesLength % 2 === 0;
@@ -14,7 +15,7 @@ const getSize = (position, facesLength) => {
     : position === facesLength - 1 ? 'col-span-4' : 'col-span-2';
 }
 
-function ImageCollage({ faces, code, systemLang }) {
+function ImageCollage({ faces, placementCode, placementLocation }) {
   
   return (
     <div className="w-full h-40 grid grid-cols-4 gap-0.5 overflow-hidden rounded-4xl relative">
@@ -34,12 +35,12 @@ function ImageCollage({ faces, code, systemLang }) {
         <div className="w-full h-10 flex items-center justify-end">
           <Chip color="success" className="font-semibold pointer-events-auto">
             <Icon name="qr-code" />
-            { code }
+            { placementCode }
           </Chip>
         </div>
         <div className="w-full h-10 flex items-center">
-          <Chip>
-            {faces.length } { systemLang.TEXTS.AVAILABLE_FACES }
+          <Chip className="max-w-[75%]">
+            <p className="truncate">{ placementLocation }</p>
           </Chip>
         </div>
       </div>
@@ -50,22 +51,23 @@ function ImageCollage({ faces, code, systemLang }) {
 function PlacementItemCard({ placement }) {
   const [isModalOpen, setIsModalOpen] = useState(() => false);
   const { language } = useLanguage();
-  const { neighbourhood, road, municipality, city } = placement.location;
+  const { display_name, city, municipality, state } = placement.location;
 
   const SYSTEM_LANG = SYSTEM[language];
 
-  const locationDisplay = `${SYSTEM_LANG.PLACEMENT.TYPES[placement.type]} ${SYSTEM_LANG.WORDS.IN} ${city || neighbourhood || road || municipality  }`
+  const placementDiplayName = `${SYSTEM_LANG.PLACEMENT.TYPES[placement.type]} ${SYSTEM_LANG.WORDS.IN} ${display_name}`
+  const placementLocation =  `${municipality || city}${ isNotNil(state) && `, ${state}` }`;
 
   return (
     <Card className="col-span-1 rounded-4xl p-2">
       <ImageCollage
         faces={ placement.faces || [] }
-        code={ placement.code }
-        systemLang={ SYSTEM_LANG }
+        placementCode={ placement.code }
+        placementLocation={ placementLocation }
       />
       <Card.Content>
         <Typography type="body-sm" className="leading-4.5">
-          { locationDisplay }
+          { placementDiplayName }
         </Typography>
         <Description className="w-full truncate">
           { placement.description }

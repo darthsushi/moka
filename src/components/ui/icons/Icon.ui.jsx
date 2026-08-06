@@ -26,6 +26,8 @@ import Visibility from './svg-icons/Visibility.svg.jsx';
 import Filter from './svg-icons/Filter.svg.jsx';
 import QrCode from './svg-icons/QrCode.svg.jsx';
 import Favorite from './svg-icons/Favorite.svg.jsx';
+import ThumbnailBar from './svg-icons/ThumbnailBar.svg';
+import Search from './svg-icons/search.svg';
 
 function Icon({ name, filled }) {
   const SGVS = {
@@ -49,9 +51,11 @@ function Icon({ name, filled }) {
     'light-mode': LightMode,
     'magnify-full-screen': MagnifyFullScreen,
     'more-horiz': MoreHoriz,
-    'remove': Remove,
     'preview': Preview,
     'qr-code': QrCode,
+    'remove': Remove,
+    'search': Search,
+    'thumbnail-bar': ThumbnailBar,
     'upload-image': UploadImage,
     'visibility': Visibility,
   };

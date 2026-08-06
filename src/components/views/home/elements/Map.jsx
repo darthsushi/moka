@@ -5,10 +5,13 @@ function Map() {
 
   return (
     <div
-      aria-label="map"
-      className={ `transition-all max-h-full bg-blue-300 sticky top-0 overflow-hidden ${ isMapOpen ? 'w-[50%]' : 'w-0'}` }
+      data-map
+      className={ `transition-all h-screen bg-blue-300 sticky top-20 overflow-hidden ${ isMapOpen ? 'w-[50%]' : 'w-0'}` }
+      style={{
+        height: 'calc(100% - 80px)'
+      }}
     >
-
+      Esto es un mapa
     </div>
   );
 }

@@ -15,7 +15,7 @@ function FilterBar() {
   return (
     <div
       aria-label="filter bar"
-      className="sticky w-full h-20 grid grid-cols-8 gap-1 p-2 top-0 bg-background-tertiary z-30"
+      className="sticky w-full h-20 grid grid-cols-8 gap-1 p-2 top-20 bg-background-tertiary z-30"
     >
       <div className={ `${ isMapOpen ? 'col-span-4' : 'col-span-2' } h-full` }>
         <Form className="w-full h-full flex items-center p-1">

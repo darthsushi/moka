@@ -23,7 +23,6 @@ function SideBar() {
   const {
     isSidebarOpen,
     theme,
-    toggleSidebar,
     toggleTheme,
   } = useUI();
 
@@ -158,29 +157,6 @@ function SideBar() {
                 theme === 'dark'
                 ? TOOLTIPS_LANG.SWITCH_LIGHT
                 : TOOLTIPS_LANG.SWITCH_DARK
-              }
-            </Tooltip.Content>
-          </Tooltip>
-          <Tooltip>
-            <Button
-              fullWidth
-              size="lg"
-              variant="danger-soft"
-              className="text-1xl flex justify-center items-center col-span-1"
-              onPress={ toggleSidebar }
-            >
-                <Icon
-                  filled
-                  name={ isSidebarOpen ? 'double-arrow-left' : 'double-arrow-right' }
-                />
-            </Button>
-            <Tooltip.Content
-              placement={ isSidebarOpen ? 'top' : 'left' }
-            >
-              { 
-                isSidebarOpen
-                ? TOOLTIPS_LANG.COLLAPSE_SIDEBAR
-                : TOOLTIPS_LANG.EXPAND_SIDEBAR
               }
             </Tooltip.Content>
           </Tooltip>
