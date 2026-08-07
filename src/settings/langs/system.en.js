@@ -12,6 +12,9 @@ export default {
     HOME: 'home',
     INVENTORY: 'Inventory'
   },
+  PAGES: {
+    INVENTORY: 'Inventory'
+  },
   TOOLTIPS: {
     SWITCH_DARK: 'Switch to dark mode',
     SWITCH_LIGHT: 'Switch to light mode',

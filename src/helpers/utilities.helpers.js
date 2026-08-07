@@ -1,5 +1,21 @@
 import { find, isNil, isNotNil, not } from './ramda.helpers';
 
+const applyListFilter = (query, column, value) => {
+  const values = (Array.isArray(value) ? value : [value])
+    .filter(item => typeof item === 'string' && item.trim())
+    .map(item => item.trim());
+
+  if (values.length === 1) {
+    return query.eq(column, values[0]);
+  }
+
+  if (values.length > 1) {
+    return query.in(column, values);
+  }
+
+  return query;
+};
+
 const canAccessModule = (module, isAuthenticated, roles = []) => {
   if (module.requiresAuth && not(isAuthenticated)) return false;
   if (not(module.roles?.length)) return true;
@@ -49,6 +65,20 @@ const getRequiredParams = (requiredParamIds = [], paramValues = {}) => {
       : [];
 };
 
+const normalizeFaceCount = (faceCount) => {
+  if (faceCount === null || faceCount === undefined || faceCount === '') {
+    return null;
+  }
+
+  const normalizedFaceCount = Number(faceCount);
+
+  if (!Number.isInteger(normalizedFaceCount) || normalizedFaceCount < 0) {
+    throw new Error('INVALID_FACE_COUNT_FILTER');
+  }
+
+  return normalizedFaceCount;
+};
+
 const parseDayRange = (range) => {
   const match = range?.match(/^\[(\d+),(\d+)\)$/);
 
@@ -69,6 +99,7 @@ const serializeDayRange = ([min, max]) => {
 }
 
 export {
+  applyListFilter,
   canUseParameters,
   canAccessModule,
   classNameParser,
@@ -76,6 +107,7 @@ export {
   getPriorityProperty,
   getRequiredParams,
   getUnlistedPlacementUrl,
+  normalizeFaceCount,
   parseDayRange,
   serializeDayRange
 };
