@@ -34,9 +34,9 @@ const normalizeFaces = (actualFaces, actualValues) => {
 
 const buildStepObjects = (actualPlacement) => {
   const isFacesNumberSync = isNil(actualPlacement.faces) ? true
-    : actualPlacement.faces.length === actualPlacement.faces_number;
+    : actualPlacement.faces.length === actualPlacement.face_count;
 
-  const faceByFormSelector = Array.from({ length: actualPlacement.faces_number || 1 }, () => ({}));
+  const faceByFormSelector = Array.from({ length: actualPlacement.face_count || 1 }, () => ({}));
   const actualFaces = isFacesNumberSync ? (actualPlacement.faces || faceByFormSelector) : faceByFormSelector;
 
   const actualFields = actualFaces.reduce((acc, item, index) => {
