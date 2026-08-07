@@ -107,10 +107,19 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
 
     try {
       const [latitude, longitude] = actualCoordinates.split(',');
-      const fetchResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2`);
+
+      const nominatimURL = new URL('https://nominatim.openstreetmap.org/reverse');
+      nominatimURL.search = new URLSearchParams({
+        lat: latitude,
+        lon: longitude,
+        format: 'jsonv2',
+        'accept-language': 'es-MX'
+      });
+
+      const nominatimResponse = await fetch(nominatimURL);
       
-      if (not(fetchResponse.ok)) {
-        throw new Error(`Error HTTP: ${fetchResponse.status}`);
+      if (not(nominatimResponse.ok)) {
+        throw new Error(`Error HTTP: ${nominatimResponse.status}`);
       }
 
       const {
@@ -124,22 +133,24 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
           municipality,
           neighbourhood,
           postcode,
+          region,
           road,
-          state
+          state,
+          village
         },
         display_name
-      } = await fetchResponse.json();
+      } = await nominatimResponse.json();
 
       setLocation({
         isoCode,
         display_name,
-        city: municipality || city || county || town,
-        country,
         country_code,
         neighbourhood,
         postcode,
         road,
-        state
+        country,
+        state: state || region,
+        city: city || town || village || municipality || county,
       });
       setCoordinates(actualCoordinates);
 
