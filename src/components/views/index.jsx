@@ -4,3 +4,4 @@ export { default as Auth } from './auth/Auth.view';
 
 export { default as AccessDenied } from './alerts/AccessDenied.view';
 export { default as NotFound } from './alerts/NotFound.view';
+export { default as EmptyContent } from './alerts/EmptyContent.view';

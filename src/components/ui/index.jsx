@@ -13,3 +13,5 @@ export { default as MetersField } from './fields/MetersField.ui';
 export { default as ImageField } from './fields/ImagesField.ui';
 export { default as DescriptionField } from './fields/DescriptionField.ui';
 export { default as RangeField } from './fields/RangeField.ui';
+
+export { default as Table } from './tables/Table.ui';

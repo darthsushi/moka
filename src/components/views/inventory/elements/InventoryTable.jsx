@@ -1,226 +1,214 @@
-import {
-  Button,
-  Checkbox,
-  Chip,
-  Spinner,
-  Table
-} from '@heroui/react';
-import { useState } from 'react';
 
-import { useInventoryPlacements } from '@/hooks/placements';
+import { SYSTEM as SYSTEM_LANGS, TABLE_LANGS } from '@/settings/langs.settings';
+import { /* useInventoryFilterOptions, */ useInventoryPlacements } from '@/hooks/placements';
+import { useLanguage } from '@/hooks/contexts';
 
-const STATUS_COLORS = {
+import { Table } from '@/components/ui';
+import CodeCell from './table-elements/Code';
+import { Chip } from '@heroui/react';
+import { isNil } from 'ramda';
+import EmptyContent from '../../alerts/EmptyContent.view';
+
+/* const STATUS_COLORS = {
   active: 'success',
   pending: 'warning',
   suspended: 'danger',
   paused: 'default',
   draft: 'default'
-};
+}; */
 
-export const InventoryTable = () => {
+function InventoryTable() {
   const {
     placements,
     page,
+    pageSize,
+    total,
     totalPages,
     isLoading,
+    isEmpty,
+    hasNoMatches,
     error,
-    setPage
+    filters,
+    /* activeFilters, */
+    activeFiltersCount,
+    hasActiveFilters,
+    setPage,
+    setPageSize,
+    refetch,
+    updateFilters,
+    clearFilters,
   } = useInventoryPlacements({
-    initialPageSize: 10
+    searchDebounceMs: 700,
+    initialPageSize: 12,
+    initialFilters: {
+      visibility: ['public', 'private', 'unlisted'],
+      status: ['active', 'pending'],
+      type: ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP']
+    }
   });
+  /* const all = useInventoryFilterOptions(); */
+  const { language } = useLanguage();  
 
-  const [selectedKeys, setSelectedKeys] = useState(
-    new Set()
-  );
+  const TABLE_LANG = TABLE_LANGS[language].INVENTORY;
+  const SYSTEM_LANG = SYSTEM_LANGS[language];
+  
+  const TABLE_COLS = [
+    { id: 'id', displayText: TABLE_LANG.ID, isRowHeader: true },
+    { id: 'type', displayText: TABLE_LANG.TYPE },
+    { id: 'face_count', displayText: TABLE_LANG.FACE_COUNT },
+    { id: 'city', displayText: TABLE_LANG.CITY },
+    { id: 'country', displayText: TABLE_LANG.COUNTRY },
+    { id: 'status', displayText: TABLE_LANG.STATUS },
+    { id: 'visibility', displayText: TABLE_LANG.VISIBILITY },
+  ];
+  const TABLE_ROWS = placements.map(({
+    city,
+    code,
+    country,
+    face_count,
+    id,
+    status, 
+    type,
+    visibility,
+    location: { display_name }
+  }) => {
+    const STATUS_TK = (status || '').toLocaleUpperCase(); 
+    const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();
 
-  const renderCell = (placement, columnKey) => {
-    switch (columnKey) {
-      case 'code':
-        return (
-          <div>
-            <p className="font-semibold">
-              {placement.code}
-            </p>
-
-            <p className="text-xs text-default-500">
-              {placement.type}
-            </p>
-          </div>
-        );
-
-      case 'face_count':
-        return (
-          <span>
-            {placement.face_count}{' '}
-            {placement.face_count === 1
-              ? 'cara'
-              : 'caras'}
-          </span>
-        );
-
-      case 'status':
-        return (
-          <Chip
-            color={
-              STATUS_COLORS[placement.status] ??
-              'default'
-            }
-            size="sm"
-            variant="soft"
-          >
-            {placement.status}
-          </Chip>
-        );
-
-      case 'visibility':
-        return placement.visibility;
-
-      default:
-        return '—';
+    return {
+      id: { render: <CodeCell code={ code } display_name={ display_name } />, value: id },
+      type: { render: TABLE_LANG[type], value: type },
+      face_count,
+      city,
+      country,
+      status: { render: <Chip>{ TABLE_LANG[STATUS_TK] }</Chip>, value: status },
+      visibility: { render: <Chip>{ TABLE_LANG[VISIBILITY_TK] }</Chip>, value: visibility }
+    }
+  });
+  const TABLE_FILTERS = {
+    filters: [
+      {
+        name: 'type',
+        translationKey: 'TYPE',
+        defaultExpended: true,
+        initialValues: ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP'],
+        options: [
+          { id: 'UNIPOLE_BILLBOARD', translationKey: 'UNIPOLE_BILLBOARD' },
+          { id: 'HAND_PAINTED_MURAL', translationKey: 'HAND_PAINTED_MURAL' },
+          { id: 'BARRICADE', translationKey: 'BARRICADE' },
+          { id: 'BUILDING_WRAP', translationKey: 'BUILDING_WRAP' },
+        ]
+      },
+      {
+        name: 'status',
+        translationKey: 'STATUS',
+        defaultExpended: true,
+        initialValues: ['active', 'pending'],
+        options: [
+          { id: 'active', translationKey: 'ACTIVE' },
+          { id: 'pending', translationKey: 'PENDING' }
+        ]
+      },
+      {
+        name: 'visibility',
+        translationKey: 'VISIBILITY',
+        defaultExpended: true,
+        initialValues: ['public', 'private', 'unlisted'],
+        options: [
+          { id: 'public', translationKey: 'PUBLIC' },
+          { id: 'private', translationKey: 'PRIVATE' },
+          { id: 'unlisted', translationKey: 'UNLISTED' }
+        ]
+      }
+    ],
+    activeFiltersCount,
+    hasActiveFilters,
+    filtersActived: filters,
+    isPending: false,
+    clearFilters,
+    onApplyingFilters: (actualFilters) => {
+      if (isNil(actualFilters)) {
+        clearFilters()
+      } else {
+        updateFilters(actualFilters)
+      }
     }
   };
-
-  const handleSelectionChange = (keys) => {
-    setSelectedKeys(keys);
-
-    const selectedIds = keys === 'all'
-      ? placements.map(placement => placement.id)
-      : Array.from(keys);
-
-    console.log(
-      'Placements seleccionados:',
-      selectedIds
-    );
+  const TABLE_PAGINATION = {
+    page,
+    totalPages,
+    pageSize,
+    totalContent: total,
+    setPage,
+    setPageSize
   };
+  const TABLE_STATES = {
+    isFechingData: isLoading,
+    errorObject: error,
+    updateContent: refetch,
+    isEmpty,
+    hasNoMatches
+  };
+  const TABLE_SELECTION = {
+    type: 'multiple',
+    onSelectionChange: (selection) => {
+      console.log('onSelectionChange', selection);
+    },
+    actionsBySelections: (currentSelections) => {
+      console.log(currentSelections);
 
-  if (error) {
-    return (
-      <p className="text-danger">
-        {error}
-      </p>
-    );
-  }
-
-  return (
-    <Table>
-      <Table.ScrollContainer>
-        <Table.Content
-          aria-label="Inventario de espacios"
-          selectionMode="multiple"
-          selectedKeys={selectedKeys}
-          onSelectionChange={handleSelectionChange}
-        >
-          <Table.Header>
-            <Table.Column className="pr-0">
-              <Checkbox
-                aria-label="Seleccionar todos"
-                slot="selection"
-              >
-                <Checkbox.Content>
-                  <Checkbox.Control>
-                    <Checkbox.Indicator />
-                  </Checkbox.Control>
-                </Checkbox.Content>
-              </Checkbox>
-            </Table.Column>
-
-            <Table.Column
-              id="code"
-              isRowHeader
-            >
-              Código
-            </Table.Column>
-
-            <Table.Column id="face_count">
-              Caras
-            </Table.Column>
-
-            <Table.Column id="status">
-              Estado
-            </Table.Column>
-
-            <Table.Column id="visibility">
-              Visibilidad
-            </Table.Column>
-          </Table.Header>
-
-          <Table.Body
-            items={placements}
-            renderEmptyState={() => (
-              isLoading
-                ? <Spinner />
-                : 'No hay placements'
-            )}
-          >
-            {(placement) => (
-              <Table.Row id={placement.id}>
-                <Table.Cell className="pr-0">
-                  <Checkbox
-                    aria-label={
-                      `Seleccionar ${placement.code}`
-                    }
-                    slot="selection"
-                    variant="secondary"
-                  >
-                    <Checkbox.Content>
-                      <Checkbox.Control>
-                        <Checkbox.Indicator />
-                      </Checkbox.Control>
-                    </Checkbox.Content>
-                  </Checkbox>
-                </Table.Cell>
-
-                <Table.Cell>
-                  {renderCell(placement, 'code')}
-                </Table.Cell>
-
-                <Table.Cell>
-                  {renderCell(
-                    placement,
-                    'face_count'
-                  )}
-                </Table.Cell>
-
-                <Table.Cell>
-                  {renderCell(
-                    placement,
-                    'status'
-                  )}
-                </Table.Cell>
-
-                <Table.Cell>
-                  {renderCell(
-                    placement,
-                    'visibility'
-                  )}
-                </Table.Cell>
-              </Table.Row>
-            )}
-          </Table.Body>
-        </Table.Content>
-      </Table.ScrollContainer>
-
-      <Table.Footer className="flex items-center justify-between">
-        <Button
-          isDisabled={page <= 1 || isLoading}
-          onPress={() => setPage(page - 1)}
-        >
-          Anterior
-        </Button>
-
-        <span>
-          Página {page} de {totalPages}
-        </span>
-
-        <Button
-          isDisabled={
-            page >= totalPages || isLoading
+      return [
+        {
+          displayText: SYSTEM_LANG.BUTTONS.DELETE,
+          isDisabled: currentSelections.size === 0,
+          variant: 'danger-soft',
+          iconName: 'delete',
+          onPress: (selection) => {
+            console.log(selection);
           }
-          onPress={() => setPage(page + 1)}
-        >
-          Siguiente
-        </Button>
-      </Table.Footer>
+        }
+      ];
+    }
+  };
+  const TABLE_SEARCH = {
+    placeholder: TABLE_LANG.SEARCH_BY_ID,
+    defaultValue: filters.search,
+    onChange: (value) => {
+      updateFilters({
+        search: value
+      });
+    }
+  };
+  const TABLE_EXTRA_ACTIONS = [
+    {
+      displayText: TABLE_LANG.FIND_ON_MAP,
+      iconName: 'map-search',
+      variant: 'primary',
+      isDisabled: isEmpty,
+      onPress: () => {
+        console.log('Hi');
+      },
+    },
+  ];
+  
+  console.log({ TABLE_STATES, TABLE_ROWS });
+  return (
+    <Table
+      name="inventory"
+      selection={ TABLE_SELECTION }
+      states={ TABLE_STATES }
+      cols={ TABLE_COLS }
+      rows={ TABLE_ROWS }
+      filters={ TABLE_FILTERS }
+      pagination= { TABLE_PAGINATION }
+      search={ TABLE_SEARCH }
+      extraActions={ TABLE_EXTRA_ACTIONS }
+    >
+      <EmptyContent>
+        Sin contenido
+      </EmptyContent>
     </Table>
   );
-};
+}
+
+export default InventoryTable;

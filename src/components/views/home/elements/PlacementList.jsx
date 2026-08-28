@@ -34,7 +34,7 @@ function PlacementsList() {
       }}
     >
       <FilterBar /> 
-      <div className={ `w-full p-2 grid gap-1 ${ gridSize }` }>
+      <div className={ `w-full p-2 grid gap-2.5 mt-3 ${ gridSize }` }>
         { isLoading && <PlacementsListSkeleton /> }
         { not(isLoading) && placements.map((placement, index) => <PlacementItemCard key={ index } placement={ placement } />) }
       </div>

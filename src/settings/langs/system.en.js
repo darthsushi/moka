@@ -22,7 +22,10 @@ export default {
     COLLAPSE_SIDEBAR: 'Collapse menu',
     REMOVE: 'Remove',
     MARK_FAVORITE: 'Mark as favorite',
-    EDIT: 'Edit'
+    EDIT: 'Edit',
+    RESET_FILTERS: 'Reset filters',
+    ADJUST_FILTERS: 'Adjust filters',
+    REFRESH: 'Refresh'
   },
   BUTTONS: {
     EXPLORE_SPACE: 'Explore Space',
@@ -34,6 +37,8 @@ export default {
     BROWSE_IMAGES: 'Browse Images',
     BROWSE: 'Browse',
     NEXT_STEP: 'Next step',
+    NEXT: 'Next',
+    PREVIOUS: 'Prev',
     PREVIOUS_STEP: 'Previous step',
     LOGIN: 'Login',
     LOG_OUT: 'Log out',
@@ -42,6 +47,9 @@ export default {
     CONTINUE: 'Continue',
     SAVE_CONTINUE: 'Save and continue',
     FIND_LOCATION: 'Find location',
+    APPLY_FILTERS: 'Apply filters',
+    SELECT: 'Select',
+    DELETE: 'Delete'
   },
   TEXTS: {
     CLICK_BELOW_UPLOAD: 'Click the button below to upload',
@@ -64,14 +72,24 @@ export default {
     }
   },
   DEFAULTS: {
-    SELECT_ONE: 'Select one'
+    SELECT_ONE: 'Select one',
+    FIND: 'Search...'
   },
   WORDS: {
+    TO: 'to',
     DAYS: 'days',
     FROM: 'from',
     UP_TO: 'up to',
     IN: 'in',
+    OF: 'of',
     METERS: 'Meters',
-    Hi: 'Hola'
+    Hi: 'Hola',
+    FILTERS: 'Filters',
+    ALL: 'All',
+    SELECTED_SINGULAR: 'Selected',
+    SELECTED_PLURAL: 'Selected',
+    PAGE: 'Page',
+    RESULTS: 'results',
+    SHOWING: 'Showing'
   }
 };

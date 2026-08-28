@@ -1,10 +1,10 @@
-import { Surface, Typography } from '@heroui/react';
+import { Typography } from '@heroui/react';
 
 import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
-import { Header/* , Table */ } from '@/components/ui';
-import { InventoryTable } from './elements/InventoryTable';
+import { Header,/* , Table */ } from '@/components/ui';
+import InventoryTable from './elements/InventoryTable';
 
 
 function Inventory() {
@@ -13,7 +13,7 @@ function Inventory() {
   const SYSTEM_LANG = SYSTEM_LANGS[language];
 
   return (
-    <>
+    <div className="flex h-dvh flex-col overflow-hidden">
       <Header>
         <div className="w-full h-full flex items-center">
           <Typography type="h4" className="truncate">
@@ -23,28 +23,8 @@ function Inventory() {
           </Typography>
         </div>
       </Header>
-
-      <section className="w-full max-w-275 m-auto p-1">
-        <Surface variant="tertiary" className="rounded-4xl p-2">
-          {/* <Table cols=[] /> */}
-          <InventoryTable />
-          {/* <div className="w-full h-20 grid grid-col bg-orange-400">
-            code
-            status
-            visibility
-            location (display_name)
-            type
-            vistas
-            precio
-
-
-            city
-            country
-            state
-          </div> */}
-        </Surface>
-      </section>
-    </>
+      <InventoryTable />
+    </div>
   );
 }
 

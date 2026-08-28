@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { applyListFilter, normalizeFaceCount, serializeDayRange } from '@/helpers/utilities.helpers';
+import { applyListFilter, normalizeFaceCounts, serializeDayRange } from '@/helpers/utilities.helpers';
 
 const FULL_PLACEMENT_CODE_PATTERN = /^(?:[A-Z]{2}-[A-Z0-9]{1,3}|OTR)-\d+$/;
 
@@ -66,6 +66,21 @@ export const placementsService = {
     return data;
   },
 
+  async getInventoryFilterOptions() {
+    const { data, error } = await supabase.rpc(
+      'get_inventory_filter_options'
+    );
+
+    if (error) throw error;
+
+    return {
+      countries: data?.countries ?? [],
+      states: data?.states ?? [],
+      cities: data?.cities ?? [],
+      faceCounts: data?.faceCounts ?? []
+    };
+  },
+
   async getInventoryPlacements({
     userId,
     page = 1,
@@ -90,6 +105,9 @@ export const placementsService = {
     const {
       search = '',
       faceCount = null,
+      city = null,
+      state = null,
+      country = null,
       status = null,
       visibility = null,
       type = null
@@ -98,7 +116,7 @@ export const placementsService = {
     const normalizedSearch = typeof search === 'string'
       ? search.trim().toUpperCase()
       : '';
-    const normalizedFaceCount = normalizeFaceCount(faceCount);
+    const normalizedFaceCounts = normalizeFaceCounts(faceCount);
 
     let query = supabase
       .from('placements')
@@ -107,6 +125,9 @@ export const placementsService = {
         user_id,
         code,
         face_count,
+        city,
+        state,
+        country,
         type,
         latitude,
         longitude,
@@ -138,10 +159,10 @@ export const placementsService = {
         : query.ilike('code', `%${normalizedSearch}%`);
     }
 
-    if (normalizedFaceCount !== null) {
-      query = query.eq('face_count', normalizedFaceCount);
-    }
-
+    query = applyListFilter(query, 'face_count', normalizedFaceCounts);
+    query = applyListFilter(query, 'city', city);
+    query = applyListFilter(query, 'state', state);
+    query = applyListFilter(query, 'country', country);
     query = applyListFilter(query, 'status', status);
     query = applyListFilter(query, 'visibility', visibility);
     query = applyListFilter(query, 'type', type);

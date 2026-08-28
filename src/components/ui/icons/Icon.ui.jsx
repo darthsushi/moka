@@ -24,10 +24,16 @@ import LightMode from './svg-icons/LightMode.svg.jsx';
 import Preview from './svg-icons/Preview.svg.jsx';
 import Visibility from './svg-icons/Visibility.svg.jsx';
 import Filter from './svg-icons/Filter.svg.jsx';
+import FilterOff from './svg-icons/FilterOff.svg';
 import QrCode from './svg-icons/QrCode.svg.jsx';
 import Favorite from './svg-icons/Favorite.svg.jsx';
-import ThumbnailBar from './svg-icons/ThumbnailBar.svg';
-import Search from './svg-icons/search.svg';
+import ThumbnailBar from './svg-icons/ThumbnailBar.svg.jsx';
+import Search from './svg-icons/Search.svg.jsx';
+import Refresh from './svg-icons/Refresh.svg.jsx';
+import Check from './svg-icons/Check.svg.jsx';
+import CheckList from './svg-icons/CheckList.svg.jsx';
+import MapSearch from './svg-icons/MapSearch.svg.jsx';
+import Delete from './svg-icons/Delete.svg.jsx';
 
 function Icon({ name, filled }) {
   const SGVS = {
@@ -35,24 +41,30 @@ function Icon({ name, filled }) {
     'arrow-drop-down': ArrowDropDown,
     'arrow-drop-up': ArrowDropUp,
     'attach-money': AttachMoney,
-    'close': Close,
     'calendar-clock': CalendarClock,
+    'close': Close,
+    'check': Check,
+    'checklist': CheckList,
     'dark-mode': DarkMode,
+    'delete': Delete,
     'double-arrow-right': DoubleArrowRightIcon,
     'double-arrow-left': DoubleArrowLeftIcon,
     'edit': Edit,
     'favorite': Favorite,
     'filter': Filter,
+    'filter-off': FilterOff,
     'find-image': FindImage,
     'home': HomeIcon,
     'inventory': Inventory,
     'image': Image,
     'language': LanguageIcon,
     'light-mode': LightMode,
+    'map-search': MapSearch,
     'magnify-full-screen': MagnifyFullScreen,
     'more-horiz': MoreHoriz,
     'preview': Preview,
     'qr-code': QrCode,
+    'refresh': Refresh,
     'remove': Remove,
     'search': Search,
     'thumbnail-bar': ThumbnailBar,

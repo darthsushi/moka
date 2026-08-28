@@ -1,7 +1,9 @@
 import DoubleCard from './DoubleCard.animation';
+import HoverCard from './HoverCard.animation';
 
 const Animations = {
-  DoubleCard
+  DoubleCard,
+  HoverCard,
 };
 
 export { Animations };

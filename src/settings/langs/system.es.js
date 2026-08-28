@@ -21,7 +21,10 @@ export default {
     COLLAPSE_SIDEBAR: 'Contraer menú',
     REMOVE: 'Remover',
     MARK_FAVORITE: 'Marcar como favorito',
-    EDIT: 'Editar'
+    EDIT: 'Editar',
+    RESET_FILTERS: 'Restablecer filtros',
+    ADJUST_FILTERS: 'Ajustar filtros',
+    REFRESH: 'Actualizar'
   },
   BUTTONS: {
     EXPLORE_SPACE: 'Explorar espacio',
@@ -33,6 +36,8 @@ export default {
     BROWSE_IMAGES: 'Explorar imágenes',
     BROWSE: 'Explorar',
     NEXT_STEP: 'Siguiente paso',
+    NEXT: 'Siguiente',
+    PREVIOUS: 'Anterior',
     PREVIOUS_STEP: 'Paso anterior',
     LOGIN: 'Identifícate',
     LOG_OUT: 'Cerrar sesión',
@@ -40,19 +45,22 @@ export default {
     NEW_PLACEMENT: 'Nuevo espacio',
     CONTINUE: 'Continuar',
     SAVE_CONTINUE: 'Guardar y continuar',
-    FIND_LOCATION: 'Buscar ubicación'
+    FIND_LOCATION: 'Buscar ubicación',
+    APPLY_FILTERS: 'Aplicar filtros',
+    SELECT: 'Seleccionar',
+    DELETE: 'Eliminar'
   },
   TEXTS: {
     CLICK_BELOW_UPLOAD: 'Haz clic en el botón de abajo para subir.',
     BECOME_OWNER: 'Publica tu espacio con nosotros y gana dinero extra',
     CHOCE_LANGUAGE: 'Selecciona tu idioma',
-    FIND_BY_PLACEMENT: 'Buscar título, código, ubicación...',
+    FIND_BY_PLACEMENT: 'Buscar título, ID, ubicación...',
     AVAILABLE_FACES: 'cara(s) disponible(s)',
     ADD_SUCCESS_MESSAGE: 'El elemento se ha agregado correctamente',
     NOTHING_TO_SHOW: 'No hay nada por aquí',
     GOOD_MORNING: 'Buenos días',
     GOOD_AFTERNOON: 'Buenas tardes',
-    GOOD_NIGHT: 'Buenas noches'
+    GOOD_NIGHT: 'Buenas noches',
   },
   PLACEMENT: {
     TYPES: {
@@ -63,14 +71,24 @@ export default {
     }
   },
   DEFAULTS: {
-    SELECT_ONE: 'Selecciona uno'
+    SELECT_ONE: 'Selecciona uno',
+    FIND: 'Buscar...'
   },
   WORDS: {
+    TO: 'a',
     DAYS: 'días',
     FROM: 'desde',
     UP_TO: 'por hasta',
     IN: 'en',
+    OF: 'de',
     METERS: 'Metros',
-    HI: 'Hola'
+    HI: 'Hola',
+    FILTERS: 'Filtros',
+    ALL: 'Todos',
+    SELECTED_SINGULAR: 'Seleccionado',
+    SELECTED_PLURAL: 'Seleccionados',
+    PAGE: 'Página',
+    RESULTS: 'resultados',
+    SHOWING: 'Mostrando'
   }
 };

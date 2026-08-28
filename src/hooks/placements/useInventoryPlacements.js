@@ -6,23 +6,39 @@ import {
   useState
 } from 'react';
 
+import { equals, isEmpty, isNil, not } from '@/helpers/ramda.helpers';
 import { useAuth } from '@/hooks/contexts';
 import { placementsService } from '@/services/placements.service';
+import { equalsIgnoreOrderNative } from '@/helpers/utilities.helpers';
 
 export const DEFAULT_INVENTORY_FILTERS = Object.freeze({
   search: '',
   faceCount: null,
+  city: null,
+  state: null,
+  country: null,
   status: null,
   visibility: null,
   type: null
 });
 
-const isActiveFilter = (value) => {
-  if (Array.isArray(value)) {
-    return value.length > 0;
-  }
+const getActiveFilters = (initialFilters, filters, filtersToIgnore = []) => {
+  // TODO: Ad support for new Set()?
+  return Object.keys(filters)
+    .filter((filterName) => {
+      if (isNil(filters[filterName]) || isEmpty(filters[filterName]) || filtersToIgnore.includes(filterName)) {
 
-  return value !== null && value !== undefined && value !== '';
+        return false;
+      }
+
+      if (Array.isArray(filters[filterName])) {
+        if (not(Array.isArray((initialFilters[filterName] || [])))) return false;
+
+        return not(equalsIgnoreOrderNative(filters[filterName], (initialFilters[filterName] || [])));
+      }
+
+      return not(equals(filters[filterName], initialFilters[filterName]));
+    });
 };
 
 export const useInventoryPlacements = ({
@@ -54,12 +70,18 @@ export const useInventoryPlacements = ({
   const requestFilters = useMemo(() => ({
     search: debouncedSearch,
     faceCount: filters.faceCount,
+    city: filters.city,
+    state: filters.state,
+    country: filters.country,
     status: filters.status,
     visibility: filters.visibility,
     type: filters.type
   }), [
     debouncedSearch,
+    filters.city,
+    filters.country,
     filters.faceCount,
+    filters.state,
     filters.status,
     filters.type,
     filters.visibility
@@ -149,13 +171,13 @@ export const useInventoryPlacements = ({
   }, []);
 
   const clearFilters = useCallback(() => {
-    setFiltersState({ ...DEFAULT_INVENTORY_FILTERS });
+    setFiltersState({ search: filters.search, ...initialFilters });
     setPageState(1);
-  }, []);
+  }, [initialFilters, filters.search]);
 
-  const activeFiltersCount = Object.values(filters)
-    .filter(isActiveFilter)
-    .length;
+  const activeFilters = getActiveFilters(initialFilters, filters, ['search']);
+
+  const hasFiltersAndSearch = getActiveFilters(initialFilters, filters).length > 0;
 
   return {
     placements,
@@ -164,11 +186,13 @@ export const useInventoryPlacements = ({
     total,
     totalPages,
     isLoading,
-    isEmpty: !isLoading && placements.length === 0,
+    isEmpty: not(isLoading) && placements.length === 0 && not(hasFiltersAndSearch),
+    hasNoMatches: not(isLoading) && placements.length === 0 && hasFiltersAndSearch,
     error,
     filters,
-    activeFiltersCount,
-    hasActiveFilters: activeFiltersCount > 0,
+    activeFilters,
+    activeFiltersCount: activeFilters.length,
+    hasActiveFilters: activeFilters.length > 0,
     setPage,
     setPageSize,
     updateFilters,

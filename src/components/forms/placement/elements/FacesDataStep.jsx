@@ -193,7 +193,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                           <RangeField
                             label={ formLabels.RANGE_DAYS }
                             name={ `day_range_face_${face_index + 1}` }
-                            maxValue={ 365 }
+                            maxValue={ 60 }
                             minValue={ 15 }
                             step={ 15 }
                             control={ control }

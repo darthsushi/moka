@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react';
 
-function DoubleCard({ children, animationId }) {
+function DoubleCard({ children, className, animationId }) {
   return (
     <AnimatePresence
       mode="wait"
@@ -8,6 +8,7 @@ function DoubleCard({ children, animationId }) {
     >
       <motion.div
         key={ animationId }
+        id={ `animation ${animationId}` }
         initial={{
           opacity: 0,
           y: 8,
@@ -27,6 +28,7 @@ function DoubleCard({ children, animationId }) {
           duration: 0.2,
           ease: 'easeOut',
         }}
+        className={ className }
       >
         { children }
       </motion.div>

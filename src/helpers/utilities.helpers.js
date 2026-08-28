@@ -1,16 +1,29 @@
 import { find, isNil, isNotNil, not } from './ramda.helpers';
 
 const applyListFilter = (query, column, value) => {
-  const values = (Array.isArray(value) ? value : [value])
-    .filter(item => typeof item === 'string' && item.trim())
-    .map(item => item.trim());
+  const values = value instanceof Set
+    ? [...value]
+    : Array.isArray(value)
+      ? value
+      : [value];
 
-  if (values.length === 1) {
-    return query.eq(column, values[0]);
+  const normalizedValues = [...new Set(
+    values
+      .map(item => typeof item === 'string' ? item.trim() : item)
+      .filter(item => (
+        item !== null &&
+        item !== undefined &&
+        item !== '' &&
+        item !== 'all'
+      ))
+  )];
+
+  if (normalizedValues.length === 1) {
+    return query.eq(column, normalizedValues[0]);
   }
 
-  if (values.length > 1) {
-    return query.in(column, values);
+  if (normalizedValues.length > 1) {
+    return query.in(column, normalizedValues);
   }
 
   return query;
@@ -37,6 +50,15 @@ const classNameParser = (classNameArray = []) => {
   return classNameArray.join(' ')
 };
 
+const equalsIgnoreOrderNative = (a, b) => {
+  if (a.length !== b.length) return false;
+  
+  const sortedA = [...a].sort();
+  const sortedB = [...b].sort();
+  
+  return sortedA.every((val, index) => val === sortedB[index]);
+};
+
 const getGreeting = (hour = new Date().getHours()) => {
   if (hour < 6 || hour >= 20) return 'GOOD_NIGHT';
   if (hour < 12) return 'GOOD_MORNING';
@@ -59,6 +81,10 @@ const getUnlistedPlacementUrl = (placement) => {
   return `${window.location.origin}/p/${placement.id}/${placement.share_token}`;
 }
 
+const getValueOrDefault = (value, options = [], defaultValue = null) => {
+  return options.includes(value) ? value : defaultValue;
+};
+
 const getRequiredParams = (requiredParamIds = [], paramValues = {}) => {
   return Array.isArray(requiredParamIds)
       ? requiredParamIds.map(paramId => paramValues[paramId].value)
@@ -77,6 +103,31 @@ const normalizeFaceCount = (faceCount) => {
   }
 
   return normalizedFaceCount;
+};
+
+const normalizeFaceCounts = (faceCount) => {
+  const values = faceCount instanceof Set
+    ? [...faceCount]
+    : Array.isArray(faceCount)
+      ? faceCount
+      : [faceCount];
+
+  const normalizedValues = values
+    .filter(value => (
+      value !== null &&
+      value !== undefined &&
+      value !== '' &&
+      value !== 'all'
+    ))
+    .map(Number);
+
+  if (normalizedValues.some(value => (
+    !Number.isInteger(value) || value < 0
+  ))) {
+    throw new Error('INVALID_FACE_COUNT_FILTER');
+  }
+
+  return [...new Set(normalizedValues)];
 };
 
 const parseDayRange = (range) => {
@@ -103,11 +154,14 @@ export {
   canUseParameters,
   canAccessModule,
   classNameParser,
+  equalsIgnoreOrderNative,
   getGreeting,
   getPriorityProperty,
   getRequiredParams,
   getUnlistedPlacementUrl,
+  getValueOrDefault,
   normalizeFaceCount,
+  normalizeFaceCounts,
   parseDayRange,
   serializeDayRange
 };
