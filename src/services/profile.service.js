@@ -1,21 +1,17 @@
+import { isNotNil } from 'ramda';
 import { supabase } from './supabase';
 
 export const profileService = {
-  // Obtiene el perfil público del usuario basado en su ID
-  getProfile: async (userId) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+  getProfile: async (profileId) => {
+    const params = isNotNil(profileId) ? { p_profile_id: profileId } : {};
+    const { data, error } = await supabase.rpc('get_profile', params).single();
       
     if (error) {
-      console.error("Error fetching profile:", error);
-      return null;
+      throw error;
     }
+
     return data;
   },
 
-  // Aquí en el futuro puedes agregar funciones para actualizar el perfil, 
-  // cambiar el tema (theme) o idioma (language), etc.
+  // Aquí en el futuro puedes agregar funciones para actualizar el perfil
 };

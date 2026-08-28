@@ -18,7 +18,8 @@ export const useCreatePlacement = () => {
     latitude,
     longitude,
     structure_height,
-    location
+    location,
+    visibility
   }) => {
     setIsLoading(true);
     setError(null);
@@ -43,8 +44,9 @@ export const useCreatePlacement = () => {
         longitude,
         location,
         structure_height,
+        visibility,
         status: 'pending',
-        visibility: 'public'
+         // TODO: Use incoming value, no use default
       };
 
       await Promise.all(

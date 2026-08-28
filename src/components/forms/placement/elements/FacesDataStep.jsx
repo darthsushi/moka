@@ -11,6 +11,7 @@ import {
 } from '@heroui/react';
 
 import { isNil } from '@/helpers/ramda.helpers';
+import { parseDayRange } from '@/helpers/utilities.helpers';
 import { isPositiveNumber, isValidHeight } from '@/helpers/validators.helper';
 
 import { ImageField, MetersField, NumberField, RangeField } from '@/components/ui';
@@ -33,16 +34,16 @@ const normalizeFaces = (actualFaces, actualValues) => {
 
 const buildStepObjects = (actualPlacement) => {
   const isFacesNumberSync = isNil(actualPlacement.faces) ? true
-    : actualPlacement.faces.length === actualPlacement.faces_number;
+    : actualPlacement.faces.length === actualPlacement.face_count;
 
-  const faceByFormSelector = Array.from({ length: actualPlacement.faces_number || 1 }, () => ({}));
+  const faceByFormSelector = Array.from({ length: actualPlacement.face_count || 1 }, () => ({}));
   const actualFaces = isFacesNumberSync ? (actualPlacement.faces || faceByFormSelector) : faceByFormSelector;
 
   const actualFields = actualFaces.reduce((acc, item, index) => {
     acc[`display_width_face_${index + 1}`] = item.display_width;
     acc[`display_height_face_${index + 1}`] = item.display_height;
     acc[`period_price_face_${index + 1}`] = item.period_price;
-    acc[`day_range_face_${index + 1}`] = item.day_range || [30, 90];
+    acc[`day_range_face_${index + 1}`] = parseDayRange(item.day_range) || [30, 90];
     acc[`images_face_${index + 1}`] = item.images || [];
 
     return acc;
@@ -192,7 +193,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                           <RangeField
                             label={ formLabels.RANGE_DAYS }
                             name={ `day_range_face_${face_index + 1}` }
-                            maxValue={ 365 }
+                            maxValue={ 60 }
                             minValue={ 15 }
                             step={ 15 }
                             control={ control }

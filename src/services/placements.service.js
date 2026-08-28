@@ -1,8 +1,14 @@
 import { supabase } from './supabase';
+import { applyListFilter, normalizeFaceCounts, serializeDayRange } from '@/helpers/utilities.helpers';
+
+const FULL_PLACEMENT_CODE_PATTERN = /^(?:[A-Z]{2}-[A-Z0-9]{1,3}|OTR)-\d+$/;
 
 export const placementsService = {
   async createPlacement(formattedData, userId) {
     const { faces, ...placementData } = formattedData;
+
+    // TODO: Remove all LOGS:
+    console.log(placementData)
 
     const { data: placement, error: placementError } = await supabase
       .from('placements')
@@ -15,8 +21,9 @@ export const placementsService = {
 
     if (placementError) throw placementError;
 
-    const facesToInsert = faces.map(actualFace => ({
-      ...actualFace,
+    const facesToInsert = faces.map(face => ({
+      ...face,
+      day_range: serializeDayRange(face.day_range),
       placement_id: placement.id 
     }));
 
@@ -28,7 +35,10 @@ export const placementsService = {
     if (facesError) throw facesError;
 
     return {
-      placement,
+      placement: {
+        ...placement,
+        face_count: createdFaces.length
+      },
       faces: createdFaces
     };
   },
@@ -54,5 +64,124 @@ export const placementsService = {
     if (error) throw error;
 
     return data;
+  },
+
+  async getInventoryFilterOptions() {
+    const { data, error } = await supabase.rpc(
+      'get_inventory_filter_options'
+    );
+
+    if (error) throw error;
+
+    return {
+      countries: data?.countries ?? [],
+      states: data?.states ?? [],
+      cities: data?.cities ?? [],
+      faceCounts: data?.faceCounts ?? []
+    };
+  },
+
+  async getInventoryPlacements({
+    userId,
+    page = 1,
+    pageSize = 10,
+    filters = {}
+  } = {}) {
+    if (!userId) {
+      throw new Error('USER_ID_REQUIRED');
+    }
+
+    if (!Number.isInteger(page) || page < 1) {
+      throw new Error('INVALID_PAGE');
+    }
+
+    if (!Number.isInteger(pageSize) || pageSize < 1) {
+      throw new Error('INVALID_PAGE_SIZE');
+    }
+
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const {
+      search = '',
+      faceCount = null,
+      city = null,
+      state = null,
+      country = null,
+      status = null,
+      visibility = null,
+      type = null
+    } = filters;
+
+    const normalizedSearch = typeof search === 'string'
+      ? search.trim().toUpperCase()
+      : '';
+    const normalizedFaceCounts = normalizeFaceCounts(faceCount);
+
+    let query = supabase
+      .from('placements')
+      .select(`
+        id,
+        user_id,
+        code,
+        face_count,
+        city,
+        state,
+        country,
+        type,
+        latitude,
+        longitude,
+        structure_height,
+        description,
+        visibility,
+        status,
+        location,
+        share_token,
+        updated_at,
+        created_at,
+        faces:placement_faces (
+          id,
+          placement_id,
+          display_width,
+          display_height,
+          period_price,
+          day_range,
+          images,
+          updated_at,
+          created_at
+        )
+      `, { count: 'exact' })
+      .eq('user_id', userId);
+
+    if (normalizedSearch) {
+      query = FULL_PLACEMENT_CODE_PATTERN.test(normalizedSearch)
+        ? query.eq('code', normalizedSearch)
+        : query.ilike('code', `%${normalizedSearch}%`);
+    }
+
+    query = applyListFilter(query, 'face_count', normalizedFaceCounts);
+    query = applyListFilter(query, 'city', city);
+    query = applyListFilter(query, 'state', state);
+    query = applyListFilter(query, 'country', country);
+    query = applyListFilter(query, 'status', status);
+    query = applyListFilter(query, 'visibility', visibility);
+    query = applyListFilter(query, 'type', type);
+
+    const { data, error, count } = await query
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
+      .range(from, to);
+
+    if (error) throw error;
+
+    const total = count ?? 0;
+
+    return {
+      placements: data ?? [],
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize)
+    };
   }
 };

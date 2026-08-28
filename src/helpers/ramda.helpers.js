@@ -12,6 +12,7 @@ import {
   head,
   isEmpty,
   isNil,
+  isNotEmpty,
   isNotNil,
   not,
   pipe,
@@ -19,6 +20,7 @@ import {
   props,
   propEq,
   reject,
+  type
 } from 'ramda';
 
 export {
@@ -33,6 +35,7 @@ export {
   head,
   isEmpty,
   isNil,
+  isNotEmpty,
   isNotNil,
   noop,
   not,
@@ -41,5 +44,6 @@ export {
   prop,
   props,
   propEq,
-  reject
+  reject,
+  type
 };

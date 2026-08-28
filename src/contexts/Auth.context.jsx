@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
       }
 
-      const userProfile = await profileService.getProfile(userId);
+      const userProfile = await profileService.getProfile();
 
       if (isMounted && requestId === authRequestId) {
         profileUserId = userId;

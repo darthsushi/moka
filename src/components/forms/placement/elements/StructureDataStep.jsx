@@ -47,7 +47,7 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
   const { handleSubmit, control } = useForm({
     defaultValues: {
       type: placement.type || OOH_TYPES[0],
-      faces_number: placement.faces_number || placement.faces?.lenght || 1,
+      face_count: placement.face_count || placement.faces?.lenght || 1,
       structure_height: placement.structure_height || 0
     }
   });
@@ -111,7 +111,7 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
               className="col-span-1 p-3 rounded-4xl"
             >
               <SelectField
-                name="faces_number"
+                name="face_count"
                 label={ formLabels.FACES }
                 control={ control }
                 isRequired
