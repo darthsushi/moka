@@ -1,26 +1,43 @@
-import { useState } from 'react';
-import { Button, Skeleton, Typography } from '@heroui/react';
+import { Skeleton, ToggleButton, Typography } from '@heroui/react';
 
-import { isNotNil, not } from '@/helpers/ramda.helpers';
+import { isNotNil } from '@/helpers/ramda.helpers';
 import { getGreeting } from '@/helpers/utilities.helpers';
-import { useAuth, useLanguage, useEscapeKey } from '@/hooks/contexts';
-import { SYSTEM } from '@/settings/langs.settings';
+import { useAuth, useLanguage, useUI } from '@/hooks/contexts';
+import { usePublicPlacements } from '@/hooks/placements';
+import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
-import { Header, Icon } from '@/components/ui';
+import { Header, NavBar, SearchInput, FiltersList, Icon } from '@/components/ui';
 import Map from './elements/Map';
 import PlacementsList from './elements/PlacementList';
 
 function Home() {
   const { isAuthenticated, loading, profile } = useAuth();
   const { language } = useLanguage();
+  const { isMapOpen, setIsMapOpen } = useUI();
+  const {
+    placements,
+    filters,
+    hasMore,
+    nextCursor,
+    isLoading,
+    isLoadingMore,
+    error,
+    updateFilters,
+    /* clearFilters,
+    loadMore,
+    refetch */
+  } = usePublicPlacements({ searchDebounceMs: 700 });
+  console.log({filters, hasMore, nextCursor, isLoading, isLoadingMore, error, placements});
 
-  const [isSearchActive, setIsSearchActive] = useState(false);
+  const SYSTEM_LANG = SYSTEM_LANGS[language];
   
-  const greetingByHour = getGreeting();
-  const [authName] = isNotNil(profile) ? profile.name.split(' ') : [null];
-  const greating = isNotNil(authName) ? `${SYSTEM[language].TEXTS[greetingByHour]}, ${authName}` : '';
+  const translationKeyGreeting = getGreeting();
+  const [firstName] = isNotNil(profile) ? profile.name.split(' ') : [null];
+  const displayGreeting = isNotNil(firstName) && `${SYSTEM_LANG.TEXTS[translationKeyGreeting]}, ${firstName}`;
 
-  useEscapeKey(() => setIsSearchActive(false), isSearchActive);
+  const handleSearchChange = (value) => {
+    updateFilters({ search: value });
+  }
 
   return (
     <section className="w-full h-dvh flex flex-wrap overflow-y-auto"> 
@@ -30,48 +47,56 @@ function Home() {
             loading ?
               <Skeleton className="w-[90%] h-[70%] rounded-3xl" />
             : 
-              (isAuthenticated && not(isSearchActive)) ?
-                <>
-                  <Button
-                    variant="tertiary"
-                    size="lg"
-                    className="text-xl"
-                    onPress={ () => setIsSearchActive(true) }
-                  >
-                    <Icon name="search" />
-                  </Button>
-                  <Typography type="h6" className="truncate">
-                    <p className="truncate">
-                      { greating }
-                    </p>
-                  </Typography>
-                </>
-              :
-                <>b</>
-          }
-          {/* { 
-            isSearchActive ?
-              <>Search</>
-            :
-              <>
-                <Button
-                  variant="tertiary"
-                  size="lg"
-                  className="text-xl"
-                  onPress={ () => setIsSearchActive(true) }
-                >
-                  <Icon name="search" />
-                </Button>
-                <Typography type="h6" className="truncate">
+              (
+                isAuthenticated &&
+                <Typography type="h5" className="truncate">
                   <p className="truncate">
-                    { greating }
+                    { displayGreeting }
                   </p>
                 </Typography>
-              </>
-          } */}
+              )
+          }
         </div>
       </Header>
-      <PlacementsList />
+      <div
+        className={ `transition-all ${ isMapOpen ? 'w-[50%]' : 'w-full'}` }
+        style={ { minHeight: 'calc(100% - 80px)' } }
+      >
+        <NavBar stickyTop={ 20 } className="flex flex-row gap-2 items-center">
+          <SearchInput
+            isDisabled={ isLoading }
+            name={ 'placements' }
+            onChange={ handleSearchChange }
+            placeholder={ SYSTEM_LANG.TEXTS.FIND_BY_PLACEMENT }
+            
+          />
+          <FiltersList
+            tableName={ 'placements' }
+            filters={ [] }
+            hasActiveFilters={ false }
+
+            isPending={ false }
+            activeFiltersCount={ 0 }
+            filtersActived={ [] }
+            isDisabled={ false }
+
+            clearFilters={ () => updateFilters({ search: '' }) }
+            onApplyingFilters={ (e) => { console.log('onApplyingFilters', e) } }
+          />
+          <ToggleButton
+            isSelected={ isMapOpen }
+            variant="tertiary"
+            className="text-lg"
+            onChange={ setIsMapOpen }
+          >
+            <Icon name="map-search" />
+          </ToggleButton>
+        </NavBar>
+        <PlacementsList
+          placements={ placements }
+          isFetchingData={ isLoading }
+        />
+      </div>
       <Map />
     </section>
   );

@@ -55,7 +55,7 @@ export default {
     CLICK_BELOW_UPLOAD: 'Click the button below to upload',
     BECOME_OWNER: 'List your placements with us and earn extra money',
     CHOCE_LANGUAGE: 'Choose your language',
-    FIND_BY_PLACEMENT: 'Search title, code, location...',
+    FIND_BY_PLACEMENT: 'Search by ID, location...',
     AVAILABLE_FACES: 'face(s) available',
     ADD_SUCCESS_MESSAGE: 'The item has been added successfully',
     NOTHING_TO_SHOW: 'Nothing to show here',

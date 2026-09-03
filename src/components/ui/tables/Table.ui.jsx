@@ -4,8 +4,6 @@ import {
   Checkbox,
   Chip,
   Pagination,
-  SearchField,
-  Surface,
   Table as HeroTable,
 } from '@heroui/react';
 
@@ -17,7 +15,9 @@ import { SYSTEM } from '@/settings/langs.settings';
 
 import Icon from '../icons/Icon.ui';
 import TableSkeleton from './elements/TableSkeleton';
-import TableFilter from './elements/TableFilter';
+import FiltersList from '../filters/FiltersList.ui';
+import SearchInput from '../filters/SearchInput.ui';
+import NavBar from '../navbar/NavBar.ui';
 import { Separator } from '@heroui/react';
 import { Animations } from '@/components/animations';
 import { EmptyContent } from '@/components/views';
@@ -342,148 +342,130 @@ function Table({
 
   return (
     <>
-      <section data-table-actions className="w-full h-15 px-2">
-        <Surface
-          variant="secondary"
-          className="w-full h-full grid grid-cols-2 gap-1 py-2 px-3 rounded-4xl"
-        >
-          <div data-table-left-actions className="w-full h-full">
-            <Animations.DoubleCard
-              animationId={ isSelectionModeActive ? 'selection-mode' : 'table-options' }
-              className="col-span-1 h-full flex items-center gap-2"
-            >
-              { 
-                isSelectionModeActive ?
-                  <>
-                    <Chip
-                      color="accent"
-                      size="lg"
-                      variant="soft"
-                      className="rounded-3xl py-1.5"
-                    >
-                      { `${selectedRows.size} ${ selectedRows.size === 1 ? SYSTEM_LANG.WORDS.SELECTED_SINGULAR : SYSTEM_LANG.WORDS.SELECTED_PLURAL }` }
-                    </Chip>
-                    { normalizedSelectionActions.length > 0 && <Separator variant="secondary" orientation="vertical" /> }
-                    {
-                      normalizedSelectionActions.map(({
-                        displayText,
-                        iconFilled,
-                        iconName,
-                        isDisabled,
-                        isIconOnly,
-                        variant,
-                        onPress
-                      }, index) => {
-                        return (
-                          <Button
-                            key={ index }
-                            onPress={ onPress }
-                            isIconOnly={ isIconOnly }
-                            isDisabled={ isDisabled }
-                            variant={ variant }
-                            size="sm"
-                          >
-                            { isNotNil(iconName) && <Icon filled={ iconFilled } name={ iconName } /> }
-                            { not(isIconOnly) && displayText }
-                          </Button>
-                        )
-                      })
-                    }
-                  </>
-                :
-                  <>
-                    { enableSearch &&
-                      <div data-table-search className="w-full max-w-65 h-full flex items-center">
-                        <SearchField
-                          fullWidth
-                          autoFocus={ true }
-                          name="search"
-                          aria-label={ `Search Field ${name}` }
-                          onChange={ search.onChange }
-                          isDisabled={ normalizedStates.isFechingData || isSelectionModeActive || normalizedStates.isEmpty }
-                          defaultValue={ search.defaultValue }
-                          /* onBlur={ true } */
-                        >
-                          <SearchField.Group aria-label={ `Search Field ${name} group` }>
-                            <SearchField.SearchIcon />
-                            <SearchField.Input
-                              aria-label={ `Search Input ${name}` }
-                              placeholder={ isNotNil(search.placeholder) ? search.placeholder : SYSTEM_LANG.DEFAULTS.FIND }
-                            />
-                            <SearchField.ClearButton />
-                          </SearchField.Group>
-                        </SearchField>
-                      </div>
-                    }
-                    <div data-table-options className="h-full flex items-center gap-1">
-                      { normalizedFilterSettings.enableFilters &&
-                        <TableFilter
-                          tableName={ name }
-                          filters={ normalizedFilterSettings.filters }
-                          hasActiveFilters={ normalizedFilterSettings.hasActiveFilters }
-
-                          isPending={ normalizedFilterSettings.isPending || normalizedStates.isFechingData }
-                          activeFiltersCount={ normalizedFilterSettings.activeFiltersCount }
-                          filtersActived={ normalizedFilterSettings.filtersActived }
-                          isDisabled={ isSelectionModeActive || normalizedStates.isEmpty }
-
-                          clearFilters={ normalizedFilterSettings.clearFilters }
-                          onApplyingFilters={ normalizedFilterSettings.onApplyingFilters }
-                        />
-                      }
-                      { isNotNil(normalizedStates.updateContent) &&
-                        <Button
-                          variant="tertiary"
-                          className="text-lg"
-                          onPress={ normalizedStates.updateContent }
-                          isDisabled={ normalizedStates.isFechingData || normalizedStates.isEmpty || isSelectionModeActive }
-                        >
-                          <Icon name="refresh" />
-                        </Button>
-                      }
-                    </div>
-                  </>
-              }
-            </Animations.DoubleCard>
-          </div>
-          <div data-table-right-actions className="col-span-1 h-full flex items-center justify-end gap-1">
-            { not(isSelectionModeActive) &&
-              normalizedExtraActions.map(({
-                displayText,
-                iconFilled,
-                iconName,
-                isIconOnly,
-                onPress,
-                variant,
-                isDisabled
-              }, index) => {
-                return (
-                  <Button
-                    key={ index }
-                    onPress={ onPress }
-                    isIconOnly={ isIconOnly }
-                    variant={ variant }
-                    isDisabled={ normalizedStates.isFechingData || isSelectionModeActive || isDisabled }
+      <NavBar className="grid grid-cols-2 gap-1">
+        <div data-table-left-actions className="w-full h-full">
+          <Animations.DoubleCard
+            animationId={ isSelectionModeActive ? 'selection-mode' : 'table-options' }
+            className="col-span-1 h-full flex items-center gap-2"
+          >
+            { 
+              isSelectionModeActive ?
+                <>
+                  <Chip
+                    color="accent"
+                    size="lg"
+                    variant="soft"
+                    className="rounded-3xl py-1.5"
                   >
-                    { isNotNil(iconName) && <Icon filled={ iconFilled } name={ iconName } /> }
-                    { not(isIconOnly) && displayText }
-                  </Button>
-                )
-              })
+                    { `${selectedRows.size} ${ selectedRows.size === 1 ? SYSTEM_LANG.WORDS.SELECTED_SINGULAR : SYSTEM_LANG.WORDS.SELECTED_PLURAL }` }
+                  </Chip>
+                  { normalizedSelectionActions.length > 0 && <Separator variant="secondary" orientation="vertical" /> }
+                  {
+                    normalizedSelectionActions.map(({
+                      displayText,
+                      iconFilled,
+                      iconName,
+                      isDisabled,
+                      isIconOnly,
+                      variant,
+                      onPress
+                    }, index) => {
+                      return (
+                        <Button
+                          key={ index }
+                          onPress={ onPress }
+                          isIconOnly={ isIconOnly }
+                          isDisabled={ isDisabled }
+                          variant={ variant }
+                          size="sm"
+                        >
+                          { isNotNil(iconName) && <Icon filled={ iconFilled } name={ iconName } /> }
+                          { not(isIconOnly) && displayText }
+                        </Button>
+                      )
+                    })
+                  }
+                </>
+              :
+                <>
+                  { enableSearch &&
+                    <SearchInput
+                      name={ name }
+                      onChange={ search.onChange }
+                      autoFocus={ true }
+                      isDisabled={ normalizedStates.isFechingData || isSelectionModeActive || normalizedStates.isEmpty }
+                      defaultValue={ search.defaultValue }
+                      placeholder={ search.placeholder }
+                    />
+                  }
+                  <div data-table-options className="h-full flex items-center gap-1">
+                    { normalizedFilterSettings.enableFilters &&
+                      <FiltersList
+                        tableName={ name }
+                        filters={ normalizedFilterSettings.filters }
+                        hasActiveFilters={ normalizedFilterSettings.hasActiveFilters }
+
+                        isPending={ normalizedFilterSettings.isPending || normalizedStates.isFechingData }
+                        activeFiltersCount={ normalizedFilterSettings.activeFiltersCount }
+                        filtersActived={ normalizedFilterSettings.filtersActived }
+                        isDisabled={ isSelectionModeActive || normalizedStates.isEmpty }
+
+                        clearFilters={ normalizedFilterSettings.clearFilters }
+                        onApplyingFilters={ normalizedFilterSettings.onApplyingFilters }
+                      />
+                    }
+                    { isNotNil(normalizedStates.updateContent) &&
+                      <Button
+                        variant="tertiary"
+                        className="text-lg"
+                        onPress={ normalizedStates.updateContent }
+                        isDisabled={ normalizedStates.isFechingData || normalizedStates.isEmpty || isSelectionModeActive }
+                      >
+                        <Icon name="refresh" />
+                      </Button>
+                    }
+                  </div>
+                </>
             }
-            { selectionType !== 'none' && normalizedRows.length > 0 &&
-              <Button
-                variant={ isSelectionModeActive ? 'danger' : 'ghost' }
-                onPress={ toggleSelectionMode }
-                isDisabled={ normalizedStates.isFechingData }
-              >
-                <Icon name={ isSelectionModeActive ? 'close' : 'checklist' } />
-                { isSelectionModeActive ? SYSTEM_LANG.BUTTONS.CANCEL : SYSTEM_LANG.BUTTONS.SELECT }
-              </Button>
-            }
-          </div>
-        </Surface>
-      </section>
+          </Animations.DoubleCard>
+        </div>
+        <div data-table-right-actions className="col-span-1 h-full flex items-center justify-end gap-1">
+          { not(isSelectionModeActive) &&
+            normalizedExtraActions.map(({
+              displayText,
+              iconFilled,
+              iconName,
+              isIconOnly,
+              onPress,
+              variant,
+              isDisabled
+            }, index) => {
+              return (
+                <Button
+                  key={ index }
+                  onPress={ onPress }
+                  isIconOnly={ isIconOnly }
+                  variant={ variant }
+                  isDisabled={ normalizedStates.isFechingData || isSelectionModeActive || isDisabled }
+                >
+                  { isNotNil(iconName) && <Icon filled={ iconFilled } name={ iconName } /> }
+                  { not(isIconOnly) && displayText }
+                </Button>
+              )
+            })
+          }
+          { selectionType !== 'none' && normalizedRows.length > 0 &&
+            <Button
+              variant={ isSelectionModeActive ? 'danger' : 'ghost' }
+              onPress={ toggleSelectionMode }
+              isDisabled={ normalizedStates.isFechingData }
+            >
+              <Icon name={ isSelectionModeActive ? 'close' : 'checklist' } />
+              { isSelectionModeActive ? SYSTEM_LANG.BUTTONS.CANCEL : SYSTEM_LANG.BUTTONS.SELECT }
+            </Button>
+          }
+        </div>
+      </NavBar>
       <div className="min-h-0 flex-1 overflow-auto p-2">
         <TableContent
           name={ name }
