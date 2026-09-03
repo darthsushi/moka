@@ -54,7 +54,7 @@ export default {
     CLICK_BELOW_UPLOAD: 'Haz clic en el botón de abajo para subir.',
     BECOME_OWNER: 'Publica tu espacio con nosotros y gana dinero extra',
     CHOCE_LANGUAGE: 'Selecciona tu idioma',
-    FIND_BY_PLACEMENT: 'Buscar título, ID, ubicación...',
+    FIND_BY_PLACEMENT: 'Buscar por ID, ubicación...',
     AVAILABLE_FACES: 'cara(s) disponible(s)',
     ADD_SUCCESS_MESSAGE: 'El elemento se ha agregado correctamente',
     NOTHING_TO_SHOW: 'No hay nada por aquí',

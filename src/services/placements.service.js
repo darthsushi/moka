@@ -2,6 +2,338 @@ import { supabase } from './supabase';
 import { applyListFilter, normalizeFaceCounts, serializeDayRange } from '@/helpers/utilities.helpers';
 
 const FULL_PLACEMENT_CODE_PATTERN = /^(?:[A-Z]{2}-[A-Z0-9]{1,3}|OTR)-\d+$/;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const COUNTRY_CODE_PATTERN = /^[A-Z]{2}$/;
+const SUBDIVISION_CODE_PATTERN = /^[A-Z]{2}-[A-Z0-9]{1,3}$/;
+
+const DEFAULT_PUBLIC_PAGE_SIZE = 24;
+const MAX_PUBLIC_PAGE_SIZE = 100;
+const MAX_PUBLIC_SEARCH_LENGTH = 160;
+const MAX_PUBLIC_SEARCH_TERMS = 8;
+const MIN_PUBLIC_SEARCH_TERM_LENGTH = 2;
+
+const PUBLIC_PLACEMENT_SELECT = `
+  id,
+  code,
+  type,
+  latitude,
+  longitude,
+  structure_height,
+  description,
+  face_count,
+  country,
+  country_code,
+  state,
+  subdivision_code,
+  city,
+  postcode,
+  display_name,
+  created_at,
+  faces:placement_faces (
+    id,
+    images
+  )
+`;
+
+const toArray = (value) => {
+  if (value instanceof Set) return [...value];
+  if (Array.isArray(value)) return value;
+  if (value === null || value === undefined || value === '' || value === 'all') return [];
+
+  return [value];
+};
+
+const uniqueBy = (items, getKey) => {
+  const seen = new Set();
+
+  return items.filter((item) => {
+    const key = getKey(item);
+
+    if (seen.has(key)) return false;
+
+    seen.add(key);
+    return true;
+  });
+};
+
+const toPostgrestLiteral = (value) => {
+  const sanitizedValue = String(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"');
+
+  return `"${sanitizedValue}"`;
+};
+
+const normalizePublicPageSize = (pageSize) => {
+  const normalizedPageSize = Number(pageSize ?? DEFAULT_PUBLIC_PAGE_SIZE);
+
+  if (
+    !Number.isInteger(normalizedPageSize) ||
+    normalizedPageSize < 1 ||
+    normalizedPageSize > MAX_PUBLIC_PAGE_SIZE
+  ) {
+    throw new Error('INVALID_PUBLIC_PAGE_SIZE');
+  }
+
+  return normalizedPageSize;
+};
+
+const normalizePublicCursor = (cursor) => {
+  if (cursor === null || cursor === undefined) return null;
+
+  if (typeof cursor !== 'object' || Array.isArray(cursor)) {
+    throw new Error('INVALID_PUBLIC_CURSOR');
+  }
+
+  const createdAt = cursor.createdAt ?? cursor.created_at;
+  const id = cursor.id;
+
+  if (
+    typeof createdAt !== 'string' ||
+    Number.isNaN(Date.parse(createdAt)) ||
+    typeof id !== 'string' ||
+    !UUID_PATTERN.test(id)
+  ) {
+    throw new Error('INVALID_PUBLIC_CURSOR');
+  }
+
+  return { createdAt, id };
+};
+
+const normalizePublicSearch = (search) => {
+  if (search === null || search === undefined || search === '') {
+    return {
+      exactCode: null,
+      hasSearch: false,
+      isTooShort: false,
+      terms: []
+    };
+  }
+
+  if (typeof search !== 'string') {
+    throw new Error('INVALID_PUBLIC_SEARCH');
+  }
+
+  const trimmedSearch = search.trim();
+
+  if (!trimmedSearch) {
+    return {
+      exactCode: null,
+      hasSearch: false,
+      isTooShort: false,
+      terms: []
+    };
+  }
+
+  if (trimmedSearch.length > MAX_PUBLIC_SEARCH_LENGTH) {
+    throw new Error('PUBLIC_SEARCH_TOO_LONG');
+  }
+
+  const exactCode = trimmedSearch.toUpperCase();
+
+  if (FULL_PLACEMENT_CODE_PATTERN.test(exactCode)) {
+    return {
+      exactCode,
+      hasSearch: true,
+      isTooShort: false,
+      terms: []
+    };
+  }
+
+  // Mirrors private.normalize_placement_search_value() in PostgreSQL:
+  // lowercase + remove accents + replace punctuation with spaces.
+  const normalizedSearch = trimmedSearch
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const allTerms = normalizedSearch ? normalizedSearch.split(' ') : [];
+  const terms = [...new Set(
+    allTerms.filter(term => term.length >= MIN_PUBLIC_SEARCH_TERM_LENGTH)
+  )].slice(0, MAX_PUBLIC_SEARCH_TERMS);
+
+  return {
+    exactCode: null,
+    hasSearch: true,
+    isTooShort: terms.length === 0,
+    terms
+  };
+};
+
+const normalizeCountryCodes = (country) => {
+  const countryCodes = toArray(country).map((item) => {
+    const rawCode = typeof item === 'string'
+      ? item
+      : item?.country_code;
+
+    const countryCode = rawCode?.trim().toUpperCase();
+
+    if (!countryCode || !COUNTRY_CODE_PATTERN.test(countryCode)) {
+      throw new Error('INVALID_PUBLIC_COUNTRY_FILTER');
+    }
+
+    return countryCode;
+  });
+
+  return [...new Set(countryCodes)];
+};
+
+const normalizeStateScopes = (state) => {
+  const scopes = toArray(state).map((item) => {
+    if (typeof item === 'string') {
+      const subdivisionCode = item.trim().toUpperCase();
+
+      if (!SUBDIVISION_CODE_PATTERN.test(subdivisionCode)) {
+        throw new Error('INVALID_PUBLIC_STATE_FILTER');
+      }
+
+      return {
+        countryCode: subdivisionCode.slice(0, 2),
+        subdivisionCode,
+        state: null
+      };
+    }
+
+    const countryCode = item?.country_code?.trim().toUpperCase();
+    const subdivisionCode = item?.subdivision_code?.trim().toUpperCase() || null;
+    const stateName = (item?.value ?? item?.label ?? item?.state)?.trim() || null;
+
+    if (!countryCode || !COUNTRY_CODE_PATTERN.test(countryCode)) {
+      throw new Error('INVALID_PUBLIC_STATE_FILTER');
+    }
+
+    if (subdivisionCode && !SUBDIVISION_CODE_PATTERN.test(subdivisionCode)) {
+      throw new Error('INVALID_PUBLIC_STATE_FILTER');
+    }
+
+    if (!subdivisionCode && !stateName) {
+      throw new Error('INVALID_PUBLIC_STATE_FILTER');
+    }
+
+    return {
+      countryCode,
+      subdivisionCode,
+      state: stateName
+    };
+  });
+
+  return uniqueBy(
+    scopes,
+    scope => `${scope.countryCode}|${scope.subdivisionCode ?? ''}|${scope.state ?? ''}`
+  );
+};
+
+const normalizeCityScopes = (city) => {
+  const scopes = toArray(city).map((item) => {
+    if (typeof item !== 'object' || item === null || Array.isArray(item)) {
+      throw new Error('INVALID_PUBLIC_CITY_FILTER');
+    }
+
+    const countryCode = item.country_code?.trim().toUpperCase();
+    const subdivisionCode = item.subdivision_code?.trim().toUpperCase() || null;
+    const stateName = item.state?.trim() || null;
+    const cityName = (item.value ?? item.label ?? item.city)?.trim();
+
+    if (!countryCode || !COUNTRY_CODE_PATTERN.test(countryCode) || !cityName) {
+      throw new Error('INVALID_PUBLIC_CITY_FILTER');
+    }
+
+    if (subdivisionCode && !SUBDIVISION_CODE_PATTERN.test(subdivisionCode)) {
+      throw new Error('INVALID_PUBLIC_CITY_FILTER');
+    }
+
+    if (!subdivisionCode && !stateName) {
+      throw new Error('INVALID_PUBLIC_CITY_FILTER');
+    }
+
+    return {
+      countryCode,
+      subdivisionCode,
+      state: stateName,
+      city: cityName
+    };
+  });
+
+  return uniqueBy(
+    scopes,
+    scope => `${scope.countryCode}|${scope.subdivisionCode ?? ''}|${scope.state ?? ''}|${scope.city}`
+  );
+};
+
+const applyStateScopes = (query, state) => {
+  const scopes = normalizeStateScopes(state);
+
+  if (!scopes.length) return query;
+
+  const conditions = scopes.map((scope) => {
+    const countryCondition = `country_code.eq.${toPostgrestLiteral(scope.countryCode)}`;
+
+    if (scope.subdivisionCode) {
+      return `and(${countryCondition},subdivision_code.eq.${toPostgrestLiteral(scope.subdivisionCode)})`;
+    }
+
+    return `and(${countryCondition},subdivision_code.is.null,state.eq.${toPostgrestLiteral(scope.state)})`;
+  });
+
+  return query.or(conditions.join(','));
+};
+
+const applyCityScopes = (query, city) => {
+  const scopes = normalizeCityScopes(city);
+
+  if (!scopes.length) return query;
+
+  const conditions = scopes.map((scope) => {
+    const conditionsForCity = [
+      `country_code.eq.${toPostgrestLiteral(scope.countryCode)}`,
+      `city.eq.${toPostgrestLiteral(scope.city)}`
+    ];
+
+    if (scope.subdivisionCode) {
+      conditionsForCity.push(
+        `subdivision_code.eq.${toPostgrestLiteral(scope.subdivisionCode)}`
+      );
+    } else {
+      conditionsForCity.push(
+        'subdivision_code.is.null',
+        `state.eq.${toPostgrestLiteral(scope.state)}`
+      );
+    }
+
+    return `and(${conditionsForCity.join(',')})`;
+  });
+
+  return query.or(conditions.join(','));
+};
+
+const applyPublicCursor = (query, cursor) => {
+  const normalizedCursor = normalizePublicCursor(cursor);
+
+  if (!normalizedCursor) return query;
+
+  const createdAt = toPostgrestLiteral(normalizedCursor.createdAt);
+  const id = toPostgrestLiteral(normalizedCursor.id);
+
+  return query.or(
+    `created_at.lt.${createdAt},and(created_at.eq.${createdAt},id.lt.${id})`
+  );
+};
+
+const toPublicPlacement = (placement) => ({
+  ...placement,
+
+  // Temporary compatibility layer for the current Home card in main.
+  // The persisted `location` JSON is deprecated and no longer stored.
+  location: {
+    country: placement.country,
+    state: placement.state,
+    city: placement.city,
+    display_name: placement.display_name
+  }
+});
 
 export const placementsService = {
   async createPlacement(formattedData, userId) {
@@ -43,27 +375,118 @@ export const placementsService = {
     };
   },
 
-  async getPublicPlacements() {
-    const { data, error } = await supabase
-      .from('placements')
-      .select(`
-        *,
-        faces:placement_faces (*),
-        owner:profiles!inner (
-          id,
-          name,
-          avatar_url,
-          status
-        )
-      `)
-      .eq('status', 'active')
-      .eq('visibility', 'public')
-      .eq('profiles.status', 'active')
-      .order('created_at', { ascending: false });
+  async getPublicPlacementFilterOptions() {
+    const { data, error } = await supabase.rpc(
+      'get_public_placement_filter_options'
+    );
 
     if (error) throw error;
 
-    return data;
+    return {
+      countries: data?.countries ?? [],
+      states: data?.states ?? [],
+      cities: data?.cities ?? [],
+      types: data?.types ?? []
+    };
+  },
+
+  async getPublicPlacements({
+    pageSize = DEFAULT_PUBLIC_PAGE_SIZE,
+    cursor = null,
+    filters = {}
+  } = {}) {
+    const normalizedPageSize = normalizePublicPageSize(pageSize);
+    const {
+      search = '',
+      country = null,
+      state = null,
+      city = null,
+      type = null
+    } = filters;
+
+    const normalizedSearch = normalizePublicSearch(search);
+
+    if (normalizedSearch.isTooShort) {
+      return {
+        placements: [],
+        hasMore: false,
+        nextCursor: null,
+        pageSize: normalizedPageSize
+      };
+    }
+
+    let query = supabase
+      .from('placements')
+      .select(PUBLIC_PLACEMENT_SELECT)
+      // Keep these explicit even though RLS also enforces public visibility.
+      // PostgreSQL needs the predicates to match Home's partial indexes.
+      .eq('visibility', 'public')
+      .eq('status', 'active');
+
+    if (normalizedSearch.exactCode) {
+      query = query.eq('code', normalizedSearch.exactCode);
+    } else {
+      normalizedSearch.terms.forEach((term) => {
+        query = query.ilike('search_text', `%${term}%`);
+      });
+    }
+
+    const countryCodes = normalizeCountryCodes(country);
+
+    query = applyListFilter(query, 'country_code', countryCodes);
+    query = applyStateScopes(query, state);
+    query = applyCityScopes(query, city);
+    query = applyListFilter(query, 'type', type);
+    query = applyPublicCursor(query, cursor);
+
+    const { data, error } = await query
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
+      .limit(normalizedPageSize + 1);
+
+    if (error) throw error;
+
+    const rows = data ?? [];
+    const hasMore = rows.length > normalizedPageSize;
+    const visibleRows = hasMore
+      ? rows.slice(0, normalizedPageSize)
+      : rows;
+    const lastPlacement = visibleRows.at(-1);
+
+    return {
+      placements: visibleRows.map(toPublicPlacement),
+      hasMore,
+      nextCursor: hasMore && lastPlacement
+        ? {
+            createdAt: lastPlacement.created_at,
+            id: lastPlacement.id
+          }
+        : null,
+      pageSize: normalizedPageSize
+    };
+  },
+
+  async getPublicPlacementsInView({
+    south,
+    west,
+    north,
+    east,
+    limit = 1000
+  } = {}) {
+    const { data, error } = await supabase.rpc(
+      'get_public_placements_in_view',
+      {
+        p_south: south,
+        p_west: west,
+        p_north: north,
+        p_east: east,
+        p_limit: limit
+      }
+    );
+
+    if (error) throw error;
+
+    return data ?? [];
   },
 
   async getInventoryFilterOptions() {

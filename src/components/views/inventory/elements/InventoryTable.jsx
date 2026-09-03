@@ -70,7 +70,7 @@ function InventoryTable() {
     status, 
     type,
     visibility,
-    location: { display_name }
+    display_name
   }) => {
     const STATUS_TK = (status || '').toLocaleUpperCase(); 
     const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();

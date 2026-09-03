@@ -39,7 +39,7 @@ function SideBar() {
 
   const SIDE_BAR_CLASS = [
     isSidebarOpen ? 'w-[280px] md:w-[350px]' : 'w-[50px] md:w-[100px]',
-    'h-screen p-1 flex-col justify-between bg-background-tertiary',
+    'h-screen p-1 flex-col justify-between bg-background',
     'transition-all duration-100',
     'hidden  sm:flex'
   ];

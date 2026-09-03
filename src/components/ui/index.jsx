@@ -1,5 +1,6 @@
 export { default as SideBar } from './sidebar/SideBar.ui';
 export { default as Header } from './header/Header.ui';
+export { default as NavBar } from './navbar/NavBar.ui';
 
 export { default as Icon } from './icons/Icon.ui'
 export { default as Dialog } from './dialog/Dialog.ui';
@@ -13,5 +14,8 @@ export { default as MetersField } from './fields/MetersField.ui';
 export { default as ImageField } from './fields/ImagesField.ui';
 export { default as DescriptionField } from './fields/DescriptionField.ui';
 export { default as RangeField } from './fields/RangeField.ui';
+
+export { default as SearchInput } from './filters/SearchInput.ui';
+export { default as FiltersList } from './filters/FiltersList.ui';
 
 export { default as Table } from './tables/Table.ui';
