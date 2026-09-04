@@ -1,7 +1,7 @@
 import { getValueOrDefault } from '@/helpers/utilities.helpers';
 import { motion } from 'motion/react';
 
-function HoverCard({ children, className, tabAnimation = false, variant }) {
+function HoverCard({ children, className, tabAnimation = false, variant, ...rest }) {
   const normalizedVariant = getValueOrDefault(variant, ['smoth', 'mark'], 'smoth');
 
   const whileHover = normalizedVariant === 'smoth' ? { y: -5 } : { y: -5, scale: 1.02 };
@@ -15,6 +15,7 @@ function HoverCard({ children, className, tabAnimation = false, variant }) {
       whileHover={ whileHover }
       whileTap={ whileTap }
       transition={ transition }
+      { ...rest }
     >
       { children }
     </motion.div>

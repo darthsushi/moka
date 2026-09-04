@@ -19,7 +19,8 @@ export const DEFAULT_PUBLIC_FILTERS = Object.freeze({
 export const usePublicPlacements = ({
   initialPageSize = 24,
   initialFilters = DEFAULT_PUBLIC_FILTERS,
-  searchDebounceMs = 400
+  searchDebounceMs = 400,
+  viewport = null
 } = {}) => {
   const [placements, setPlacements] = useState([]);
   const [filters, setFilters] = useState(() => ({
@@ -68,7 +69,8 @@ export const usePublicPlacements = ({
     try {
       const result = await placementsService.getPublicPlacements({
         pageSize: initialPageSize,
-        filters: requestFilters
+        filters: requestFilters,
+        viewport
       });
 
       if (requestId !== requestIdRef.current) return;
@@ -88,7 +90,7 @@ export const usePublicPlacements = ({
         setIsLoading(false);
       }
     }
-  }, [initialPageSize, requestFilters]);
+  }, [initialPageSize, requestFilters, viewport]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(fetchPlacements, 0);
@@ -113,7 +115,8 @@ export const usePublicPlacements = ({
       const result = await placementsService.getPublicPlacements({
         pageSize: initialPageSize,
         cursor: nextCursor,
-        filters: requestFilters
+        filters: requestFilters,
+        viewport
       });
 
       if (requestId !== requestIdRef.current) return;
@@ -139,7 +142,8 @@ export const usePublicPlacements = ({
     isLoading,
     isLoadingMore,
     nextCursor,
-    requestFilters
+    requestFilters,
+    viewport
   ]);
 
   const updateFilters = useCallback((changes) => {
@@ -167,6 +171,7 @@ export const usePublicPlacements = ({
     nextCursor,
     isLoading,
     isLoadingMore,
+    requestFilters,
     error,
     updateFilters,
     clearFilters,

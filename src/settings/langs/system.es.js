@@ -28,6 +28,7 @@ export default {
   },
   BUTTONS: {
     EXPLORE_SPACE: 'Explorar espacio',
+    VIEW_DETAILS: 'Ver detalles',
     SAVE_DRAFT: 'Borrador',
     CANCEL: 'Cancelar',
     SUBMIT: 'Enviar',

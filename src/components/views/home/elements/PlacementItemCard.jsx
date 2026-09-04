@@ -1,11 +1,18 @@
-import { useState } from 'react';
-import { Button, Card, Chip, Tooltip, Typography } from '@heroui/react';
+import {
+  Button,
+  Card,
+  Chip,
+  Dropdown,
+  Label,
+  Tooltip,
+  Typography
+} from '@heroui/react';
 
 import { SYSTEM } from '@/settings/langs.settings';
 import { useLanguage } from '@/hooks/contexts';
 
 import { Animations } from '@/components/animations';
-import { Dialog, Icon } from '@/components/ui';
+import { Icon } from '@/components/ui';
 
 function ItemThumbnail({ faces = [], placementCode, location }) {
   const imagesList = faces[0]?.images || [];
@@ -34,19 +41,60 @@ function ItemThumbnail({ faces = [], placementCode, location }) {
   );
 }
 
-function PlacementItemCard({ placement }) {
-  const [isModalOpen, setIsModalOpen] = useState(() => false);
+function PlacementItemCard({
+  placement,
+  isMapOpen,
+  isSelected,
+  onExplorePlacement,
+  onViewDetails
+}) {
   const { language } = useLanguage();
   
   const SYSTEM_LANG = SYSTEM[language];
+
+  const primaryActionLabel = isMapOpen
+    ? SYSTEM_LANG.BUTTONS.EXPLORE_SPACE
+    : SYSTEM_LANG.BUTTONS.VIEW_DETAILS;
+
+  const secondaryActionLabel = isMapOpen
+    ? SYSTEM_LANG.BUTTONS.VIEW_DETAILS
+    : SYSTEM_LANG.BUTTONS.EXPLORE_SPACE;
+
+  const handleExplorePlacement = () => {
+    onExplorePlacement?.(placement);
+  };
+
+  const handleViewDetails = () => {
+    onViewDetails?.(placement);
+  };
+
+  const handlePrimaryAction = () => {
+    if (isMapOpen) {
+      handleExplorePlacement();
+
+      return;
+    }
+
+    handleViewDetails();
+  };
+
+  const handleSecondaryAction = () => {
+    if (isMapOpen) {
+      handleViewDetails();
+
+      return;
+    }
+
+    handleExplorePlacement();
+  };
   
   const { city, country, municipality, state } = placement.location;
   const placementLocation = municipality || city || state || country;
-  const placementDiplayName = `${SYSTEM_LANG.PLACEMENT.TYPES[placement.type]} ${SYSTEM_LANG.WORDS.IN} ${placementLocation}`
+  const placementDiplayName = `${SYSTEM_LANG.PLACEMENT.TYPES[placement.type]} ${SYSTEM_LANG.WORDS.IN} ${placementLocation}`;
 
   return (
-    <Animations.HoverCard variant="mark">
-      <Card className="col-span-1 rounded-4xl p-2 shadow-sm hover:shadow-lg">
+    <Animations.HoverCard variant="mark" data-placement-id={ placement.id }>
+      <Card className={ `col-span-1 rounded-4xl p-2 shadow-sm hover:shadow-lg ${ isSelected ? 'ring-2 ring-primary shadow-lg' : '' }` }>
         <ItemThumbnail
           faces={ placement.faces || [] }
           placementCode={ placement.code }
@@ -70,9 +118,9 @@ function PlacementItemCard({ placement }) {
             size="lg"
             variant="tertiary"
             className="col-span-4 truncate"
-            onPress={ () => setIsModalOpen(true) }
+            onPress={handlePrimaryAction}
           >
-            { SYSTEM_LANG.BUTTONS.EXPLORE_SPACE }
+            {primaryActionLabel}
           </Button>
           <Tooltip>
             <Button
@@ -89,24 +137,41 @@ function PlacementItemCard({ placement }) {
               </p>
             </Tooltip.Content>
           </Tooltip>
-          <Button
-            fullWidth
-            size="lg"
-            variant="tertiary"
-            className="col-span-1 text-xl"
-          >
-            <Icon name="more-horiz" />
-          </Button>
+          <Dropdown>
+            <Button
+              fullWidth
+              size="lg"
+              variant="tertiary"
+              className="col-span-1 text-xl"
+              aria-label="Placement options"
+            >
+              <Icon name="more-horiz" />
+            </Button>
+
+            <Dropdown.Popover placement="bottom end">
+              <Dropdown.Menu
+                onAction={handleSecondaryAction}
+              >
+                <Dropdown.Item
+                  id="secondary-action"
+                  textValue={secondaryActionLabel}
+                >
+                  <Icon
+                    name={
+                      isMapOpen
+                        ? 'map-search'
+                        : 'visibility'
+                    }
+                  />
+
+                  <Label>
+                    {secondaryActionLabel}
+                  </Label>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown>
         </Card.Footer>
-        <Dialog
-          isModalOpen={ isModalOpen }
-          setIsModalOpen={ setIsModalOpen }
-          size="cover"
-        >
-          <Typography type="h5">
-            { placement.code }
-          </Typography>
-        </Dialog>
       </Card>
     </Animations.HoverCard>
   )

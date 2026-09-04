@@ -263,6 +263,100 @@ const normalizeCityScopes = (city) => {
   );
 };
 
+const normalizePublicMapFilters = (filters = {}) => {
+  const {
+    search = '',
+    country = null,
+    state = null,
+    city = null,
+    type = null
+  } = filters;
+
+  const normalizedSearch = normalizePublicSearch(search);
+
+  const types = [
+    ...new Set(
+      toArray(type)
+        .map(item => {
+          if (typeof item === 'string') {
+            return item.trim();
+          }
+
+          return item?.value ?? item?.id ?? null;
+        })
+        .filter(Boolean)
+    )
+  ];
+
+  const stateScopes = normalizeStateScopes(state).map(scope => ({
+    country_code: scope.countryCode,
+    subdivision_code: scope.subdivisionCode,
+    state: scope.state
+  }));
+
+  const cityScopes = normalizeCityScopes(city).map(scope => ({
+    country_code: scope.countryCode,
+    subdivision_code: scope.subdivisionCode,
+    state: scope.state,
+    city: scope.city
+  }));
+
+  return {
+    isTooShort: normalizedSearch.isTooShort,
+    exactCode: normalizedSearch.exactCode,
+    searchTerms: normalizedSearch.terms,
+    countryCodes: normalizeCountryCodes(country),
+    stateScopes,
+    cityScopes,
+    types
+  };
+};
+
+const normalizePublicViewport = (viewport) => {
+  if (!viewport) return null;
+
+  const south = Number(viewport.south);
+  const west = Number(viewport.west);
+  const north = Number(viewport.north);
+  const east = Number(viewport.east);
+
+  if (
+    !Number.isFinite(south) ||
+    !Number.isFinite(west) ||
+    !Number.isFinite(north) ||
+    !Number.isFinite(east)
+  ) {
+    throw new Error('INVALID_PUBLIC_VIEWPORT');
+  }
+
+  if (
+    south < -90 ||
+    south > 90 ||
+    north < -90 ||
+    north > 90 ||
+    south >= north
+  ) {
+    throw new Error('INVALID_PUBLIC_VIEWPORT');
+  }
+
+  if (
+    west < -180 ||
+    west > 180 ||
+    east < -180 ||
+    east > 180 ||
+    west === east
+  ) {
+    throw new Error('INVALID_PUBLIC_VIEWPORT');
+  }
+
+  return {
+    south,
+    west,
+    north,
+    east
+  };
+};
+
 const applyStateScopes = (query, state) => {
   const scopes = normalizeStateScopes(state);
 
@@ -335,6 +429,153 @@ const toPublicPlacement = (placement) => ({
   }
 });
 
+const getPublicPlacementPageInView = async ({
+  pageSize,
+  cursor,
+  filters,
+  viewport
+}) => {
+  const normalizedPageSize =
+    normalizePublicPageSize(pageSize);
+
+  const normalizedCursor =
+    normalizePublicCursor(cursor);
+
+  const normalizedViewport =
+    normalizePublicViewport(viewport);
+
+  const normalizedFilters =
+    normalizePublicMapFilters(filters);
+
+  if (normalizedFilters.isTooShort) {
+    return {
+      placements: [],
+      hasMore: false,
+      nextCursor: null,
+      pageSize: normalizedPageSize
+    };
+  }
+
+  const {
+    exactCode,
+    searchTerms,
+    countryCodes,
+    stateScopes,
+    cityScopes,
+    types
+  } = normalizedFilters;
+
+  const {
+    data: pageRows,
+    error: pageError
+  } = await supabase.rpc(
+    'get_public_placement_page_in_view',
+    {
+      p_south: normalizedViewport.south,
+      p_west: normalizedViewport.west,
+      p_north: normalizedViewport.north,
+      p_east: normalizedViewport.east,
+
+      // Pedimos uno extra para saber si existe
+      // una página posterior.
+      p_limit: normalizedPageSize + 1,
+
+      p_cursor_created_at:
+        normalizedCursor?.createdAt ?? null,
+
+      p_cursor_id:
+        normalizedCursor?.id ?? null,
+
+      p_exact_code: exactCode,
+      p_search_terms: searchTerms,
+      p_country_codes: countryCodes,
+      p_state_scopes: stateScopes,
+      p_city_scopes: cityScopes,
+      p_types: types
+    }
+  );
+
+  if (pageError) throw pageError;
+
+  const rows = pageRows ?? [];
+
+  const hasMore =
+    rows.length > normalizedPageSize;
+
+  const visibleRows = hasMore
+    ? rows.slice(0, normalizedPageSize)
+    : rows;
+
+  if (visibleRows.length === 0) {
+    return {
+      placements: [],
+      hasMore: false,
+      nextCursor: null,
+      pageSize: normalizedPageSize
+    };
+  }
+
+  const placementIds =
+    visibleRows.map(({ id }) => id);
+
+  /*
+   * Ahora obtenemos únicamente los placements
+   * que necesitamos para las Cards.
+   *
+   * Esta consulta sí trae faces/images.
+   */
+  const {
+    data: placements,
+    error: placementsError
+  } = await supabase
+    .from('placements')
+    .select(PUBLIC_PLACEMENT_SELECT)
+    .eq('visibility', 'public')
+    .eq('status', 'active')
+    .in('id', placementIds);
+
+  if (placementsError) {
+    throw placementsError;
+  }
+
+  /*
+   * .in() no garantiza el mismo orden que
+   * nuestro RPC, así que lo reconstruimos.
+   */
+  const placementsById = new Map(
+    (placements ?? []).map(placement => [
+      placement.id,
+      placement
+    ])
+  );
+
+  const orderedPlacements = visibleRows
+    .map(({ id }) => placementsById.get(id))
+    .filter(Boolean)
+    .map(toPublicPlacement);
+
+  const lastPlacement =
+    visibleRows.at(-1);
+
+  return {
+    placements: orderedPlacements,
+    hasMore,
+
+    nextCursor:
+      hasMore && lastPlacement
+        ? {
+            createdAt:
+              lastPlacement.created_at,
+
+            id:
+              lastPlacement.id
+          }
+        : null,
+
+    pageSize: normalizedPageSize
+  };
+};
+
 export const placementsService = {
   async createPlacement(formattedData, userId) {
     const { faces, ...placementData } = formattedData;
@@ -393,8 +634,18 @@ export const placementsService = {
   async getPublicPlacements({
     pageSize = DEFAULT_PUBLIC_PAGE_SIZE,
     cursor = null,
-    filters = {}
+    filters = {},
+    viewport = null
   } = {}) {
+    if (viewport) {
+      return getPublicPlacementPageInView({
+        pageSize,
+        cursor,
+        filters,
+        viewport
+      });
+    }
+
     const normalizedPageSize = normalizePublicPageSize(pageSize);
     const {
       search = '',
@@ -471,8 +722,24 @@ export const placementsService = {
     west,
     north,
     east,
-    limit = 1000
+    limit = 1000,
+    filters = {}
   } = {}) {
+    const normalizedFilters = normalizePublicMapFilters(filters);
+
+    if (normalizedFilters.isTooShort) {
+      return [];
+    }
+
+    const {
+      exactCode,
+      searchTerms,
+      countryCodes,
+      stateScopes,
+      cityScopes,
+      types
+    } = normalizedFilters;
+
     const { data, error } = await supabase.rpc(
       'get_public_placements_in_view',
       {
@@ -480,7 +747,14 @@ export const placementsService = {
         p_west: west,
         p_north: north,
         p_east: east,
-        p_limit: limit
+        p_limit: limit,
+
+        p_exact_code: exactCode,
+        p_search_terms: searchTerms,
+        p_country_codes: countryCodes,
+        p_state_scopes: stateScopes,
+        p_city_scopes: cityScopes,
+        p_types: types
       }
     );
 

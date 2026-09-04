@@ -29,6 +29,7 @@ export default {
   },
   BUTTONS: {
     EXPLORE_SPACE: 'Explore Space',
+    VIEW_DETAILS: 'View details',
     SAVE_DRAFT: 'Save draft',
     CANCEL: 'Cancel',
     SUBMIT: 'Submit',
