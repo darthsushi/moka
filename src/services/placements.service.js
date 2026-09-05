@@ -832,7 +832,7 @@ export const placementsService = {
         description,
         visibility,
         status,
-        location,
+        display_name,
         share_token,
         updated_at,
         created_at,

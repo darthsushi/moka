@@ -34,6 +34,9 @@ import Check from './svg-icons/Check.svg.jsx';
 import CheckList from './svg-icons/CheckList.svg.jsx';
 import MapSearch from './svg-icons/MapSearch.svg.jsx';
 import Delete from './svg-icons/Delete.svg.jsx';
+import Faces from './svg-icons/Faces.svg.jsx';
+import Height from './svg-icons/Height.svg.jsx';
+import Map from './svg-icons/Map.svg.jsx';
 
 function Icon({ name, filled }) {
   const SGVS = {
@@ -50,15 +53,18 @@ function Icon({ name, filled }) {
     'double-arrow-right': DoubleArrowRightIcon,
     'double-arrow-left': DoubleArrowLeftIcon,
     'edit': Edit,
+    'faces': Faces,
     'favorite': Favorite,
     'filter': Filter,
     'filter-off': FilterOff,
     'find-image': FindImage,
     'home': HomeIcon,
+    'height': Height,
     'inventory': Inventory,
     'image': Image,
     'language': LanguageIcon,
     'light-mode': LightMode,
+    'map': Map,
     'map-search': MapSearch,
     'magnify-full-screen': MagnifyFullScreen,
     'more-horiz': MoreHoriz,

@@ -24,7 +24,7 @@ const INITIAL_VIEW_STATE = {
   zoom: 12
 };
 
-const RESIZE_SETTLE_DELAY = 120;
+const RESIZE_SETTLE_DELAY = 1000;
 
 function Map({
   filters,
@@ -230,7 +230,7 @@ function Map({
         ${isMapOpen ? 'w-[50%]' : 'w-0'}
       `}
       style={{
-        height: isMapOpen ? 'calc(100% - 80px)' : 'auto'
+        height: isMapOpen ? 'calc(100% - 80px)' : '0px'
       }}
     >
       <Card variant="secondary" className="w-full p-0 h-full rounded-[20px] overflow-hidden shadow-xl">

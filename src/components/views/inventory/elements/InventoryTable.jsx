@@ -1,21 +1,15 @@
-
+import { isNil } from '@/helpers/ramda.helpers';
+import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS, TABLE_LANGS } from '@/settings/langs.settings';
 import { /* useInventoryFilterOptions, */ useInventoryPlacements } from '@/hooks/placements';
-import { useLanguage } from '@/hooks/contexts';
 
 import { Table } from '@/components/ui';
-import CodeCell from './table-elements/Code';
-import { Chip } from '@heroui/react';
-import { isNil } from 'ramda';
+import IDCell from './table-elements/IDCell';
 import EmptyContent from '../../alerts/EmptyContent.view';
-
-/* const STATUS_COLORS = {
-  active: 'success',
-  pending: 'warning',
-  suspended: 'danger',
-  paused: 'default',
-  draft: 'default'
-}; */
+import DetailsCell from './table-elements/DetailsCell';
+import LocationCell from './table-elements/LocationCell';
+import StatusCell from './table-elements/StatusCell';
+import VisibilityCell from './table-elements/VisibilityCell';
 
 function InventoryTable() {
   const {
@@ -54,35 +48,34 @@ function InventoryTable() {
   
   const TABLE_COLS = [
     { id: 'id', displayText: TABLE_LANG.ID, isRowHeader: true },
-    { id: 'type', displayText: TABLE_LANG.TYPE },
-    { id: 'face_count', displayText: TABLE_LANG.FACE_COUNT },
-    { id: 'city', displayText: TABLE_LANG.CITY },
-    { id: 'country', displayText: TABLE_LANG.COUNTRY },
+    { id: 'details', displayText: TABLE_LANG.DETAILS },
+    { id: 'location', displayText: TABLE_LANG.LOCATION },
     { id: 'status', displayText: TABLE_LANG.STATUS },
     { id: 'visibility', displayText: TABLE_LANG.VISIBILITY },
   ];
   const TABLE_ROWS = placements.map(({
-    city,
     code,
-    country,
     face_count,
     id,
     status, 
     type,
     visibility,
+    city,
+    country,
+    state,
+    structure_height,
     display_name
   }) => {
     const STATUS_TK = (status || '').toLocaleUpperCase(); 
     const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();
+    console.log(placements);
 
     return {
-      id: { render: <CodeCell code={ code } display_name={ display_name } />, value: id },
-      type: { render: TABLE_LANG[type], value: type },
-      face_count,
-      city,
-      country,
-      status: { render: <Chip>{ TABLE_LANG[STATUS_TK] }</Chip>, value: status },
-      visibility: { render: <Chip>{ TABLE_LANG[VISIBILITY_TK] }</Chip>, value: visibility }
+      id: { render: <IDCell code={ code } />, value: id },
+      details: { render: <DetailsCell type={ TABLE_LANG[type] } faces_count={ face_count } structure_height={ structure_height } />, value: type },
+      location: { render: <LocationCell display_name={ display_name } city={ city } state={ state } country={ country } />, value: display_name },
+      status: { render: <StatusCell status={ status } displayStatus={ TABLE_LANG[STATUS_TK] } />, value: status },
+      visibility: { render: <VisibilityCell visibility={ visibility } visibilityDisplay={ TABLE_LANG[VISIBILITY_TK] } />, value: visibility }
     }
   });
   const TABLE_FILTERS = {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Accordion, Button, ButtonGroup, Checkbox, CheckboxGroup, Chip, Modal, Spinner } from '@heroui/react';
+import { Accordion, Button, ButtonGroup, Checkbox, CheckboxGroup, Chip, Modal } from '@heroui/react';
 
 import { isEmpty, noop, not } from '@/helpers/ramda.helpers';
 import { equalsIgnoreOrderNative } from '@/helpers/utilities.helpers';
@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS, TABLE_LANGS } from '@/settings/langs.settings';
 
 import Icon from '../icons/Icon.ui';
+import { ToggleButton } from '@heroui/react';
 
 const getDefaultExpandedNames = (filters = []) =>
   filters
@@ -162,17 +163,23 @@ function FiltersList({
   return (
     <>
       <ButtonGroup variant={ hasActiveFilters ? 'ghost' : 'tertiary' }>
-        <Button
-          aria-label={ `${tableName} filter` }
-          isDisabled={ isDisabled }
-          isPending={ isPending }
+        {/* <Button
+          
           onPress={ handleOpenFilter }
           className={ hasActiveFilters ? 'bg-accent-soft' : '' }
         >
-          { isPending ? <Spinner size="sm" /> : <Icon filled name="filter" /> }
+          
+        </Button> */}
+        <ToggleButton
+          aria-label={ `${tableName} filter` }
+          isDisabled={ isDisabled || isPending }
+          onPress={ handleOpenFilter }
+          isSelected={ hasActiveFilters }
+          className={ hasActiveFilters ? 'rounded-r-none' : '' }
+        >
           { SYSTEM_LANG.WORDS.FILTERS }
-          { hasActiveFilters && <Chip variant="tertiary">{ activeFiltersCount }</Chip> }
-        </Button>
+          { hasActiveFilters && <Chip variant="soft">{ activeFiltersCount }</Chip> }
+        </ToggleButton>
         { hasActiveFilters &&
           <Button
             isIconOnly
