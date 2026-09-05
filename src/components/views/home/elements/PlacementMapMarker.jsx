@@ -23,15 +23,15 @@ function PlacementMapMarker({
 
   return (
     <Marker
-      latitude={latitude}
-      longitude={longitude}
+      latitude={ latitude }
+      longitude={ longitude }
       anchor="bottom"
-      onClick={handleClick}
+      onClick={ handleClick }
     >
       <button
         type="button"
-        aria-label={`Explorar ${placement.code}`}
-        title={placement.code}
+        aria-label={ `Explorar ${placement.code}` }
+        title={ placement.code }
         className={`
           group
           relative
@@ -45,28 +45,11 @@ function PlacementMapMarker({
           ${isSelected ? 'scale-110' : ''}
         `}
       >
-        <span
-          className={`
-            flex
-            size-9
-            items-center
-            justify-center
-            rounded-full
-            border-3
-            border-background
-            shadow-md
-            text-xs
-            font-semibold
-            ${
-              isSelected
-                ? 'bg-foreground text-background'
-                : 'bg-primary text-primary-foreground'
-            }
-          `}
-        >
-          M
+        <span className={ `flex size-8 p-0.5 rounded-full shadow-2xl ${isSelected ? 'bg-accent border-2 border-accent' : 'bg-default border border-default'}` }>
+          <span className={ `relative w-full h-full rounded-full z-2 ${isSelected ? 'bg-default' : 'bg-accent'}` }>
+            <img src='./assets/moka/logo.png' className="w-full h-full object-contain" />
+          </span>
         </span>
-
         <span
           className={`
             absolute
@@ -75,11 +58,10 @@ function PlacementMapMarker({
             rotate-45
             border-r-3
             border-b-3
-            border-background
             ${
               isSelected
-                ? 'bg-foreground'
-                : 'bg-primary'
+                ? 'bg-accent border-accent'
+                : 'bg-default border-default'
             }
           `}
         />

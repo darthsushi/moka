@@ -3,10 +3,9 @@ import {
   useEffect,
   useRef
 } from 'react';
+import { Card } from '@heroui/react';
 
-import MapboxMap, {
-  NavigationControl
-} from 'react-map-gl/mapbox';
+import MapboxMap, { NavigationControl } from 'react-map-gl/mapbox';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -15,6 +14,7 @@ import { usePublicPlacementMap } from '@/hooks/placements';
 
 import PlacementMapMarker from './PlacementMapMarker';
 import PlacementMapPopup from './PlacementMapPopup';
+
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -216,6 +216,7 @@ function Map({
     isMapOpen,
     focusPlacement
   ]);
+  // TODO: fix resize
 
   return (
     <div
@@ -225,48 +226,53 @@ function Map({
         transition-all
         sticky top-20
         overflow-hidden
+        p-3.5
         ${isMapOpen ? 'w-[50%]' : 'w-0'}
       `}
       style={{
-        height: 'calc(100% - 80px)'
+        height: isMapOpen ? 'calc(100% - 80px)' : 'auto'
       }}
     >
-      <MapboxMap
-        ref={mapRef}
-        mapboxAccessToken={ MAPBOX_ACCESS_TOKEN }
-        initialViewState={ INITIAL_VIEW_STATE }
-        mapStyle="mapbox://styles/mapbox/standard"
-        style={{
-          width: '100%',
-          height: '100%'
-        }}
-        onLoad={ handleMapLoad }
-        onMoveEnd={ handleMoveEnd }
-        onClick={ () => onSelectPlacement?.(null) }
-      >
-        <NavigationControl
-          position="bottom-right"
-          showCompass
-          showZoom
-        />
-
-        {
-          placements.map(placement => (
-            <PlacementMapMarker
-              key={ placement.id }
-              placement={ placement }
-              isSelected={ selectedPlacement?.id === placement.id }
-              onClick={ onSelectPlacement }
+      <Card variant="secondary" className="w-full p-0 h-full rounded-[20px] overflow-hidden shadow-xl">
+        <Card.Content className="w-full p-0 overflow-hidden">
+          <MapboxMap
+            ref={mapRef}
+            mapboxAccessToken={ MAPBOX_ACCESS_TOKEN }
+            initialViewState={ INITIAL_VIEW_STATE }
+            mapStyle="mapbox://styles/mapbox/standard"
+            style={{
+              width: '100%',
+              height: '100%'
+            }}
+            onLoad={ handleMapLoad }
+            onMoveEnd={ handleMoveEnd }
+            onClick={ () => onSelectPlacement?.(null) }
+          >
+            <NavigationControl
+              position="bottom-right"
+              showCompass
+              showZoom
             />
-          ))
-        }
 
-        <PlacementMapPopup
-          placement={selectedPlacement}
-          onClose={() => onSelectPlacement?.(null)}
-          onViewDetails={onViewDetails}
-        />
-      </MapboxMap>
+            {
+              placements.map(placement => (
+                <PlacementMapMarker
+                  key={ placement.id }
+                  placement={ placement }
+                  isSelected={ selectedPlacement?.id === placement.id }
+                  onClick={ onSelectPlacement }
+                />
+              ))
+            }
+
+            <PlacementMapPopup
+              placement={selectedPlacement}
+              onClose={() => onSelectPlacement?.(null)}
+              onViewDetails={onViewDetails}
+            />
+          </MapboxMap>
+        </Card.Content>
+      </Card>
     </div>
   );
 }

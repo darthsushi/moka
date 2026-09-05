@@ -87,14 +87,16 @@ function PlacementItemCard({
 
     handleExplorePlacement();
   };
+  console.log('PlacementItemCard', { placement });
   
   const { city, country, municipality, state } = placement.location;
   const placementLocation = municipality || city || state || country;
   const placementDiplayName = `${SYSTEM_LANG.PLACEMENT.TYPES[placement.type]} ${SYSTEM_LANG.WORDS.IN} ${placementLocation}`;
+  const displayOutline = isSelected && isMapOpen;
 
   return (
     <Animations.HoverCard variant="mark" data-placement-id={ placement.id }>
-      <Card className={ `col-span-1 rounded-4xl p-2 shadow-sm hover:shadow-lg ${ isSelected ? 'ring-2 ring-primary shadow-lg' : '' }` }>
+      <Card className={ `col-span-1 rounded-4xl p-2 shadow-sm hover:shadow-lg ${ displayOutline ? 'ring-2 ring-accent shadow-lg' : '' }` }>
         <ItemThumbnail
           faces={ placement.faces || [] }
           placementCode={ placement.code }
@@ -112,7 +114,7 @@ function PlacementItemCard({
             </Tooltip.Content>
           </Tooltip>
         </Card.Content>
-        <Card.Footer className="w-full grid grid-cols-6 gap-1">
+        <Card.Footer className="w-full grid grid-cols-5 gap-1">
           <Button
             fullWidth
             size="lg"
@@ -122,21 +124,6 @@ function PlacementItemCard({
           >
             {primaryActionLabel}
           </Button>
-          <Tooltip>
-            <Button
-              fullWidth
-              size="lg"
-              variant="danger-soft"
-              className="col-span-1"
-            >
-              <Icon name="favorite" />
-            </Button>
-            <Tooltip.Content>
-              <p>
-                { SYSTEM_LANG.TOOLTIPS.MARK_FAVORITE }
-              </p>
-            </Tooltip.Content>
-          </Tooltip>
           <Dropdown>
             <Button
               fullWidth
@@ -148,7 +135,7 @@ function PlacementItemCard({
               <Icon name="more-horiz" />
             </Button>
 
-            <Dropdown.Popover placement="bottom end">
+            <Dropdown.Popover>
               <Dropdown.Menu
                 onAction={handleSecondaryAction}
               >
@@ -156,13 +143,7 @@ function PlacementItemCard({
                   id="secondary-action"
                   textValue={secondaryActionLabel}
                 >
-                  <Icon
-                    name={
-                      isMapOpen
-                        ? 'map-search'
-                        : 'visibility'
-                    }
-                  />
+                  <Icon name={ isMapOpen ? 'visibility' : 'map-search' } />
 
                   <Label>
                     {secondaryActionLabel}

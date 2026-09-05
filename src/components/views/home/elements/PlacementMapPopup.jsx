@@ -1,12 +1,11 @@
-import {
-  Button,
-  Typography
-} from '@heroui/react';
+import { Typography } from '@heroui/react';
 
 import { Popup } from 'react-map-gl/mapbox';
 
 import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM } from '@/settings/langs.settings';
+import { Card } from '@heroui/react';
+import { Animations } from '@/components/animations';
 
 function PlacementMapPopup({
   placement,
@@ -30,10 +29,11 @@ function PlacementMapPopup({
       latitude={latitude}
       longitude={longitude}
       anchor="bottom"
-      offset={48}
+      offset={ 48 }
       closeButton={false}
       closeOnClick={false}
       onClose={onClose}
+      style={ { width: '300px' } }
     >
       <PopupContent
         placement={placement}
@@ -46,7 +46,7 @@ function PlacementMapPopup({
 
 function PopupContent({
   placement,
-  onClose,
+  /* onClose, */
   onViewDetails
 }) {
   const { language } = useLanguage();
@@ -54,48 +54,32 @@ function PopupContent({
   const SYSTEM_LANG = SYSTEM[language];
 
   return (
-    <div className="w-60 p-1">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <Typography
-            type="body-sm"
-            className="font-semibold"
-          >
-            {placement.code}
-          </Typography>
-
-          <Typography
-            type="body-xs"
-            className="truncate text-default-500"
-          >
-            {
-              SYSTEM_LANG.PLACEMENT.TYPES[
-                placement.type
-              ]
-            }
-          </Typography>
-        </div>
-
-        <Button
-          isIconOnly
-          size="sm"
-          variant="ghost"
-          onPress={onClose}
-        >
-          ×
-        </Button>
-      </div>
-
-      <Button
-        fullWidth
-        size="sm"
-        variant="tertiary"
-        className="mt-3"
-        onPress={() => onViewDetails?.(placement)}
+    <Animations.HoverCard disableHoverAnimation tabAnimation>
+      <Card
+        onClick={ () => onViewDetails?.(placement) }
+        className="w-full p-2 shadow-2xl rounded-4xl cursor-pointer select-none"
       >
-        {SYSTEM_LANG.BUTTONS.VIEW_DETAILS}
-      </Button>
-    </div>
+        <Card.Content className="grid grid-cols-3 gap-1">
+          <div className="col-span-1 h-20 rounded-4xl overflow-hidden bg-surface-secondary">
+            {/* Poner imagen aqui */}
+          </div>
+          <div className="col-span-2 row-span-2">
+            <Typography
+              type="body-sm"
+              className="font-semibold"
+            >
+              { placement.code }
+            </Typography>
+            <Typography
+              type="body-xs"
+              className="truncate text-default-500"
+            >
+              { SYSTEM_LANG.PLACEMENT.TYPES[placement.type] }
+            </Typography>
+          </div>
+        </Card.Content>
+      </Card>
+    </Animations.HoverCard>
   );
 }
 
