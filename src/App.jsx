@@ -5,7 +5,7 @@ import { MODULES } from '@/settings/navigation.settings';
 
 import { AppLayout } from '@/components/layouts';
 import { ProtectedRoute, PublicOnlyRoute, RoleRoute } from '@/router';
-import { AccessDenied, Auth, HomePage, Inventory, NotFound } from '@/components/views';
+import { AccessDenied, Auth, HomePage, Inventory, NotFound, Settings } from '@/components/views';
 
 import './App.css';
 
@@ -17,6 +17,7 @@ function App() {
         <Route element={ <AppLayout /> }>
           <Route index element={ <HomePage /> } />
           <Route path="home" element={ <Navigate to="/" replace /> } />
+          <Route path={ MODULES.SETTINGS.id } element={ <Settings /> } />
           <Route path="forbidden" element={ <AccessDenied /> } />
 
           <Route element={ <ProtectedRoute /> }>

@@ -37,7 +37,7 @@ function Header({ children }) {
         </div>
       </div>
       <div data-header-right-controls className="h-full flex items-center gap-1">
-        <LanguageButton />
+        {/* <LanguageButton /> */}
         <OwnerButton />
         <AvatarAccount />
       </div>

@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { Skeleton, ToggleButton, Typography } from '@heroui/react';
 
 import { isNotNil } from '@/helpers/ramda.helpers';
@@ -9,8 +10,13 @@ import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 import { Header, NavBar, SearchInput, FiltersList, Icon } from '@/components/ui';
 import Map from './elements/Map';
 import PlacementsList from './elements/PlacementList';
+import PlacementDetailsDialog from './elements/PlacementDetailsDialog';
 
 function Home() {
+  const [selectedPlacement, setSelectedPlacement] = useState(null);
+  const [detailsPlacement, setDetailsPlacement] = useState(null);
+  const [mapViewport, setMapViewport] = useState(null);
+
   const { isAuthenticated, loading, profile } = useAuth();
   const { language } = useLanguage();
   const { isMapOpen, setIsMapOpen } = useUI();
@@ -22,12 +28,16 @@ function Home() {
     isLoading,
     isLoadingMore,
     error,
+    requestFilters,
     updateFilters,
     /* clearFilters,
     loadMore,
     refetch */
-  } = usePublicPlacements({ searchDebounceMs: 700 });
-  console.log({filters, hasMore, nextCursor, isLoading, isLoadingMore, error, placements});
+  } = usePublicPlacements({
+    searchDebounceMs: 700,
+    viewport: isMapOpen ? mapViewport : null
+  });
+  console.log({ filters, hasMore, nextCursor, isLoading, isLoadingMore, error, placements, requestFilters });
 
   const SYSTEM_LANG = SYSTEM_LANGS[language];
   
@@ -38,6 +48,48 @@ function Home() {
   const handleSearchChange = (value) => {
     updateFilters({ search: value });
   }
+
+  const handleExplorePlacement = (placement) => {
+    // Creamos una referencia nueva para que "Explorar" vuelva a ejecutar
+    // el flyTo incluso si es el mismo placement seleccionado anteriormente.
+    setSelectedPlacement({
+      ...placement
+    });
+
+    if (!isMapOpen) {
+      setIsMapOpen(true);
+    }
+  };
+
+  const handleViewPlacementDetails = (placement) => {
+    setDetailsPlacement(placement);
+  };
+
+  const handleDetailsOpenChange = (isOpen) => {
+    if (!isOpen) {
+      setDetailsPlacement(null);
+    }
+  };
+
+  const handleMapViewportChange = useCallback((nextViewport) => {
+    setMapViewport(currentViewport => {
+      if (
+        currentViewport &&
+        currentViewport.south ===
+          nextViewport.south &&
+        currentViewport.west ===
+          nextViewport.west &&
+        currentViewport.north ===
+          nextViewport.north &&
+        currentViewport.east ===
+          nextViewport.east
+      ) {
+        return currentViewport;
+      }
+
+      return nextViewport;
+    });
+  }, []);
 
   return (
     <section className="w-full h-dvh flex flex-wrap overflow-y-auto"> 
@@ -93,11 +145,24 @@ function Home() {
           </ToggleButton>
         </NavBar>
         <PlacementsList
-          placements={ placements }
-          isFetchingData={ isLoading }
+          placements={placements}
+          isFetchingData={isLoading}
+          onExplorePlacement={handleExplorePlacement}
+          onViewDetails={handleViewPlacementDetails}
+          selectedPlacement={selectedPlacement}
         />
       </div>
-      <Map />
+      <Map
+        filters={ requestFilters }
+        selectedPlacement={ selectedPlacement }
+        onViewportChange={ handleMapViewportChange }
+        onSelectPlacement={ setSelectedPlacement }
+        onViewDetails={handleViewPlacementDetails}
+      />
+      <PlacementDetailsDialog
+        placement={detailsPlacement}
+        onOpenChange={handleDetailsOpenChange}
+      />
     </section>
   );
 }

@@ -3,7 +3,7 @@ import { Typography } from '@heroui/react';
 import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
-import { Header,/* , Table */ } from '@/components/ui';
+import { Header } from '@/components/ui';
 import InventoryTable from './elements/InventoryTable';
 
 

@@ -18,4 +18,6 @@ export { default as RangeField } from './fields/RangeField.ui';
 export { default as SearchInput } from './filters/SearchInput.ui';
 export { default as FiltersList } from './filters/FiltersList.ui';
 
+export { default as CircleAvatar } from './profile/CircleAvatar.ui';
+
 export { default as Table } from './tables/Table.ui';

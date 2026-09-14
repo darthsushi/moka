@@ -3,7 +3,8 @@ import SYSTEM from '../system.en';
 export default {
   ID: 'ID',
   TYPE: 'Type',
-  FACE_COUNT: 'Number of faces',
+  DETAILS: 'Details',
+  LOCATION: 'Location',
   CITY: 'City',
   COUNTRY: 'Country',
   STATUS: 'Status',

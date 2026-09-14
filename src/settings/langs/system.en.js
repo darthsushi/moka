@@ -10,10 +10,12 @@ export default {
   },
   SIDEBAR: {
     HOME: 'home',
-    INVENTORY: 'Inventory'
+    INVENTORY: 'Inventory',
+    SETTINGS: 'Settings',
   },
   PAGES: {
-    INVENTORY: 'Inventory'
+    INVENTORY: 'Inventory',
+    SETTINGS: 'Settings',
   },
   TOOLTIPS: {
     SWITCH_DARK: 'Switch to dark mode',
@@ -29,6 +31,7 @@ export default {
   },
   BUTTONS: {
     EXPLORE_SPACE: 'Explore Space',
+    VIEW_DETAILS: 'View details',
     SAVE_DRAFT: 'Save draft',
     CANCEL: 'Cancel',
     SUBMIT: 'Submit',
@@ -61,7 +64,9 @@ export default {
     NOTHING_TO_SHOW: 'Nothing to show here',
     GOOD_MORNING: 'Good morning',
     GOOD_AFTERNOON: 'Good afternoon',
-    GOOD_NIGHT: 'Good evening'
+    GOOD_NIGHT: 'Good evening',
+    ACCESS_YOUR_ACCOUNT: 'Access your account',
+    LOG_TO_ACCESS_TOOLS: 'Log into your account to access all the platform\'s tools and features.'
   },
   PLACEMENT: {
     TYPES: {

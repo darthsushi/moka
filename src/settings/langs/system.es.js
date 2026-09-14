@@ -9,10 +9,12 @@ export default {
   },
   SIDEBAR: {
     HOME: 'Inicio',
-    INVENTORY: 'Inventario'
+    INVENTORY: 'Inventario',
+    SETTINGS: 'Configuración'
   },
   PAGES: {
-    INVENTORY: 'Inventario'
+    INVENTORY: 'Inventario',
+    SETTINGS: 'Configuración'
   },
   TOOLTIPS: {
     SWITCH_DARK: 'Cambiar a modo oscuro',
@@ -28,6 +30,7 @@ export default {
   },
   BUTTONS: {
     EXPLORE_SPACE: 'Explorar espacio',
+    VIEW_DETAILS: 'Ver detalles',
     SAVE_DRAFT: 'Borrador',
     CANCEL: 'Cancelar',
     SUBMIT: 'Enviar',
@@ -61,6 +64,8 @@ export default {
     GOOD_MORNING: 'Buenos días',
     GOOD_AFTERNOON: 'Buenas tardes',
     GOOD_NIGHT: 'Buenas noches',
+    ACCESS_YOUR_ACCOUNT: 'Accede a tu cuenta',
+    LOG_TO_ACCESS_TOOLS: 'Ingresa a tu cuenta para acceder a todas las herramientas de la plataforma'
   },
   PLACEMENT: {
     TYPES: {

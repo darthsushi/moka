@@ -1,0 +1,23 @@
+.mapboxgl-popup-content {
+  padding: 0px;
+  box-sizing: border-box;
+  border-radius: 0px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: var(--background);
+  margin-top: -1px;
+}
+
+.asset-top-30 {
+  margin-top: -30px;
+  margin-bottom: -5px;
+}
+
+.billboard-asset {
+  background-image: url("assets/billboard.png");
+  background-position: center;
+  background-size: 105%;
+}
