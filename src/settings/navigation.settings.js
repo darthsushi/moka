@@ -14,6 +14,12 @@ const MODULES = {
     icon: 'inventory',
     requiresAuth: true,
     roles: [PROFILES.ROLES.OWNER]
+  },
+  SETTINGS: {
+    id: 'settings',
+    path: '/settings',
+    label: 'SETTINGS',
+    icon: 'settings',
   }
 };
 

@@ -19,19 +19,19 @@ const PUBLIC_PLACEMENT_SELECT = `
   latitude,
   longitude,
   structure_height,
-  description,
   face_count,
   country,
   country_code,
   state,
   subdivision_code,
   city,
-  postcode,
   display_name,
   created_at,
   faces:placement_faces (
     id,
-    images
+    images,
+    day_range,
+    period_price
   )
 `;
 

@@ -129,7 +129,7 @@ function SideBar() {
           </Surface>
         </div>
       </div>
-      <div className="w-full h-auto">
+      {/* <div className="w-full h-auto">
         <Separator
           variant="secondary"
         />
@@ -161,7 +161,7 @@ function SideBar() {
             </Tooltip.Content>
           </Tooltip>
         </Surface>
-      </div>
+      </div> */}
     </nav>
   );
 }

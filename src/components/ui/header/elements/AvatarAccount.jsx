@@ -126,7 +126,7 @@ function AvatarAccount() {
       <Button
         size="lg"
         variant="primary"
-        onPress={ () => navigate('auth') }
+        onPress={ () => navigate('/auth') }
       >
         { BUTTONS_LANG.LOGIN }
       </Button>

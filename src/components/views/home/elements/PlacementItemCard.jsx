@@ -8,38 +8,26 @@ import {
   Typography
 } from '@heroui/react';
 
-import { SYSTEM } from '@/settings/langs.settings';
+import { formatCurrency, parseDayRange } from '@/helpers/utilities.helpers';
 import { useLanguage } from '@/hooks/contexts';
+import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
+import { MIN_RENT_DAYS } from '@/settings/defaults.settings';
 
 import { Animations } from '@/components/animations';
 import { Icon } from '@/components/ui';
 
-function ItemThumbnail({ faces = [], placementCode, location }) {
-  const imagesList = faces[0]?.images || [];
-  const [firstImage] = imagesList;
+const obtainFaceData = ([{ images = [], day_range, period_price }]) => {
+  const [firtImage] = images;
+  const [minDays, maxDays] = parseDayRange(day_range);
 
-  return (
-    <div className="w-full h-50 grid grid-cols-1 overflow-hidden rounded-4xl relative">
-        <div
-          className={ `bg-center bg-cover h-full col-span-1` }
-          style={ { backgroundImage: `url(${firstImage})` } }
-        />
-      <div className="w-full h-full absolute pointer-events-none flex flex-col justify-between px-2">
-        <div className="w-full h-10 flex items-center justify-end">
-          <Chip color="success" className="font-semibold pointer-events-auto">
-            <Icon name="qr-code" />
-            { placementCode }
-          </Chip>
-        </div>
-        <div className="w-full h-10 flex items-center">
-          <Chip className="max-w-[75%]">
-            <p className="truncate">{ location }</p>
-          </Chip>
-        </div>
-      </div>
-    </div>
-  );
-}
+  const lowestPrice = formatCurrency(period_price * (minDays / MIN_RENT_DAYS));
+  const higherPrice = formatCurrency(period_price *  (maxDays / MIN_RENT_DAYS));
+
+  return {
+    image: firtImage,
+    priceRange: [lowestPrice, higherPrice],
+  }
+};
 
 function PlacementItemCard({
   placement,
@@ -50,7 +38,7 @@ function PlacementItemCard({
 }) {
   const { language } = useLanguage();
   
-  const SYSTEM_LANG = SYSTEM[language];
+  const SYSTEM_LANG = SYSTEM_LANGS[language];
 
   const primaryActionLabel = isMapOpen
     ? SYSTEM_LANG.BUTTONS.EXPLORE_SPACE
@@ -87,25 +75,58 @@ function PlacementItemCard({
 
     handleExplorePlacement();
   };
-  console.log('PlacementItemCard', { placement });
   
-  const { city, country, municipality, state } = placement.location;
-  const placementLocation = municipality || city || state || country;
-  const placementDiplayName = `${SYSTEM_LANG.PLACEMENT.TYPES[placement.type]} ${SYSTEM_LANG.WORDS.IN} ${placementLocation}`;
-  const displayOutline = isSelected && isMapOpen;
+  const {
+    id,
+    city,
+    code,
+    country,
+    state,
+    type,
+    faces
+  } = placement || {};
+  const { image, priceRange: [lowestPrice, higherPrice] } = obtainFaceData(faces);
+  const placementLocation =  `${state}, ${country}`;
+  const placementDiplayName = `${SYSTEM_LANG.PLACEMENT.TYPES[type]} ${SYSTEM_LANG.WORDS.IN} ${city}`;
+  const ringCard = isSelected && isMapOpen && 'ring-2 ring-accent shadow-lg';
 
   return (
-    <Animations.HoverCard variant="mark" data-placement-id={ placement.id }>
-      <Card className={ `col-span-1 rounded-4xl p-2 shadow-sm hover:shadow-lg ${ displayOutline ? 'ring-2 ring-accent shadow-lg' : '' }` }>
-        <ItemThumbnail
-          faces={ placement.faces || [] }
-          placementCode={ placement.code }
-          location={ state || country }
-        />
-        <Card.Content>
+    <Animations.HoverCard variant="mark" data-placement-id={ id }>
+      <Card className={ `col-span-1 rounded-4xl p-2 shadow-sm hover:shadow-lg ${ringCard}` }>
+        <div className="w-full h-50 grid grid-cols-1 overflow-hidden rounded-4xl relative">
+          <div
+            className={ `bg-center bg-cover h-full col-span-1` }
+            style={ { backgroundImage: `url(${image})` } }
+          />
+          <div className="w-full h-full absolute pointer-events-none flex flex-col justify-between px-2">
+            <div className="w-full h-10 flex items-center justify-end">
+              <Chip
+                color="success"
+                className="font-semibold pointer-events-auto"
+              >
+                <Icon name="qr-code" />
+                { code }
+              </Chip>
+            </div>
+            <div className="w-full h-10 flex items-center">
+              <Chip
+                className="max-w-[75%]"
+                variant="secondary"
+                color="warning"
+              >
+                <p className="truncate">
+                  { placementLocation }
+                </p>
+              </Chip>
+            </div>
+          </div>
+        </div>
+        <Card.Content className="w-full flex flex-col">
           <Tooltip>
             <Tooltip.Trigger>
-              <Typography type="body-sm" className="truncate leading-4.5">
+              <Typography
+                type="body-sm"
+                className="truncate leading-4.5">
                 { placementDiplayName }
               </Typography>
             </Tooltip.Trigger>
@@ -113,6 +134,17 @@ function PlacementItemCard({
               { placementDiplayName }
             </Tooltip.Content>
           </Tooltip>
+          <Typography
+            type="body-xs"
+            color="muted"
+            className="truncate flex items-center gap-1"
+          >
+            <Icon
+              name="money-range"
+              filled
+            />
+            { lowestPrice } - { higherPrice }
+          </Typography>
         </Card.Content>
         <Card.Footer className="w-full grid grid-cols-5 gap-1">
           <Button
@@ -122,7 +154,7 @@ function PlacementItemCard({
             className="col-span-4 truncate"
             onPress={handlePrimaryAction}
           >
-            {primaryActionLabel}
+            { primaryActionLabel }
           </Button>
           <Dropdown>
             <Button
@@ -137,16 +169,16 @@ function PlacementItemCard({
 
             <Dropdown.Popover>
               <Dropdown.Menu
-                onAction={handleSecondaryAction}
+                onAction={ handleSecondaryAction }
               >
                 <Dropdown.Item
                   id="secondary-action"
-                  textValue={secondaryActionLabel}
+                  textValue={ secondaryActionLabel }
                 >
                   <Icon name={ isMapOpen ? 'visibility' : 'map-search' } />
 
                   <Label>
-                    {secondaryActionLabel}
+                    { secondaryActionLabel }
                   </Label>
                 </Dropdown.Item>
               </Dropdown.Menu>

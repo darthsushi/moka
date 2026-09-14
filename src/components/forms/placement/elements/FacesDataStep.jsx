@@ -15,6 +15,7 @@ import { parseDayRange } from '@/helpers/utilities.helpers';
 import { isPositiveNumber, isValidHeight } from '@/helpers/validators.helper';
 
 import { ImageField, MetersField, NumberField, RangeField } from '@/components/ui';
+import { MAX_RENT_DAYS, MIN_RENT_DAYS } from '@/settings/defaults.settings';
 
 const normalizeFaces = (actualFaces, actualValues) => {
   const newFaceArray = [];
@@ -193,11 +194,11 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                           <RangeField
                             label={ formLabels.RANGE_DAYS }
                             name={ `day_range_face_${face_index + 1}` }
-                            maxValue={ 60 }
-                            minValue={ 15 }
-                            step={ 15 }
+                            maxValue={ MAX_RENT_DAYS }
+                            minValue={ MIN_RENT_DAYS }
+                            step={ MIN_RENT_DAYS }
                             control={ control }
-                            defaultValue={ [30,90] }
+                            defaultValue={ [30, 90] }
                             formatOptions={{
                               style: 'unit',
                               unit: 'day',

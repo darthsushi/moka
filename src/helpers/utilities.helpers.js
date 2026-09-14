@@ -59,6 +59,23 @@ const equalsIgnoreOrderNative = (a, b) => {
   return sortedA.every((val, index) => val === sortedB[index]);
 };
 
+const formatCurrency = (value, currency = 'MXN') => {
+  const locales = {
+    MXN: 'es-MX',
+    USD: 'en-US',
+  };
+
+  if (!locales[currency]) {
+    throw new Error(`Moneda no soportada: ${currency}`);
+  }
+
+  return new Intl.NumberFormat(locales[currency], {
+    style: 'currency',
+    currency,
+    currencyDisplay: 'code'
+  }).format(value);
+};
+
 const getGreeting = (hour = new Date().getHours()) => {
   if (hour < 6 || hour >= 20) return 'GOOD_NIGHT';
   if (hour < 12) return 'GOOD_MORNING';
@@ -155,6 +172,7 @@ export {
   canAccessModule,
   classNameParser,
   equalsIgnoreOrderNative,
+  formatCurrency,
   getGreeting,
   getPriorityProperty,
   getRequiredParams,

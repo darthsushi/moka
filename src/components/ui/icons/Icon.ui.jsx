@@ -37,6 +37,9 @@ import Delete from './svg-icons/Delete.svg.jsx';
 import Faces from './svg-icons/Faces.svg.jsx';
 import Height from './svg-icons/Height.svg.jsx';
 import Map from './svg-icons/Map.svg.jsx';
+import Settings from './svg-icons/Settings.svg.jsx';
+import PinDrop from './svg-icons/PinDrop.svg.jsx';
+import MoneyRange from './svg-icons/MoneyRange.svg.jsx';
 
 function Icon({ name, filled }) {
   const SGVS = {
@@ -68,11 +71,14 @@ function Icon({ name, filled }) {
     'map-search': MapSearch,
     'magnify-full-screen': MagnifyFullScreen,
     'more-horiz': MoreHoriz,
+    'money-range': MoneyRange,
     'preview': Preview,
+    'pin-drop': PinDrop,
     'qr-code': QrCode,
     'refresh': Refresh,
     'remove': Remove,
     'search': Search,
+    'settings': Settings,
     'thumbnail-bar': ThumbnailBar,
     'upload-image': UploadImage,
     'visibility': Visibility,
