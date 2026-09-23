@@ -1,6 +1,6 @@
 import { Avatar } from '@heroui/react';
 
-import { isNotNil } from '@/helpers/ramda.helpers';
+import { not } from '@/helpers/ramda.helpers';
 import { getValueOrDefault } from '@/helpers/utilities.helpers';
 
 const SHAPE_SIZES = {
@@ -9,25 +9,47 @@ const SHAPE_SIZES = {
   lg: 'w-37 h-37 rounded-[40px]'
 };
 
-/* const obtainInitials = (name = '') => {
+const FALLBACK_SIZE = {
+  sm: 'text-xl select-none',
+  md: 'text-5xl select-none',
+  lg: 'text-7xl select-none'
+};
 
-}; */
+
+const getInitials = (name) => {
+  if (typeof name !== 'string') return '';
+
+  const words = name.trim().split(/\s+/).filter(Boolean);
+
+  if (not(words.length)) return '';
+
+  const firstInitial = words[0][0];
+
+  if (words.length === 1) {
+    return firstInitial.toUpperCase();
+  }
+
+  const lastInitial = words.at(-1)[0];
+
+  return `${firstInitial}${lastInitial}`.toUpperCase();
+}
 
 function CircleAvatar({ user = {}, size }) {
   const { name, avatar_url } = user;
   const actualSize = getValueOrDefault(size, ['sm', 'md', 'lg'], 'sm');
-
-  /* const shapeSize = actualSize === 'sm' ? '' */
+  const initials = getInitials(name);
 
   return (
-    <Avatar className={ SHAPE_SIZES[actualSize] }>
-      { isNotNil(avatar_url) &&
-        <Avatar.Image
-          alt={ name }
-          src={ avatar_url }
-        />
-      }
-      <Avatar.Fallback>LG</Avatar.Fallback>
+    <Avatar color="accent" className={ `flex-none shadow-sm m-0.5 ${SHAPE_SIZES[actualSize]}` }>
+      <Avatar.Image
+        alt={ name }
+        src={ avatar_url }
+      />
+      <Avatar.Fallback>
+        <span className={ FALLBACK_SIZE[actualSize] }>
+          { initials }
+        </span>
+      </Avatar.Fallback>
     </Avatar>
   );
 };
