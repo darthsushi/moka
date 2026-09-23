@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@heroui/react';
+import { Button, Dropdown, Label } from '@heroui/react';
 
 import { isNil } from '@/helpers/ramda.helpers';
 import { useAuth, useLanguage } from '@/hooks/contexts';
@@ -28,6 +28,8 @@ const INITIAL_FILTERS = {
 function InventoryTable() {
   const { user, roles } = useAuth();
   const [scope, setScope] = useState('mine');
+  const [isSelectionModeActive, setIsSelectionModeActive] = useState(false);
+  const [selectionReset, setSelectionReset] = useState(0);
   const isTeam = roles.some(role => role === 'admin' || role === 'moderator');
   const isAdmin = roles.includes('admin');
 
@@ -61,6 +63,7 @@ function InventoryTable() {
     error: actionError,
     clearError,
     changeOwnerStatus,
+    changeOwnerStatuses,
     changeReviewStatus,
     restorePlacement
   } = usePlacementStatus(refetch);
@@ -74,8 +77,19 @@ function InventoryTable() {
     }
   };
 
+  const handleBulkAction = async (selectedPlacements, status) => {
+    if (status === 'withdrawn' && !window.confirm(
+      TABLE_LANG.WITHDRAW_MULTIPLE_CONFIRM.replace('{count}', selectedPlacements.length)
+    )) return;
+
+    await changeOwnerStatuses(selectedPlacements.map(({ id }) => id), status);
+    setIsSelectionModeActive(false);
+    setSelectionReset(current => current + 1);
+  };
+
   const selectScope = (nextScope) => {
     clearError();
+    setIsSelectionModeActive(false);
     setScope(nextScope);
     setPage(1);
   };
@@ -109,6 +123,9 @@ function InventoryTable() {
     const canRequestReview = !isTeam && user_id === user?.id
       && (review_status === 'draft' || review_status === 'rejected');
     const busy = Boolean(updatingId);
+    const availabilityActionLabel = owner_status === 'withdrawn'
+      ? TABLE_LANG.RESTORE
+      : owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME;
 
     return {
       id: { render: <IDCell code={ code } />, value: id },
@@ -126,31 +143,41 @@ function InventoryTable() {
       actions: {
         value: id,
         render: <div className="flex items-center gap-2">
-          { canChangeAvailability && owner_status !== 'withdrawn' && <>
-            <Button
-              size="sm"
-              variant="tertiary"
-              isDisabled={ busy }
-              onPress={ () => changeOwnerStatus(id, owner_status === 'active' ? 'paused' : 'active') }
-            >
-              { owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME }
+          <Dropdown>
+            <Button size="sm" variant="tertiary" isDisabled={ busy || isSelectionModeActive }>
+              { TABLE_LANG.ACTIONS }
             </Button>
-            <Button size="sm" variant="danger-soft" isDisabled={ busy } onPress={ () => handleWithdraw(id) }>
-              { TABLE_LANG.WITHDRAW }
-            </Button>
-          </> }
-          { isAdmin && owner_status === 'withdrawn' && <Button
-            size="sm"
-            variant="tertiary"
-            isDisabled={ busy }
-            onPress={ () => restorePlacement(id) }
-          >
-            { TABLE_LANG.RESTORE }
-          </Button> }
+            <Dropdown.Popover>
+              <Dropdown.Menu>
+                <Dropdown.Item id="edit" textValue={ TABLE_LANG.EDIT }>
+                  <Label>{ TABLE_LANG.EDIT }</Label>
+                </Dropdown.Item>
+                <Dropdown.Item
+                  id="toggle-availability"
+                  textValue={ availabilityActionLabel }
+                  isDisabled={ !canChangeAvailability || (owner_status === 'withdrawn' && !isAdmin) }
+                  onPress={ () => owner_status === 'withdrawn'
+                    ? restorePlacement(id)
+                    : changeOwnerStatus(id, owner_status === 'active' ? 'paused' : 'active') }
+                >
+                  <Label>{ availabilityActionLabel }</Label>
+                </Dropdown.Item>
+                <Dropdown.Item
+                  id="withdraw"
+                  textValue={ TABLE_LANG.WITHDRAW }
+                  isDisabled={ !canChangeAvailability || owner_status === 'withdrawn' }
+                  variant="danger"
+                  onPress={ () => handleWithdraw(id) }
+                >
+                  <Label>{ TABLE_LANG.WITHDRAW }</Label>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown>
           { isTeam && <select
             aria-label={ TABLE_LANG.REVIEW_STATUS }
             value={ review_status }
-            disabled={ busy }
+            disabled={ busy || isSelectionModeActive }
             onChange={ (event) => changeReviewStatus(id, event.target.value) }
           >
             { REVIEW_STATUSES.map(status => (
@@ -160,7 +187,7 @@ function InventoryTable() {
           { canRequestReview && <Button
             size="sm"
             variant="tertiary"
-            isDisabled={ busy }
+            isDisabled={ busy || isSelectionModeActive }
             onPress={ () => changeReviewStatus(id, 'pending') }
           >
             { TABLE_LANG.SEND_FOR_REVIEW }
@@ -248,6 +275,38 @@ function InventoryTable() {
     isEmpty,
     hasNoMatches
   };
+  const TABLE_SELECTION = {
+    type: 'multiple',
+    isBusy: Boolean(updatingId) || isLoading,
+    onModeChange: setIsSelectionModeActive,
+    actionsBySelections: (selectedIds) => {
+      const selectedPlacements = placements.filter(({ id }) => selectedIds.has(id));
+      const canUpdateAll = selectedPlacements.length > 0
+        && selectedPlacements.length === selectedIds.size
+        && selectedPlacements.every(({ user_id, owner_status }) =>
+          (user_id === user?.id || isAdmin) && owner_status !== 'withdrawn'
+        );
+
+      return [
+        {
+          displayText: TABLE_LANG.PAUSE,
+          isDisabled: !canUpdateAll || !selectedPlacements.some(({ owner_status }) => owner_status === 'active'),
+          onPress: () => handleBulkAction(selectedPlacements.filter(({ owner_status }) => owner_status === 'active'), 'paused')
+        },
+        {
+          displayText: TABLE_LANG.WITHDRAW,
+          variant: 'danger-soft',
+          isDisabled: !canUpdateAll,
+          onPress: () => handleBulkAction(selectedPlacements, 'withdrawn')
+        },
+        {
+          displayText: TABLE_LANG.RESUME,
+          isDisabled: !canUpdateAll || !selectedPlacements.some(({ owner_status }) => owner_status === 'paused'),
+          onPress: () => handleBulkAction(selectedPlacements.filter(({ owner_status }) => owner_status === 'paused'), 'active')
+        }
+      ];
+    }
+  };
   const TABLE_SEARCH = {
     placeholder: TABLE_LANG.SEARCH_BY_ID,
     defaultValue: filters.search,
@@ -272,16 +331,18 @@ function InventoryTable() {
   return (
     <>
       { isTeam && <div className="flex gap-2 p-2">
-        <Button size="sm" variant={ scope === 'mine' ? 'primary' : 'tertiary' } onPress={ () => selectScope('mine') }>
+        <Button size="sm" variant={ scope === 'mine' ? 'primary' : 'tertiary' } isDisabled={ Boolean(updatingId) } onPress={ () => selectScope('mine') }>
           { TABLE_LANG.MY_PLACEMENTS }
         </Button>
-        <Button size="sm" variant={ scope === 'review' ? 'primary' : 'tertiary' } onPress={ () => selectScope('review') }>
+        <Button size="sm" variant={ scope === 'review' ? 'primary' : 'tertiary' } isDisabled={ Boolean(updatingId) } onPress={ () => selectScope('review') }>
           { TABLE_LANG.REVIEW_PLACEMENTS }
         </Button>
       </div> }
       { actionError && <p role="alert" className="p-2 text-danger">{ actionError }</p> }
       <Table
+      key={ `${scope}:${page}:${pageSize}:${selectionReset}` }
       name="inventory"
+      selection={ TABLE_SELECTION }
       states={ TABLE_STATES }
       cols={ TABLE_COLS }
       rows={ TABLE_ROWS }
