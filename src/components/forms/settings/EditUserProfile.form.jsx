@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Button, Fieldset, Form, Spinner, Surface, Tabs } from '@heroui/react';
 
 import { noop, not } from '@/helpers/ramda.helpers';
+import { useProfileSettings } from '@/hooks/profile';
 
 import { AvatarField, TextField } from '@/components/ui';
 
@@ -11,15 +12,32 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { updateAvatar, updateName } = useProfileSettings();
 
-  const onNameFormSubmit = ({ name }) => {
-    // Aqui guardar el nombre
+  const onNameFormSubmit = async ({ name }) => {
     setIsLoading(true);
+
+    try {
+      await updateName(name);
+      closeModal();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const onAvatarFormSubmit = ({ avatar_url }) => {
-    // Aqui guardar avatar_url
+  const onAvatarFormSubmit = async ({ avatar_url }) => {
     setIsLoading(true);
+
+    try {
+      await updateAvatar(avatar_url);
+      closeModal();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

@@ -1,11 +1,9 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useController } from 'react-hook-form';
-import { Input } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 
 import { isNil, noop } from '@/helpers/ramda.helpers';
 import { CircleAvatar } from '..';
-import { Button } from '@heroui/react';
-import { useState } from 'react';
 
 function AvatarField({
   control,
@@ -16,6 +14,7 @@ function AvatarField({
  /*  registerError = noop, */
 }) {
   const fileInputRef = useRef(null);
+  const previewUrlRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(() => user);
   const {
     field,
@@ -29,28 +28,56 @@ function AvatarField({
     },
   });
 
+  useEffect(() => () => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
+  }, []);
+
   const handleOnRemoveAvatar = () => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+
     field.onChange(null);
 
     onChange(null);
-    setCurrentUser({
-      ...currentUser,
+    setCurrentUser((actualUser) => ({
+      ...actualUser,
       avatar_url: null
-    });
+    }));
   };
 
   const handleOnChange = useCallback(({ target } = {}) => {
     const [currentAvatar] = target?.files || [];
+
+    if (!currentAvatar) {
+      return;
+    }
+
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
+
     const preview = URL.createObjectURL(currentAvatar);
+    previewUrlRef.current = preview;
     
     field.onChange(currentAvatar);
 
     onChange(currentAvatar);
-    setCurrentUser({
-      ...currentUser,
+    setCurrentUser((actualUser) => ({
+      ...actualUser,
       avatar_url: preview
-    });
-  }, [field, onChange, currentUser]);
+    }));
+  }, [field, onChange]);
+
+  const handleUploadPress = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
+  };
 
   return (
     <section
@@ -59,7 +86,7 @@ function AvatarField({
     >
       <CircleAvatar user={ currentUser } size="md" />
       <div className="grid grid-rows-2 gap-1 w-full p-1 h-fit">
-        <Button size="lg" fullWidth onPress={ () => fileInputRef.current?.click() }>
+        <Button size="lg" fullWidth onPress={ handleUploadPress }>
           Subir foto
         </Button>
         <Button
@@ -83,7 +110,7 @@ function AvatarField({
           id={ `images-field-${name}` }
           type="file"
           className="hidden"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
         />
       </div>
     </section>
