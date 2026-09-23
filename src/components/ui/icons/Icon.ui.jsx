@@ -40,6 +40,9 @@ import Map from './svg-icons/Map.svg.jsx';
 import Settings from './svg-icons/Settings.svg.jsx';
 import PinDrop from './svg-icons/PinDrop.svg.jsx';
 import MoneyRange from './svg-icons/MoneyRange.svg.jsx';
+import Payments from './svg-icons/Payments.svg.jsx';
+import BarChart from './svg-icons/BarChart.svg.jsx';
+import ShieldLock from './svg-icons/ShieldLock.svg.jsx';
 
 function Icon({ name, filled }) {
   const SGVS = {
@@ -47,6 +50,7 @@ function Icon({ name, filled }) {
     'arrow-drop-down': ArrowDropDown,
     'arrow-drop-up': ArrowDropUp,
     'attach-money': AttachMoney,
+    'bar-chart': BarChart,
     'calendar-clock': CalendarClock,
     'close': Close,
     'check': Check,
@@ -72,6 +76,7 @@ function Icon({ name, filled }) {
     'magnify-full-screen': MagnifyFullScreen,
     'more-horiz': MoreHoriz,
     'money-range': MoneyRange,
+    'payments': Payments,
     'preview': Preview,
     'pin-drop': PinDrop,
     'qr-code': QrCode,
@@ -79,6 +84,7 @@ function Icon({ name, filled }) {
     'remove': Remove,
     'search': Search,
     'settings': Settings,
+    'shield-lock': ShieldLock,
     'thumbnail-bar': ThumbnailBar,
     'upload-image': UploadImage,
     'visibility': Visibility,

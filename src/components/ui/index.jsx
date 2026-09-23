@@ -7,6 +7,7 @@ export { default as Dialog } from './dialog/Dialog.ui';
 
 export { default as Logo } from './brand/Logo.ui';
 
+export { default as AvatarField } from './fields/AvatarField.ui';
 export { default as SelectField } from './fields/SelectField.ui';
 export { default as TextField } from './fields/TextField.ui';
 export { default as NumberField } from './fields/NumberField.ui';

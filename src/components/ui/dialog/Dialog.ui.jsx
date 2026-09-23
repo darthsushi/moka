@@ -34,7 +34,7 @@ function Dialog({
         className="min-h-auto transition-all"
       >
         <Modal.Dialog
-          className={ `transition-all rounded-4xl ${ ['sm', 'lg'].includes(size) && 'max-h-150' }` }
+          className={ `transition-all rounded-[28px] border-2 ${ ['sm', 'lg'].includes(size) && 'max-h-150' }` }
         >
           
           { showDefaultCloseButton && 
