@@ -13,7 +13,7 @@ const MODULES = {
     label: 'INVENTORY',
     icon: 'inventory',
     requiresAuth: true,
-    roles: [PROFILES.ROLES.OWNER]
+    roles: [PROFILES.ROLES.OWNER, PROFILES.ROLES.ADMIN, PROFILES.ROLES.MODERATOR]
   },
   SETTINGS: {
     id: 'settings',

@@ -17,7 +17,8 @@ export const DEFAULT_INVENTORY_FILTERS = Object.freeze({
   city: null,
   state: null,
   country: null,
-  status: null,
+  owner_status: null,
+  review_status: null,
   visibility: null,
   type: null
 });
@@ -42,6 +43,7 @@ const getActiveFilters = (initialFilters, filters, filtersToIgnore = []) => {
 };
 
 export const useInventoryPlacements = ({
+  scope = 'mine',
   initialPage = 1,
   initialPageSize = 10,
   initialFilters = DEFAULT_INVENTORY_FILTERS,
@@ -73,7 +75,8 @@ export const useInventoryPlacements = ({
     city: filters.city,
     state: filters.state,
     country: filters.country,
-    status: filters.status,
+    owner_status: filters.owner_status,
+    review_status: filters.review_status,
     visibility: filters.visibility,
     type: filters.type
   }), [
@@ -82,7 +85,8 @@ export const useInventoryPlacements = ({
     filters.country,
     filters.faceCount,
     filters.state,
-    filters.status,
+    filters.owner_status,
+    filters.review_status,
     filters.type,
     filters.visibility
   ]);
@@ -116,6 +120,7 @@ export const useInventoryPlacements = ({
     try {
       const result = await placementsService.getInventoryPlacements({
         userId,
+        scope,
         page,
         pageSize,
         filters: requestFilters
@@ -142,7 +147,7 @@ export const useInventoryPlacements = ({
         setIsLoading(false);
       }
     }
-  }, [isAuthLoading, page, pageSize, requestFilters, userId]);
+  }, [isAuthLoading, page, pageSize, requestFilters, scope, userId]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(fetchPlacements, 0);

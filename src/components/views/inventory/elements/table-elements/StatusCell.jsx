@@ -2,7 +2,14 @@ import { Chip } from "@heroui/react";
 
 const STATE_COLOR = {
   'pending': 'warning',
-  'active': 'success'
+  'active': 'success',
+  'approved': 'success',
+  'paused': 'warning',
+  'withdrawn': 'danger',
+  'draft': 'secondary',
+  'in_review': 'accent',
+  'suspended': 'danger',
+  'rejected': 'danger'
 };
 
 function StatusCell({ status, displayStatus }) {

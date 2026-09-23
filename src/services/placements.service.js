@@ -531,7 +531,8 @@ const getPublicPlacementPageInView = async ({
     .from('placements')
     .select(PUBLIC_PLACEMENT_SELECT)
     .eq('visibility', 'public')
-    .eq('status', 'active')
+    .eq('owner_status', 'active')
+    .eq('review_status', 'approved')
     .in('id', placementIds);
 
   if (placementsError) {
@@ -672,7 +673,8 @@ export const placementsService = {
       // Keep these explicit even though RLS also enforces public visibility.
       // PostgreSQL needs the predicates to match Home's partial indexes.
       .eq('visibility', 'public')
-      .eq('status', 'active');
+      .eq('owner_status', 'active')
+      .eq('review_status', 'approved');
 
     if (normalizedSearch.exactCode) {
       query = query.eq('code', normalizedSearch.exactCode);
@@ -780,6 +782,7 @@ export const placementsService = {
 
   async getInventoryPlacements({
     userId,
+    scope = 'mine',
     page = 1,
     pageSize = 10,
     filters = {}
@@ -805,7 +808,8 @@ export const placementsService = {
       city = null,
       state = null,
       country = null,
-      status = null,
+      owner_status = null,
+      review_status = null,
       visibility = null,
       type = null
     } = filters;
@@ -831,7 +835,8 @@ export const placementsService = {
         structure_height,
         description,
         visibility,
-        status,
+        owner_status,
+        review_status,
         display_name,
         share_token,
         updated_at,
@@ -847,8 +852,13 @@ export const placementsService = {
           updated_at,
           created_at
         )
-      `, { count: 'exact' })
-      .eq('user_id', userId);
+      `, { count: 'exact' });
+
+    if (scope === 'mine') {
+      query = query.eq('user_id', userId);
+    } else if (scope !== 'review') {
+      throw new Error('INVALID_INVENTORY_SCOPE');
+    }
 
     if (normalizedSearch) {
       query = FULL_PLACEMENT_CODE_PATTERN.test(normalizedSearch)
@@ -860,7 +870,8 @@ export const placementsService = {
     query = applyListFilter(query, 'city', city);
     query = applyListFilter(query, 'state', state);
     query = applyListFilter(query, 'country', country);
-    query = applyListFilter(query, 'status', status);
+    query = applyListFilter(query, 'owner_status', owner_status);
+    query = applyListFilter(query, 'review_status', review_status);
     query = applyListFilter(query, 'visibility', visibility);
     query = applyListFilter(query, 'type', type);
 
@@ -880,5 +891,41 @@ export const placementsService = {
       pageSize,
       totalPages: Math.ceil(total / pageSize)
     };
+  },
+
+  async updatePlacementOwnerStatus(placementId, ownerStatus) {
+    const { data, error } = await supabase
+      .from('placements')
+      .update({ owner_status: ownerStatus })
+      .eq('id', placementId)
+      .select('id, owner_status, review_status')
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async restorePlacement(placementId) {
+    const { data, error } = await supabase
+      .from('placements')
+      .update({ owner_status: 'active', review_status: 'pending' })
+      .eq('id', placementId)
+      .select('id, owner_status, review_status')
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async updatePlacementReviewStatus(placementId, reviewStatus) {
+    const { data, error } = await supabase
+      .from('placements')
+      .update({ review_status: reviewStatus })
+      .eq('id', placementId)
+      .select('id, owner_status, review_status')
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 };
