@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import {
-  Avatar,
   Button,
   Description,
   Dropdown,
@@ -13,6 +12,8 @@ import { isNotNil, not } from '@/helpers/ramda.helpers';
 import { useAuth, useLanguage } from '@/hooks/contexts';
 import { PROFILES } from '@/settings/keys.settings';
 import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
+
+import CircleAvatar from '../../profile/CircleAvatar.ui';
 
 function AvatarAccount() {
   const { loading, user, signOut, profile } = useAuth();
@@ -30,30 +31,17 @@ function AvatarAccount() {
   if (isNotNil(user) && isNotNil(profile)) {
     const { email } = user;
     const { name, avatar_url, roles } = profile;
-    const avatar = isNotNil(avatar_url) ? avatar_url : 'https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg';
     const becomeOwnerOption = not(roles.includes(PROFILES.ROLES.OWNER));
 
     return (
       <Dropdown>
-        <Dropdown.Trigger className="rounded-full">
-          <Avatar>
-            <Avatar.Image
-              alt={ name }
-              src={ avatar }
-            />
-            <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
-          </Avatar>
+        <Dropdown.Trigger>
+          <CircleAvatar size="xs" user={ { avatar_url, name } } />
         </Dropdown.Trigger>
-        <Dropdown.Popover className="max-w-37.5">
+        <Dropdown.Popover className="max-w-37.5 rounded-[20px]">
           <div className="px-3 pt-3 pb-1">
             <div className="flex items-center gap-2">
-              <Avatar size="sm">
-                <Avatar.Image
-                  alt={ name }
-                  src={ avatar }
-                />
-                <Avatar.Fallback delayMs={600}>JD</Avatar.Fallback>
-              </Avatar>
+              <CircleAvatar size="sm" user={ profile } />
               <div className="flex flex-col gap-0">
                 <p className="text-sm leading-4 font-medium">
                   { name }
@@ -66,19 +54,19 @@ function AvatarAccount() {
           </div>
           <Dropdown.Menu>
             <Dropdown.Section>
-              <Dropdown.Item id="dashboard" textValue="Dashboard">
+              <Dropdown.Item className="rounded-3xl" id="dashboard" textValue="Dashboard">
                 <Label>Dashboard</Label>
               </Dropdown.Item>
-              <Dropdown.Item id="profile" textValue="Profile">
+              <Dropdown.Item className="rounded-3xl" id="profile" textValue="Profile">
                 <Label>Profile</Label>
               </Dropdown.Item>
-              <Dropdown.Item id="settings" textValue="Settings">
+              <Dropdown.Item className="rounded-3xl" id="settings" textValue="Settings">
                 <div className="flex w-full items-center justify-between gap-2">
                   <Label>Settings</Label>
                   
                 </div>
               </Dropdown.Item>
-              <Dropdown.Item id="new-project" textValue="New project">
+              <Dropdown.Item className="rounded-3xl" id="new-project" textValue="New project">
                 <div className="flex w-full items-center justify-between gap-2">
                   <Label>Create Team</Label>
                   
@@ -89,7 +77,7 @@ function AvatarAccount() {
               <>
                 <Separator />
                 <Dropdown.Section>
-                  <Dropdown.Item id="new-file" textValue="New file">
+                  <Dropdown.Item className="rounded-3xl" id="new-file" textValue="New file">
                     <div className="flex flex-col">
                       <Label>
                         { BUTTONS_LANG.BECOME_OWNER }
@@ -109,6 +97,7 @@ function AvatarAccount() {
                 id="logout"
                 textValue={ BUTTONS_LANG.LOG_OUT }
                 variant="danger"
+                className="rounded-3xl"
               >
                 <div className="flex w-full items-center justify-between gap-2">
                   <Label>

@@ -19,7 +19,8 @@ const PROFILES = {
 
 const SUPABASE = {
   STORAGE: {
-    PLACEMENTS_STORAGE: 'placements_images'
+    PLACEMENTS_STORAGE: 'placements_images',
+    PROFILE_AVATARS_STORAGE: 'profile_avatars'
   }
 };
 
