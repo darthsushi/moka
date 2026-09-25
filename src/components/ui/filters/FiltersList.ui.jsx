@@ -1,13 +1,21 @@
 import { useState } from 'react';
-import { Accordion, Button, ButtonGroup, Checkbox, CheckboxGroup, Chip, Modal } from '@heroui/react';
+import {
+  Accordion,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  CheckboxGroup,
+  Chip,
+  ToggleButton
+} from '@heroui/react';
 
 import { isEmpty, noop, not } from '@/helpers/ramda.helpers';
 import { equalsIgnoreOrderNative } from '@/helpers/utilities.helpers';
 import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS, TABLE_LANGS } from '@/settings/langs.settings';
 
+import Dialog from '../dialog/Dialog.ui';
 import Icon from '../icons/Icon.ui';
-import { ToggleButton } from '@heroui/react';
 
 const getDefaultExpandedNames = (filters = []) =>
   filters
@@ -105,8 +113,6 @@ function FiltersList({
     isDisabled = false,
     hasActiveFilters,
     activeFiltersCount,
-    /* activeFilters, */
-    /* clearFilters = noop, */
     onApplyingFilters = noop
   }) {
   const { language } = useLanguage();
@@ -160,13 +166,6 @@ function FiltersList({
   return (
     <>
       <ButtonGroup variant={ hasActiveFilters ? 'ghost' : 'tertiary' }>
-        {/* <Button
-          
-          onPress={ handleOpenFilter }
-          className={ hasActiveFilters ? 'bg-accent-soft' : '' }
-        >
-          
-        </Button> */}
         <ToggleButton
           aria-label={ `${tableName} filter` }
           isDisabled={ isDisabled || isPending }
@@ -190,48 +189,38 @@ function FiltersList({
         }
       </ButtonGroup>
 
-      <Modal.Backdrop
+      <Dialog
+        size="sm"
         variant="opaque"
-        isOpen={ isFilterPanelOpen }
-        onOpenChange={ handleFilterDismiss }
+        isModalOpen={ isFilterPanelOpen }
+        setIsModalOpen={ handleFilterDismiss }
+        title={ SYSTEM_LANG.WORDS.FILTERS }
       >
-        <Modal.Container size="sm" placement="bottom">
-          <Modal.Dialog  className="rounded-4xl p-4">
-            <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Heading>
-                { SYSTEM_LANG.WORDS.FILTERS }
-              </Modal.Heading>
-            </Modal.Header>
-            <Modal.Body>
-              <Accordion
-                allowsMultipleExpanded
-                className="w-full bg-surface-secondary max-h-80 overflow-y-auto"
-                variant="surface"
-                defaultExpandedKeys={ DEFAULT_EXPANDED }
-              >
-                {
-                  Object.keys(actualFilters).map((filterName, index) =>
-                    <FilterOption
-                      key={ index }
-                      tableName={ tableName }
-                      filter={ actualFilters[filterName] }
-                      setValues={ setFilterValues }
-                    />
-                  )
-                }
-              </Accordion>
-            </Modal.Body>
-            <Modal.Footer>
-              <div className="w-full sticky bottom-0 flex gap-1">
-                <Button size="sm" onPress={ handleApplyFilters }>
-                  { SYSTEM_LANG.BUTTONS.APPLY_FILTERS }
-                </Button>
-              </div>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
+        <div className="flex flex-col gap-2">
+          <Accordion
+            allowsMultipleExpanded
+            className="w-full bg-surface-secondary max-h-80 overflow-y-auto"
+            variant="surface"
+            defaultExpandedKeys={ DEFAULT_EXPANDED }
+          >
+            {
+              Object.keys(actualFilters).map((filterName, index) =>
+                <FilterOption
+                  key={ index }
+                  tableName={ tableName }
+                  filter={ actualFilters[filterName] }
+                  setValues={ setFilterValues }
+                />
+              )
+            }
+          </Accordion>
+          <div className="w-full">
+            <Button fullWidth size="lg" onPress={ handleApplyFilters }>
+              { SYSTEM_LANG.BUTTONS.APPLY_FILTERS }
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </>
   );
 };
