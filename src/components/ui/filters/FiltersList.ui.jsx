@@ -35,7 +35,7 @@ const getFilterToApply = (actualFilters) => {
   return filtersToApply;
 };
 
-const normalizeFilter = (filters = []) => {
+const normalizeFilter = (filters = [], appliedFilters = null) => {
   const actualFilters = {};
   
   filters.forEach(({ initialValues, name, iconName, translationKey, options }) => {
@@ -44,7 +44,7 @@ const normalizeFilter = (filters = []) => {
       options,
       iconName,
       translationKey,
-      values: initialValues,
+      values: Array.isArray(appliedFilters?.[name]) ? appliedFilters[name] : initialValues,
     };
   });
 
@@ -113,6 +113,7 @@ function FiltersList({
     isDisabled = false,
     hasActiveFilters,
     activeFiltersCount,
+    filtersActived = null,
     onApplyingFilters = noop
   }) {
   const { language } = useLanguage();
@@ -122,8 +123,8 @@ function FiltersList({
   const INITIAL_FILTERS = normalizeFilter(filters);
   const DEFAULT_EXPANDED = getDefaultExpandedNames(filters);
 
-  const [actualFilters, setActualFilters] = useState(INITIAL_FILTERS);
-  const [filtersBeforeOpen, setFiltersBeforeOpen] = useState(INITIAL_FILTERS);
+  const [actualFilters, setActualFilters] = useState(() => normalizeFilter(filters, filtersActived));
+  const [filtersBeforeOpen, setFiltersBeforeOpen] = useState(() => normalizeFilter(filters, filtersActived));
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
 
   const setFilterValues = (name, values) => {
@@ -143,7 +144,12 @@ function FiltersList({
   };
 
   const handleOpenFilter = () => {
-    setFiltersBeforeOpen(() => actualFilters);
+    const currentFilters = filtersActived
+      ? normalizeFilter(filters, filtersActived)
+      : actualFilters;
+
+    setActualFilters(currentFilters);
+    setFiltersBeforeOpen(currentFilters);
     setIsFilterPanelOpen(true);
   }
 
