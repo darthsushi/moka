@@ -43,6 +43,20 @@ import MoneyRange from './svg-icons/MoneyRange.svg.jsx';
 import Payments from './svg-icons/Payments.svg.jsx';
 import BarChart from './svg-icons/BarChart.svg.jsx';
 import ShieldLock from './svg-icons/ShieldLock.svg.jsx';
+import VisibilityOff from './svg-icons/VisibilityOff.svg.jsx';
+import Link from './svg-icons/Link.svg.jsx';
+import Public from './svg-icons/Public.svg.jsx';
+import Draft from './svg-icons/Draft.svg.jsx';
+import Schedule from './svg-icons/Schedule.svg.jsx';
+import RateReview from './svg-icons/RateReview.svg.jsx';
+import CheckCircle from './svg-icons/CheckCircle.svg.jsx';
+import Verified from './svg-icons/Verified.svg.jsx';
+import DoNotDisturb from './svg-icons/DoNotDisturb.svg.jsx';
+import Error from './svg-icons/Error.svg.jsx';
+import AutoDelete from './svg-icons/AutoDelete.svg.jsx';
+import EditDocument from './svg-icons/EditDocument.svg.jsx';
+import PauseCircle from './svg-icons/PauseCircle.svg.jsx';
+import PlayCircle from './svg-icons/PlayCircle.svg.jsx';
 
 function Icon({ name, filled }) {
   const SGVS = {
@@ -50,16 +64,22 @@ function Icon({ name, filled }) {
     'arrow-drop-down': ArrowDropDown,
     'arrow-drop-up': ArrowDropUp,
     'attach-money': AttachMoney,
+    'auto-delete': AutoDelete,
     'bar-chart': BarChart,
     'calendar-clock': CalendarClock,
     'close': Close,
     'check': Check,
+    'check-circle': CheckCircle,
     'checklist': CheckList,
     'dark-mode': DarkMode,
     'delete': Delete,
+    'do-not-disturb': DoNotDisturb,
     'double-arrow-right': DoubleArrowRightIcon,
     'double-arrow-left': DoubleArrowLeftIcon,
+    'draft': Draft,
     'edit': Edit,
+    'edit-document': EditDocument,
+    'error': Error,
     'faces': Faces,
     'favorite': Favorite,
     'filter': Filter,
@@ -71,23 +91,31 @@ function Icon({ name, filled }) {
     'image': Image,
     'language': LanguageIcon,
     'light-mode': LightMode,
+    'link': Link,
     'map': Map,
     'map-search': MapSearch,
     'magnify-full-screen': MagnifyFullScreen,
     'more-horiz': MoreHoriz,
     'money-range': MoneyRange,
     'payments': Payments,
+    'pause-circle': PauseCircle,
+    'play-circle': PlayCircle,
     'preview': Preview,
     'pin-drop': PinDrop,
+    'public': Public,
     'qr-code': QrCode,
+    'rate_review': RateReview,
     'refresh': Refresh,
     'remove': Remove,
+    'schedule': Schedule,
     'search': Search,
     'settings': Settings,
     'shield-lock': ShieldLock,
     'thumbnail-bar': ThumbnailBar,
     'upload-image': UploadImage,
+    'verified': Verified,
     'visibility': Visibility,
+    'visibility_off': VisibilityOff
   };
 
   const CurrentIcon =  SGVS[name];

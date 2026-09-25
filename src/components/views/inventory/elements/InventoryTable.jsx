@@ -6,13 +6,12 @@ import { useAuth, useLanguage } from '@/hooks/contexts';
 import { TABLE_LANGS } from '@/settings/langs.settings';
 import { useInventoryPlacements, usePlacementStatus } from '@/hooks/placements';
 
-import { Table } from '@/components/ui';
+import { Icon, Table } from '@/components/ui';
 import IDCell from './table-elements/IDCell';
 import EmptyContent from '../../alerts/EmptyContent.view';
 import DetailsCell from './table-elements/DetailsCell';
 import LocationCell from './table-elements/LocationCell';
 import StatusCell from './table-elements/StatusCell';
-import VisibilityCell from './table-elements/VisibilityCell';
 
 const OWNER_STATUSES = ['active', 'paused', 'withdrawn'];
 const REVIEW_STATUSES = ['draft', 'pending', 'in_review', 'approved', 'suspended', 'rejected'];
@@ -100,7 +99,6 @@ function InventoryTable() {
     { id: 'location', displayText: TABLE_LANG.LOCATION },
     { id: 'owner_status', displayText: TABLE_LANG.OWNER_STATUS },
     { id: 'review_status', displayText: TABLE_LANG.REVIEW_STATUS },
-    { id: 'visibility', displayText: TABLE_LANG.VISIBILITY },
     { id: 'actions', displayText: TABLE_LANG.ACTIONS },
   ];
   const TABLE_ROWS = placements.map(({
@@ -129,7 +127,18 @@ function InventoryTable() {
 
     return {
       id: { render: <IDCell code={ code } />, value: id },
-      details: { render: <DetailsCell type={ TABLE_LANG[type] } faces_count={ face_count } structure_height={ structure_height } />, value: type },
+      details: {
+        render: (
+          <DetailsCell
+            type={ TABLE_LANG[type] }
+            faceCount={ face_count }
+            structureHeight={ structure_height }
+            visibility={ visibility }
+            visibilityDisplay={ TABLE_LANG[VISIBILITY_TK] }
+          />
+        ),
+        value: type
+      },
       location: { render: <LocationCell display_name={ display_name } city={ city } state={ state } country={ country } />, value: display_name },
       owner_status: {
         render: <StatusCell status={ owner_status } displayStatus={ TABLE_LANG[owner_status.toUpperCase()] } />,
@@ -139,13 +148,17 @@ function InventoryTable() {
         render: <StatusCell status={ review_status } displayStatus={ TABLE_LANG[review_status.toUpperCase()] } />,
         value: review_status
       },
-      visibility: { render: <VisibilityCell visibility={ visibility } visibilityDisplay={ TABLE_LANG[VISIBILITY_TK] } />, value: visibility },
       actions: {
         value: id,
         render: <div className="flex items-center gap-2">
           <Dropdown>
-            <Button size="sm" variant="tertiary" isDisabled={ busy || isSelectionModeActive }>
-              { TABLE_LANG.ACTIONS }
+            <Button
+              size="lg"
+              variant="ghost"
+              className="text-xl"
+              isDisabled={ busy || isSelectionModeActive }
+            >
+              <Icon name="more-horiz" />
             </Button>
             <Dropdown.Popover>
               <Dropdown.Menu>
@@ -162,6 +175,16 @@ function InventoryTable() {
                 >
                   <Label>{ availabilityActionLabel }</Label>
                 </Dropdown.Item>
+                { canRequestReview && 
+                  <Dropdown.Item
+                    id="send-for-review"
+                    textValue={ TABLE_LANG.SEND_FOR_REVIEW }
+                    isDisabled={ !canRequestReview }
+                    onPress={ () => changeReviewStatus(id, 'pending') }
+                  >
+                    <Label>{ TABLE_LANG.SEND_FOR_REVIEW }</Label>
+                  </Dropdown.Item>
+                }
                 <Dropdown.Item
                   id="withdraw"
                   textValue={ TABLE_LANG.WITHDRAW }
@@ -174,24 +197,6 @@ function InventoryTable() {
               </Dropdown.Menu>
             </Dropdown.Popover>
           </Dropdown>
-          { isTeam && <select
-            aria-label={ TABLE_LANG.REVIEW_STATUS }
-            value={ review_status }
-            disabled={ busy || isSelectionModeActive }
-            onChange={ (event) => changeReviewStatus(id, event.target.value) }
-          >
-            { REVIEW_STATUSES.map(status => (
-              <option key={ status } value={ status }>{ TABLE_LANG[status.toUpperCase()] }</option>
-            )) }
-          </select> }
-          { canRequestReview && <Button
-            size="sm"
-            variant="tertiary"
-            isDisabled={ busy || isSelectionModeActive }
-            onPress={ () => changeReviewStatus(id, 'pending') }
-          >
-            { TABLE_LANG.SEND_FOR_REVIEW }
-          </Button> }
         </div>
       }
     }
@@ -340,17 +345,17 @@ function InventoryTable() {
       </div> }
       { actionError && <p role="alert" className="p-2 text-danger">{ actionError }</p> }
       <Table
-      key={ `${scope}:${page}:${pageSize}:${selectionReset}` }
-      name="inventory"
-      selection={ TABLE_SELECTION }
-      states={ TABLE_STATES }
-      cols={ TABLE_COLS }
-      rows={ TABLE_ROWS }
-      filters={ TABLE_FILTERS }
-      pagination= { TABLE_PAGINATION }
-      search={ TABLE_SEARCH }
-      extraActions={ TABLE_EXTRA_ACTIONS }
-    >
+        key={ `${scope}:${page}:${pageSize}:${selectionReset}` }
+        name="inventory"
+        selection={ TABLE_SELECTION }
+        states={ TABLE_STATES }
+        cols={ TABLE_COLS }
+        rows={ TABLE_ROWS }
+        filters={ TABLE_FILTERS }
+        pagination= { TABLE_PAGINATION }
+        search={ TABLE_SEARCH }
+        extraActions={ TABLE_EXTRA_ACTIONS }
+      >
       <EmptyContent>
         Sin contenido
       </EmptyContent>
