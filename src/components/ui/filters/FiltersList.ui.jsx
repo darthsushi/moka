@@ -48,16 +48,13 @@ function FilterOption({
   setValues,
   filter: { translationKey, name, iconName, values, options },
 }) {
-  const [selected, setSelected] = useState([ ...values ]);
-  
   const { language } = useLanguage();
 
-  const FILTER_OPTIONS_LANG = TABLE_LANGS[language][tableName.toLocaleUpperCase()];
+  const FILTER_OPTIONS_LANG = TABLE_LANGS[language][tableName.toLocaleUpperCase()] ?? {};
 
   const handleSelectedChange = (values = []) => {
     if (values.length === 0) return;
 
-    setSelected(values);
     setValues(name, values);
   };
 
@@ -73,22 +70,22 @@ function FilterOption({
             :
               null
           }
-          { FILTER_OPTIONS_LANG[translationKey] }
+          { FILTER_OPTIONS_LANG[translationKey] ?? translationKey }
            <Accordion.Indicator />
         </Accordion.Trigger>
       </Accordion.Heading>
       <Accordion.Panel>
         <Accordion.Body className="w-full px-2 pb-3">
           <div className="ms-3 flex flex-col gap-1">
-            <CheckboxGroup aria-label={ `${name} options` } value={ selected } onChange={ handleSelectedChange }>
+            <CheckboxGroup aria-label={ `${name} options` } value={ values } onChange={ handleSelectedChange }>
               {
-                options.map(({ id, translationKey }) => (
+                options.map(({ id, translationKey, label }) => (
                   <Checkbox key={ id } value={ id }>
                     <Checkbox.Content className="w-full flex flex-row items-center gap-1">
                       <Checkbox.Control>
                         <Checkbox.Indicator />
                       </Checkbox.Control>
-                      { FILTER_OPTIONS_LANG[translationKey] }
+                      { label ?? FILTER_OPTIONS_LANG[translationKey] ?? id }
                     </Checkbox.Content>
                   </Checkbox>
                 ))
