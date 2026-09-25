@@ -853,7 +853,7 @@ export const placementsService = {
         )
       `, { count: 'exact' });
 
-    query = query.eq('user_id', userId);
+    query = query.eq('user_id', userId).neq('owner_status', 'withdrawn');
 
     if (normalizedSearch) {
       query = FULL_PLACEMENT_CODE_PATTERN.test(normalizedSearch)
