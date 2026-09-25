@@ -4,10 +4,10 @@ import { not } from '@/helpers/ramda.helpers';
 import { getValueOrDefault } from '@/helpers/utilities.helpers';
 
 const SHAPE_SIZES = {
-  xs: 'w-10 h-10 shadow-xs rounded-3xl',
-  sm: 'w-12 h-12 shadow-sm rounded-4xl',
-  md: 'w-25 h-25 shadow-sm rounded-[30px]',
-  lg: 'w-37 h-37 shadow-sm rounded-[40px]'
+  xs: 'w-10 h-10 border-1 shadow-xs rounded-3xl',
+  sm: 'w-12 h-12 border-2 shadow-sm rounded-4xl',
+  md: 'w-25 h-25 border-2 shadow-sm rounded-[30px]',
+  lg: 'w-37 h-37 border-2 shadow-sm rounded-[40px]'
 };
 
 const FALLBACK_SIZE = {
@@ -16,7 +16,6 @@ const FALLBACK_SIZE = {
   md: 'text-5xl select-none',
   lg: 'text-7xl select-none'
 };
-
 
 const getInitials = (name) => {
   if (typeof name !== 'string') return '';
@@ -42,7 +41,7 @@ function CircleAvatar({ user = {}, size }) {
   const initials = getInitials(name);
 
   return (
-    <Avatar color="accent" className={ `flex-none m-0.5 ${SHAPE_SIZES[actualSize]}` }>
+    <Avatar color="accent" className={ `flex-none m-0.5 border-accent-soft ${SHAPE_SIZES[actualSize]}` }>
       <Avatar.Image
         alt={ name }
         src={ avatar_url }

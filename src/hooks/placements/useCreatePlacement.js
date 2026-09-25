@@ -45,7 +45,7 @@ export const useCreatePlacement = () => {
         location,
         structure_height,
         visibility,
-        status: 'pending',
+        review_status: 'pending',
          // TODO: Use incoming value, no use default
       };
 
