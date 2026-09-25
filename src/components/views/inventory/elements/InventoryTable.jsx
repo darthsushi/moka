@@ -13,7 +13,7 @@ import DetailsCell from './table-elements/DetailsCell';
 import LocationCell from './table-elements/LocationCell';
 import StatusCell from './table-elements/StatusCell';
 
-const OWNER_STATUSES = ['active', 'paused', 'withdrawn'];
+const OWNER_STATUSES = ['active', 'paused'];
 const REVIEW_STATUSES = ['draft', 'pending', 'in_review', 'approved', 'suspended', 'rejected'];
 const PLACEMENT_TYPES = ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP'];
 
@@ -105,7 +105,7 @@ function InventoryTable() {
   }) => {
     const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();
     const canChangeAvailability = user_id === user?.id;
-    const canRequestReview = user_id === user?.id
+    const canRequestReview = user_id === user?.id && owner_status !== 'withdrawn'
       && (review_status === 'draft' || review_status === 'rejected');
     const busy = Boolean(updatingId);
     const availabilityActionLabel = owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME;
@@ -205,8 +205,7 @@ function InventoryTable() {
         initialValues: OWNER_STATUSES,
         options: [
           { id: 'active', translationKey: 'ACTIVE' },
-          { id: 'paused', translationKey: 'PAUSED' },
-          { id: 'withdrawn', translationKey: 'WITHDRAWN' }
+          { id: 'paused', translationKey: 'PAUSED' }
         ]
       },
       {
