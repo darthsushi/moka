@@ -43,7 +43,6 @@ const getActiveFilters = (initialFilters, filters, filtersToIgnore = []) => {
 };
 
 export const useInventoryPlacements = ({
-  scope = 'mine',
   initialPage = 1,
   initialPageSize = 10,
   initialFilters = DEFAULT_INVENTORY_FILTERS,
@@ -120,7 +119,6 @@ export const useInventoryPlacements = ({
     try {
       const result = await placementsService.getInventoryPlacements({
         userId,
-        scope,
         page,
         pageSize,
         filters: requestFilters
@@ -147,7 +145,7 @@ export const useInventoryPlacements = ({
         setIsLoading(false);
       }
     }
-  }, [isAuthLoading, page, pageSize, requestFilters, scope, userId]);
+  }, [isAuthLoading, page, pageSize, requestFilters, userId]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(fetchPlacements, 0);

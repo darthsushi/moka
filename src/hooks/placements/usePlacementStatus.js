@@ -52,16 +52,11 @@ export const usePlacementStatus = (onSuccess) => {
   return {
     updatingId,
     error,
-    clearError: () => setError(null),
     changeOwnerStatus: (placementId, status) => save(
       placementId,
       () => placementsService.updatePlacementOwnerStatus(placementId, status)
     ),
     changeOwnerStatuses,
-    restorePlacement: (placementId) => save(
-      placementId,
-      () => placementsService.restorePlacement(placementId)
-    ),
     changeReviewStatus: (placementId, status) => save(
       placementId,
       () => placementsService.updatePlacementReviewStatus(placementId, status)
