@@ -6,6 +6,8 @@ import newPlacementFormEs from './langs/forms/new-placement.es';
 
 import inventoryTableEn from './langs/tables/inventory.en';
 import inventoryTableEs from './langs/tables/inventory.es';
+import placementsTableEn from './langs/tables/placements.en';
+import placementsTableEs from './langs/tables/placements.es';
 
 const AVAILABLE_LANGUAGES = [
   { id: 'es', label: 'Español' },
@@ -23,8 +25,8 @@ const FORMS = {
 };
 
 const TABLE_LANGS = {
-  es: { INVENTORY: inventoryTableEs },
-  en: { INVENTORY: inventoryTableEn }
+  es: { INVENTORY: inventoryTableEs, PLACEMENTS: placementsTableEs },
+  en: { INVENTORY: inventoryTableEn, PLACEMENTS: placementsTableEn }
 };
 
 export {
