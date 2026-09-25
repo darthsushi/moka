@@ -782,7 +782,6 @@ export const placementsService = {
 
   async getInventoryPlacements({
     userId,
-    scope = 'mine',
     page = 1,
     pageSize = 10,
     filters = {}
@@ -854,11 +853,7 @@ export const placementsService = {
         )
       `, { count: 'exact' });
 
-    if (scope === 'mine') {
-      query = query.eq('user_id', userId);
-    } else if (scope !== 'review') {
-      throw new Error('INVALID_INVENTORY_SCOPE');
-    }
+    query = query.eq('user_id', userId);
 
     if (normalizedSearch) {
       query = FULL_PLACEMENT_CODE_PATTERN.test(normalizedSearch)
@@ -897,18 +892,6 @@ export const placementsService = {
     const { data, error } = await supabase
       .from('placements')
       .update({ owner_status: ownerStatus })
-      .eq('id', placementId)
-      .select('id, owner_status, review_status')
-      .single();
-
-    if (error) throw error;
-    return data;
-  },
-
-  async restorePlacement(placementId) {
-    const { data, error } = await supabase
-      .from('placements')
-      .update({ owner_status: 'active', review_status: 'pending' })
       .eq('id', placementId)
       .select('id, owner_status, review_status')
       .single();

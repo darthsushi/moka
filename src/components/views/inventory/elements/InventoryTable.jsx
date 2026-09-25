@@ -25,12 +25,9 @@ const INITIAL_FILTERS = {
 };
 
 function InventoryTable() {
-  const { user, roles } = useAuth();
-  const [scope, setScope] = useState('mine');
+  const { user } = useAuth();
   const [isSelectionModeActive, setIsSelectionModeActive] = useState(false);
   const [selectionReset, setSelectionReset] = useState(0);
-  const isTeam = roles.some(role => role === 'admin' || role === 'moderator');
-  const isAdmin = roles.includes('admin');
 
   const {
     placements,
@@ -52,7 +49,6 @@ function InventoryTable() {
     updateFilters,
     clearFilters,
   } = useInventoryPlacements({
-    scope,
     searchDebounceMs: 700,
     initialPageSize: 12,
     initialFilters: INITIAL_FILTERS
@@ -60,11 +56,9 @@ function InventoryTable() {
   const {
     updatingId,
     error: actionError,
-    clearError,
     changeOwnerStatus,
     changeOwnerStatuses,
-    changeReviewStatus,
-    restorePlacement
+    changeReviewStatus
   } = usePlacementStatus(refetch);
   const { language } = useLanguage();
 
@@ -86,13 +80,6 @@ function InventoryTable() {
     setSelectionReset(current => current + 1);
   };
 
-  const selectScope = (nextScope) => {
-    clearError();
-    setIsSelectionModeActive(false);
-    setScope(nextScope);
-    setPage(1);
-  };
-  
   const TABLE_COLS = [
     { id: 'id', displayText: TABLE_LANG.ID, isRowHeader: true },
     { id: 'details', displayText: TABLE_LANG.DETAILS },
@@ -117,13 +104,11 @@ function InventoryTable() {
     display_name
   }) => {
     const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();
-    const canChangeAvailability = user_id === user?.id || isAdmin;
-    const canRequestReview = !isTeam && user_id === user?.id
+    const canChangeAvailability = user_id === user?.id;
+    const canRequestReview = user_id === user?.id
       && (review_status === 'draft' || review_status === 'rejected');
     const busy = Boolean(updatingId);
-    const availabilityActionLabel = owner_status === 'withdrawn'
-      ? TABLE_LANG.RESTORE
-      : owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME;
+    const availabilityActionLabel = owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME;
 
     return {
       id: { render: <IDCell code={ code } />, value: id },
@@ -165,16 +150,14 @@ function InventoryTable() {
                 <Dropdown.Item id="edit" textValue={ TABLE_LANG.EDIT }>
                   <Label>{ TABLE_LANG.EDIT }</Label>
                 </Dropdown.Item>
-                <Dropdown.Item
+                { owner_status !== 'withdrawn' && <Dropdown.Item
                   id="toggle-availability"
                   textValue={ availabilityActionLabel }
-                  isDisabled={ !canChangeAvailability || (owner_status === 'withdrawn' && !isAdmin) }
-                  onPress={ () => owner_status === 'withdrawn'
-                    ? restorePlacement(id)
-                    : changeOwnerStatus(id, owner_status === 'active' ? 'paused' : 'active') }
+                  isDisabled={ !canChangeAvailability }
+                  onPress={ () => changeOwnerStatus(id, owner_status === 'active' ? 'paused' : 'active') }
                 >
                   <Label>{ availabilityActionLabel }</Label>
-                </Dropdown.Item>
+                </Dropdown.Item> }
                 { canRequestReview && 
                   <Dropdown.Item
                     id="send-for-review"
@@ -289,7 +272,7 @@ function InventoryTable() {
       const canUpdateAll = selectedPlacements.length > 0
         && selectedPlacements.length === selectedIds.size
         && selectedPlacements.every(({ user_id, owner_status }) =>
-          (user_id === user?.id || isAdmin) && owner_status !== 'withdrawn'
+          user_id === user?.id && owner_status !== 'withdrawn'
         );
 
       return [
@@ -335,17 +318,9 @@ function InventoryTable() {
   
   return (
     <>
-      { isTeam && <div className="flex gap-2 p-2">
-        <Button size="sm" variant={ scope === 'mine' ? 'primary' : 'tertiary' } isDisabled={ Boolean(updatingId) } onPress={ () => selectScope('mine') }>
-          { TABLE_LANG.MY_PLACEMENTS }
-        </Button>
-        <Button size="sm" variant={ scope === 'review' ? 'primary' : 'tertiary' } isDisabled={ Boolean(updatingId) } onPress={ () => selectScope('review') }>
-          { TABLE_LANG.REVIEW_PLACEMENTS }
-        </Button>
-      </div> }
       { actionError && <p role="alert" className="p-2 text-danger">{ actionError }</p> }
       <Table
-        key={ `${scope}:${page}:${pageSize}:${selectionReset}` }
+        key={ `${page}:${pageSize}:${selectionReset}` }
         name="inventory"
         selection={ TABLE_SELECTION }
         states={ TABLE_STATES }
