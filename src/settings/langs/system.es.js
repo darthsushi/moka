@@ -28,6 +28,7 @@ export default {
   },
   BUTTONS: {
     EXPLORE_SPACE: 'Explorar espacio',
+    SHOW_ON_MAP: 'Ubicar en el mapa',
     VIEW_DETAILS: 'Ver detalles',
     SAVE_DRAFT: 'Borrador',
     CANCEL: 'Cancelar',

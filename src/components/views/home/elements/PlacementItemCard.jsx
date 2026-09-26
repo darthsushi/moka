@@ -40,13 +40,8 @@ function PlacementItemCard({
   
   const SYSTEM_LANG = SYSTEM_LANGS[language];
 
-  const primaryActionLabel = isMapOpen
-    ? SYSTEM_LANG.BUTTONS.EXPLORE_SPACE
-    : SYSTEM_LANG.BUTTONS.VIEW_DETAILS;
-
-  const secondaryActionLabel = isMapOpen
-    ? SYSTEM_LANG.BUTTONS.VIEW_DETAILS
-    : SYSTEM_LANG.BUTTONS.EXPLORE_SPACE;
+  const primaryActionLabel = SYSTEM_LANG.BUTTONS.EXPLORE_SPACE;
+  const secondaryActionLabel = SYSTEM_LANG.BUTTONS.SHOW_ON_MAP;
 
   const handleExplorePlacement = () => {
     onExplorePlacement?.(placement);
@@ -57,22 +52,10 @@ function PlacementItemCard({
   };
 
   const handlePrimaryAction = () => {
-    if (isMapOpen) {
-      handleExplorePlacement();
-
-      return;
-    }
-
     handleViewDetails();
   };
 
   const handleSecondaryAction = () => {
-    if (isMapOpen) {
-      handleViewDetails();
-
-      return;
-    }
-
     handleExplorePlacement();
   };
   
@@ -175,7 +158,7 @@ function PlacementItemCard({
                   id="secondary-action"
                   textValue={ secondaryActionLabel }
                 >
-                  <Icon name={ isMapOpen ? 'visibility' : 'map-search' } />
+                  <Icon name="map-search" />
 
                   <Label>
                     { secondaryActionLabel }

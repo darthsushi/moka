@@ -35,6 +35,34 @@ const PUBLIC_PLACEMENT_SELECT = `
   )
 `;
 
+const PLACEMENT_DETAIL_SELECT = `
+  id,
+  code,
+  user_id,
+  type,
+  latitude,
+  longitude,
+  structure_height,
+  face_count,
+  country,
+  state,
+  city,
+  display_name,
+  description,
+  visibility,
+  owner_status,
+  review_status,
+  faces:placement_faces (
+    id,
+    images,
+    display_width,
+    display_height,
+    day_range,
+    period_price,
+    created_at
+  )
+`;
+
 const toArray = (value) => {
   if (value instanceof Set) return [...value];
   if (Array.isArray(value)) return value;
@@ -578,6 +606,39 @@ const getPublicPlacementPageInView = async ({
 };
 
 export const placementsService = {
+  async getPlacementDetails({ code, id, shareToken }) {
+    if (id || shareToken) {
+      if (!UUID_PATTERN.test(id ?? '') || !UUID_PATTERN.test(shareToken ?? '')) {
+        return null;
+      }
+
+      const { data, error } = await supabase.rpc('get_unlisted_placement', {
+        p_placement_id: id,
+        p_share_token: shareToken
+      });
+
+      if (error) throw error;
+      if (!data?.placement) return null;
+
+      return { ...data.placement, faces: data.faces ?? [] };
+    }
+
+    if (!FULL_PLACEMENT_CODE_PATTERN.test(code?.toUpperCase() ?? '')) {
+      return null;
+    }
+
+    // RLS exposes published public placements to everyone and unpublished
+    // placements only to their owner (or the roles authorized by the database).
+    const { data, error } = await supabase
+      .from('placements')
+      .select(PLACEMENT_DETAIL_SELECT)
+      .eq('code', code.toUpperCase())
+      .maybeSingle();
+
+    if (error) throw error;
+    return data;
+  },
+
   async createPlacement(formattedData, userId) {
     const { faces, ...placementData } = formattedData;
 

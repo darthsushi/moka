@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Skeleton, ToggleButton, Typography } from '@heroui/react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { isNotNil } from '@/helpers/ramda.helpers';
-import { getGreeting } from '@/helpers/utilities.helpers';
+import { getGreeting, getPlacementDetailsPath } from '@/helpers/utilities.helpers';
 import { useAuth, useLanguage, useUI } from '@/hooks/contexts';
 import { usePublicPlacementFilterOptions, usePublicPlacements } from '@/hooks/placements';
 import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
@@ -10,14 +11,14 @@ import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 import { Header, NavBar, SearchInput, FiltersList, Icon } from '@/components/ui';
 import Map from './elements/Map';
 import PlacementsList from './elements/PlacementList';
-import PlacementDetailsDialog from './elements/PlacementDetailsDialog';
 
 const PUBLIC_FILTER_NAMES = ['country', 'state', 'city', 'type'];
 
 function Home() {
   const [selectedPlacement, setSelectedPlacement] = useState(null);
-  const [detailsPlacement, setDetailsPlacement] = useState(null);
   const [mapViewport, setMapViewport] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const { isAuthenticated, loading, profile } = useAuth();
   const { language } = useLanguage();
@@ -113,13 +114,9 @@ function Home() {
   };
 
   const handleViewPlacementDetails = (placement) => {
-    setDetailsPlacement(placement);
-  };
-
-  const handleDetailsOpenChange = (isOpen) => {
-    if (!isOpen) {
-      setDetailsPlacement(null);
-    }
+    navigate(getPlacementDetailsPath(placement), {
+      state: { backgroundLocation: location }
+    });
   };
 
   const handleMapViewportChange = useCallback((nextViewport) => {
@@ -206,10 +203,6 @@ function Home() {
         onViewportChange={ handleMapViewportChange }
         onSelectPlacement={ setSelectedPlacement }
         onViewDetails={handleViewPlacementDetails}
-      />
-      <PlacementDetailsDialog
-        placement={detailsPlacement}
-        onOpenChange={handleDetailsOpenChange}
       />
     </section>
   );
