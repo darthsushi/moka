@@ -949,6 +949,60 @@ export const placementsService = {
     };
   },
 
+  async getInventoryPlacementsInView({ userId, bounds, filters = {}, limit = 500 } = {}) {
+    if (!userId) throw new Error('USER_ID_REQUIRED');
+
+    const { south, west, north, east } = bounds ?? {};
+    if (![south, west, north, east].every(Number.isFinite) || south >= north || west >= east) {
+      throw new Error('INVALID_VIEWPORT');
+    }
+
+    const {
+      search = '', faceCount = null, city = null, state = null,
+      country = null, owner_status = null, review_status = null,
+      visibility = null, type = null
+    } = filters;
+    const normalizedSearch = typeof search === 'string' ? search.trim().toUpperCase() : '';
+
+    let query = supabase.from('placements').select(`
+      id, code, type, latitude, longitude, face_count, city, state, country,
+      display_name, owner_status, review_status, visibility, share_token
+    `)
+      .eq('user_id', userId)
+      .neq('owner_status', 'withdrawn')
+      .gte('latitude', south)
+      .lte('latitude', north);
+
+    // Mapbox may return longitudes outside [-180, 180] when the globe wraps.
+    // Restrict only if the view spans less than the full globe.
+    if (east - west < 360) {
+      const normalizedWest = ((west + 180) % 360 + 360) % 360 - 180;
+      const normalizedEast = ((east + 180) % 360 + 360) % 360 - 180;
+      query = normalizedWest <= normalizedEast
+        ? query.gte('longitude', normalizedWest).lte('longitude', normalizedEast)
+        : query.or(`longitude.gte.${normalizedWest},longitude.lte.${normalizedEast}`);
+    }
+
+    if (normalizedSearch) {
+      query = FULL_PLACEMENT_CODE_PATTERN.test(normalizedSearch)
+        ? query.eq('code', normalizedSearch)
+        : query.ilike('code', `%${normalizedSearch}%`);
+    }
+
+    query = applyListFilter(query, 'face_count', normalizeFaceCounts(faceCount));
+    query = applyListFilter(query, 'city', city);
+    query = applyListFilter(query, 'state', state);
+    query = applyListFilter(query, 'country', country);
+    query = applyListFilter(query, 'owner_status', owner_status);
+    query = applyListFilter(query, 'review_status', review_status);
+    query = applyListFilter(query, 'visibility', visibility);
+    query = applyListFilter(query, 'type', type);
+
+    const { data, error } = await query.order('code').limit(limit);
+    if (error) throw error;
+    return data ?? [];
+  },
+
   async updatePlacementOwnerStatus(placementId, ownerStatus) {
     const { data, error } = await supabase
       .from('placements')

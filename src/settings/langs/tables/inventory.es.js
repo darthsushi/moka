@@ -33,5 +33,9 @@ export default {
   UNLISTED: 'Oculto',
   SEARCH_BY_ID: 'Buscar por ID',
   FIND_ON_MAP: 'Buscar en el mapa',
+  MAP_RESULTS: 'espacios en el mapa',
+  MAP_LOADING: 'Buscando espacios…',
+  MAP_EMPTY: 'No hay espacios en esta zona con los filtros actuales.',
+  MAP_ERROR: 'No se pudieron cargar los espacios del mapa.',
   ...SYSTEM.PLACEMENT.TYPES
 };

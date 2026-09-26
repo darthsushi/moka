@@ -14,6 +14,7 @@ import EmptyContent from '../../alerts/EmptyContent.view';
 import DetailsCell from './table-elements/DetailsCell';
 import LocationCell from './table-elements/LocationCell';
 import StatusCell from './table-elements/StatusCell';
+import InventoryMapDialog from './InventoryMapDialog';
 
 const OWNER_STATUSES = ['active', 'paused'];
 const REVIEW_STATUSES = ['draft', 'pending', 'in_review', 'approved', 'suspended', 'rejected'];
@@ -33,6 +34,7 @@ function InventoryTable() {
   const [isSelectionModeActive, setIsSelectionModeActive] = useState(false);
   const [selectionReset, setSelectionReset] = useState(0);
   const [copyFeedback, setCopyFeedback] = useState('');
+  const [isMapDialogOpen, setIsMapDialogOpen] = useState(false);
 
   const {
     placements,
@@ -339,10 +341,8 @@ function InventoryTable() {
       displayText: TABLE_LANG.FIND_ON_MAP,
       iconName: 'map-search',
       variant: 'primary',
-      isDisabled: isEmpty,
-      onPress: () => {
-        console.log('Hi');
-      },
+      isDisabled: isEmpty || isLoading,
+      onPress: () => setIsMapDialogOpen(true),
     },
   ];
   
@@ -366,6 +366,16 @@ function InventoryTable() {
         Sin contenido
       </EmptyContent>
       </Table>
+      { isMapDialogOpen && <InventoryMapDialog
+        userId={ user?.id }
+        filters={ filters }
+        initialPlacement={ placements.find(item => Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude)) && item.latitude != null && item.longitude != null) }
+        onClose={ () => setIsMapDialogOpen(false) }
+        onViewDetails={ (placement) => {
+          setIsMapDialogOpen(false);
+          viewDetails(placement);
+        } }
+      /> }
     </>
   );
 }
