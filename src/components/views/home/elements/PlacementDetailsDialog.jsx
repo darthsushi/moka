@@ -1,40 +1,18 @@
-import { Typography } from '@heroui/react';
-
+import { useNavigate } from 'react-router-dom';
 import { Dialog } from '@/components/ui';
+import PlacementDetails from '@/components/views/placements/PlacementDetails.view';
 
-function PlacementDetailsDialog({
-  placement,
-  onOpenChange
-}) {
+function PlacementDetailsDialog() {
+  const navigate = useNavigate();
+
   return (
     <Dialog
-      isModalOpen={Boolean(placement)}
-      setIsModalOpen={onOpenChange}
+      isModalOpen
+      setIsModalOpen={ (isOpen) => { if (!isOpen) navigate(-1); } }
       size="cover"
+      showDefaultCloseButton={ false }
     >
-      {
-        placement && (
-          <>
-            <Typography type="h5">
-              {placement.code}
-            </Typography>
-            <ul>
-              <li>
-                Si es del propietario, mostrar controles 
-              </li>
-              <li>
-                Que datos mostrar con sesion?
-              </li>
-              <li>
-                Es necesario ocultar algun dato?
-              </li>
-              <li>
-                
-              </li>
-            </ul>
-          </>
-        )
-      }
+      <PlacementDetails isDialog />
     </Dialog>
   );
 }

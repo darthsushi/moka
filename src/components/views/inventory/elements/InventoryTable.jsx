@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button, Dropdown, Label } from '@heroui/react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { isNil } from '@/helpers/ramda.helpers';
+import { getUnlistedPlacementUrl } from '@/helpers/utilities.helpers';
 import { useAuth, useLanguage } from '@/hooks/contexts';
 import { TABLE_LANGS } from '@/settings/langs.settings';
 import { useInventoryPlacements, usePlacementStatus } from '@/hooks/placements';
@@ -25,9 +27,12 @@ const INITIAL_FILTERS = {
 };
 
 function InventoryTable() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [isSelectionModeActive, setIsSelectionModeActive] = useState(false);
   const [selectionReset, setSelectionReset] = useState(0);
+  const [copyFeedback, setCopyFeedback] = useState('');
 
   const {
     placements,
@@ -63,6 +68,19 @@ function InventoryTable() {
   const { language } = useLanguage();
 
   const TABLE_LANG = TABLE_LANGS[language].INVENTORY;
+  // Owners can inspect drafts, paused and private placements through RLS.
+  // The token URL is intentionally restricted to published unlisted placements.
+  const viewDetails = (placement) => navigate(`/p/${encodeURIComponent(placement.code)}`, {
+    state: { backgroundLocation: location }
+  });
+  const copyUnlistedLink = async (placement) => {
+    try {
+      await navigator.clipboard.writeText(getUnlistedPlacementUrl(placement));
+      setCopyFeedback(language === 'en' ? 'Link copied' : 'Enlace copiado');
+    } catch {
+      setCopyFeedback(language === 'en' ? 'Could not copy the link' : 'No se pudo copiar el enlace');
+    }
+  };
 
   const handleWithdraw = (placementId) => {
     if (window.confirm(TABLE_LANG.WITHDRAW_CONFIRM)) {
@@ -101,8 +119,10 @@ function InventoryTable() {
     country,
     state,
     structure_height,
-    display_name
+    display_name,
+    share_token
   }) => {
+    const detailPlacement = { id, code, visibility, share_token };
     const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();
     const canChangeAvailability = user_id === user?.id;
     const canRequestReview = user_id === user?.id && owner_status !== 'withdrawn'
@@ -111,7 +131,7 @@ function InventoryTable() {
     const availabilityActionLabel = owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME;
 
     return {
-      id: { render: <IDCell code={ code } />, value: id },
+      id: { render: <IDCell code={ code } isDisabled={ isSelectionModeActive } onPress={ () => viewDetails(detailPlacement) } />, value: id },
       details: {
         render: (
           <DetailsCell
@@ -147,6 +167,17 @@ function InventoryTable() {
             </Button>
             <Dropdown.Popover>
               <Dropdown.Menu>
+                <Dropdown.Item id="view-details" textValue={ language === 'en' ? 'View details' : 'Ver detalles' } onPress={ () => viewDetails(detailPlacement) }>
+                  <Label>{ language === 'en' ? 'View details' : 'Ver detalles' }</Label>
+                </Dropdown.Item>
+                { visibility === 'unlisted' && share_token && <Dropdown.Item
+                  id="copy-unlisted-link"
+                  textValue={ language === 'en' ? 'Copy private link' : 'Copiar enlace no listado' }
+                  isDisabled={ owner_status !== 'active' || review_status !== 'approved' }
+                  onPress={ () => copyUnlistedLink(detailPlacement) }
+                >
+                  <Label>{ language === 'en' ? 'Copy private link' : 'Copiar enlace no listado' }</Label>
+                </Dropdown.Item> }
                 <Dropdown.Item id="edit" textValue={ TABLE_LANG.EDIT }>
                   <Label>{ TABLE_LANG.EDIT }</Label>
                 </Dropdown.Item>
@@ -318,6 +349,7 @@ function InventoryTable() {
   return (
     <>
       { actionError && <p role="alert" className="p-2 text-danger">{ actionError }</p> }
+      { copyFeedback && <p role="status" className="p-2 text-sm">{ copyFeedback }</p> }
       <Table
         key={ `${page}:${pageSize}:${selectionReset}` }
         name="inventory"

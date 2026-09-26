@@ -98,6 +98,14 @@ const getUnlistedPlacementUrl = (placement) => {
   return `${window.location.origin}/p/${placement.id}/${placement.share_token}`;
 }
 
+const getPlacementDetailsPath = (placement) => {
+  if (placement.visibility === 'unlisted' && placement.share_token) {
+    return `/p/${placement.id}/${placement.share_token}`;
+  }
+
+  return `/p/${encodeURIComponent(placement.code)}`;
+};
+
 const getValueOrDefault = (value, options = [], defaultValue = null) => {
   return options.includes(value) ? value : defaultValue;
 };
@@ -177,6 +185,7 @@ export {
   getPriorityProperty,
   getRequiredParams,
   getUnlistedPlacementUrl,
+  getPlacementDetailsPath,
   getValueOrDefault,
   normalizeFaceCount,
   normalizeFaceCounts,
