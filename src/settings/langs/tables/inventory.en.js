@@ -33,5 +33,9 @@ export default {
   UNLISTED: 'Hidden',
   SEARCH_BY_ID: 'Search by ID',
   FIND_ON_MAP: 'Search on map',
+  MAP_RESULTS: 'placements on the map',
+  MAP_LOADING: 'Finding placements…',
+  MAP_EMPTY: 'No placements in this area match the current filters.',
+  MAP_ERROR: 'Could not load placements on the map.',
   ...SYSTEM.PLACEMENT.TYPES
 };
