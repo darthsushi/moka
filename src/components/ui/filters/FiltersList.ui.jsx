@@ -1,13 +1,21 @@
 import { useState } from 'react';
-import { Accordion, Button, ButtonGroup, Checkbox, CheckboxGroup, Chip, Modal } from '@heroui/react';
+import {
+  Accordion,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  CheckboxGroup,
+  Chip,
+  ToggleButton
+} from '@heroui/react';
 
 import { isEmpty, noop, not } from '@/helpers/ramda.helpers';
 import { equalsIgnoreOrderNative } from '@/helpers/utilities.helpers';
 import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS, TABLE_LANGS } from '@/settings/langs.settings';
 
+import Dialog from '../dialog/Dialog.ui';
 import Icon from '../icons/Icon.ui';
-import { ToggleButton } from '@heroui/react';
 
 const getDefaultExpandedNames = (filters = []) =>
   filters
@@ -27,7 +35,7 @@ const getFilterToApply = (actualFilters) => {
   return filtersToApply;
 };
 
-const normalizeFilter = (filters = []) => {
+const normalizeFilter = (filters = [], appliedFilters = null) => {
   const actualFilters = {};
   
   filters.forEach(({ initialValues, name, iconName, translationKey, options }) => {
@@ -36,7 +44,7 @@ const normalizeFilter = (filters = []) => {
       options,
       iconName,
       translationKey,
-      values: initialValues,
+      values: Array.isArray(appliedFilters?.[name]) ? appliedFilters[name] : initialValues,
     };
   });
 
@@ -48,16 +56,13 @@ function FilterOption({
   setValues,
   filter: { translationKey, name, iconName, values, options },
 }) {
-  const [selected, setSelected] = useState([ ...values ]);
-  
   const { language } = useLanguage();
 
-  const FILTER_OPTIONS_LANG = TABLE_LANGS[language][tableName.toLocaleUpperCase()];
+  const FILTER_OPTIONS_LANG = TABLE_LANGS[language][tableName.toLocaleUpperCase()] ?? {};
 
   const handleSelectedChange = (values = []) => {
     if (values.length === 0) return;
 
-    setSelected(values);
     setValues(name, values);
   };
 
@@ -73,22 +78,22 @@ function FilterOption({
             :
               null
           }
-          { FILTER_OPTIONS_LANG[translationKey] }
+          { FILTER_OPTIONS_LANG[translationKey] ?? translationKey }
            <Accordion.Indicator />
         </Accordion.Trigger>
       </Accordion.Heading>
       <Accordion.Panel>
         <Accordion.Body className="w-full px-2 pb-3">
           <div className="ms-3 flex flex-col gap-1">
-            <CheckboxGroup aria-label={ `${name} options` } value={ selected } onChange={ handleSelectedChange }>
+            <CheckboxGroup aria-label={ `${name} options` } value={ values } onChange={ handleSelectedChange }>
               {
-                options.map(({ id, translationKey }) => (
+                options.map(({ id, translationKey, label }) => (
                   <Checkbox key={ id } value={ id }>
                     <Checkbox.Content className="w-full flex flex-row items-center gap-1">
                       <Checkbox.Control>
                         <Checkbox.Indicator />
                       </Checkbox.Control>
-                      { FILTER_OPTIONS_LANG[translationKey] }
+                      { label ?? FILTER_OPTIONS_LANG[translationKey] ?? id }
                     </Checkbox.Content>
                   </Checkbox>
                 ))
@@ -108,8 +113,7 @@ function FiltersList({
     isDisabled = false,
     hasActiveFilters,
     activeFiltersCount,
-    /* activeFilters, */
-    /* clearFilters = noop, */
+    filtersActived = null,
     onApplyingFilters = noop
   }) {
   const { language } = useLanguage();
@@ -119,8 +123,8 @@ function FiltersList({
   const INITIAL_FILTERS = normalizeFilter(filters);
   const DEFAULT_EXPANDED = getDefaultExpandedNames(filters);
 
-  const [actualFilters, setActualFilters] = useState(INITIAL_FILTERS);
-  const [filtersBeforeOpen, setFiltersBeforeOpen] = useState(INITIAL_FILTERS);
+  const [actualFilters, setActualFilters] = useState(() => normalizeFilter(filters, filtersActived));
+  const [filtersBeforeOpen, setFiltersBeforeOpen] = useState(() => normalizeFilter(filters, filtersActived));
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
 
   const setFilterValues = (name, values) => {
@@ -140,7 +144,12 @@ function FiltersList({
   };
 
   const handleOpenFilter = () => {
-    setFiltersBeforeOpen(() => actualFilters);
+    const currentFilters = filtersActived
+      ? normalizeFilter(filters, filtersActived)
+      : actualFilters;
+
+    setActualFilters(currentFilters);
+    setFiltersBeforeOpen(currentFilters);
     setIsFilterPanelOpen(true);
   }
 
@@ -163,13 +172,6 @@ function FiltersList({
   return (
     <>
       <ButtonGroup variant={ hasActiveFilters ? 'ghost' : 'tertiary' }>
-        {/* <Button
-          
-          onPress={ handleOpenFilter }
-          className={ hasActiveFilters ? 'bg-accent-soft' : '' }
-        >
-          
-        </Button> */}
         <ToggleButton
           aria-label={ `${tableName} filter` }
           isDisabled={ isDisabled || isPending }
@@ -193,48 +195,38 @@ function FiltersList({
         }
       </ButtonGroup>
 
-      <Modal.Backdrop
+      <Dialog
+        size="sm"
         variant="opaque"
-        isOpen={ isFilterPanelOpen }
-        onOpenChange={ handleFilterDismiss }
+        isModalOpen={ isFilterPanelOpen }
+        setIsModalOpen={ handleFilterDismiss }
+        title={ SYSTEM_LANG.WORDS.FILTERS }
       >
-        <Modal.Container size="sm" placement="bottom">
-          <Modal.Dialog  className="rounded-4xl p-4">
-            <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Heading>
-                { SYSTEM_LANG.WORDS.FILTERS }
-              </Modal.Heading>
-            </Modal.Header>
-            <Modal.Body>
-              <Accordion
-                allowsMultipleExpanded
-                className="w-full bg-surface-secondary max-h-80 overflow-y-auto"
-                variant="surface"
-                defaultExpandedKeys={ DEFAULT_EXPANDED }
-              >
-                {
-                  Object.keys(actualFilters).map((filterName, index) =>
-                    <FilterOption
-                      key={ index }
-                      tableName={ tableName }
-                      filter={ actualFilters[filterName] }
-                      setValues={ setFilterValues }
-                    />
-                  )
-                }
-              </Accordion>
-            </Modal.Body>
-            <Modal.Footer>
-              <div className="w-full sticky bottom-0 flex gap-1">
-                <Button size="sm" onPress={ handleApplyFilters }>
-                  { SYSTEM_LANG.BUTTONS.APPLY_FILTERS }
-                </Button>
-              </div>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
+        <div className="flex flex-col gap-2">
+          <Accordion
+            allowsMultipleExpanded
+            className="w-full bg-surface-secondary max-h-80 overflow-y-auto"
+            variant="surface"
+            defaultExpandedKeys={ DEFAULT_EXPANDED }
+          >
+            {
+              Object.keys(actualFilters).map((filterName, index) =>
+                <FilterOption
+                  key={ index }
+                  tableName={ tableName }
+                  filter={ actualFilters[filterName] }
+                  setValues={ setFilterValues }
+                />
+              )
+            }
+          </Accordion>
+          <div className="w-full">
+            <Button fullWidth size="lg" onPress={ handleApplyFilters }>
+              { SYSTEM_LANG.BUTTONS.APPLY_FILTERS }
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </>
   );
 };

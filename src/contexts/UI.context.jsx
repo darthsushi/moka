@@ -68,6 +68,7 @@ export const UIProvider = ({ children }) => {
   const value = {
     theme,
     toggleTheme,
+    setTheme,
     isLoading,
     setIsLoading,
     isSidebarOpen,

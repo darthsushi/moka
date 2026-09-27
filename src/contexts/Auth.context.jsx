@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
 import { authService } from '@/services/auth.service.js';
 import { profileService } from '@/services/profile.service.js';
@@ -88,6 +88,17 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  const updateProfile = async (changes) => {
+    if (not(user?.id)) {
+      throw new Error('Debes iniciar sesión para actualizar tu perfil.');
+    }
+
+    const updatedProfile = await profileService.updateProfile(user.id, changes);
+    setProfile(updatedProfile);
+
+    return updatedProfile;
+  };
+
   const roles = profile?.roles || [];
   const value = {
     user,
@@ -102,7 +113,8 @@ export const AuthProvider = ({ children }) => {
     
     signUp: authService.signUp,
     signIn: authService.signIn,
-    signOut: authService.signOut
+    signOut: authService.signOut,
+    updateProfile
   };
 
   return (

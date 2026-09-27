@@ -110,11 +110,11 @@ const normalizeActionButtons = (extraActions = []) => {
       ...action,
       variant: getValueOrDefault(action.variant, ['primary', 'danger-soft', 'tertiary'], 'tertiary')
     };
-  }).filter(({ displaName, isIconOnly, iconName, onPress }) => {
+  }).filter(({ displayText, isIconOnly, iconName, onPress }) => {
     if (isIconOnly && (isNil(iconName) || isEmpty(iconName))) return false;
 
     const hasValidAction = isFunction(onPress);
-    const hasValidLabel = isIconOnly || not(isEmpty(displaName));
+    const hasValidLabel = isIconOnly || (isNotNil(displayText) && not(isEmpty(displayText)));
 
     return hasValidAction && hasValidLabel;
   }).splice(0, 3);
@@ -137,6 +137,7 @@ function TableContent({
   tableLanguage,
   children = null,
   isSelectionModeActive,
+  isSelectionBusy,
   selectedRows,
   handleSelectionChange
 }) {
@@ -177,6 +178,7 @@ function TableContent({
                   <Checkbox
                     aria-label="Select all rows"
                     slot="selection"
+                    isDisabled={ isSelectionBusy }
                   >
                     <Checkbox.Content>
                       <Checkbox.Control>
@@ -216,6 +218,7 @@ function TableContent({
                           aria-label={ `Select row` }
                           slot="selection"
                           variant="secondary"
+                          isDisabled={ isSelectionBusy }
                         >
                           <Checkbox.Content>
                             <Checkbox.Control>
@@ -257,7 +260,7 @@ function TableContent({
               <Pagination.Content className="flex gap-3">
                 <Pagination.Item>
                   <Pagination.Previous
-                    isDisabled={ pagination.page === 1 || states.isFechingData }
+                    isDisabled={ pagination.page === 1 || states.isFechingData || isSelectionModeActive }
                     onPress={ () => pagination.setPage(pagination.page - 1) }
                   >
                     <Pagination.PreviousIcon />
@@ -266,7 +269,7 @@ function TableContent({
                 </Pagination.Item>
                 <Pagination.Item>
                   <Pagination.Next
-                    isDisabled={ pagination.page === pagination.totalPages || states.isFechingData }
+                    isDisabled={ pagination.page === pagination.totalPages || states.isFechingData || isSelectionModeActive }
                     onPress={ () => pagination.setPage(pagination.page + 1) }
                   >
                     { tableLanguage.BUTTONS.NEXT }
@@ -299,16 +302,24 @@ function Table({
 
   const { language } = useLanguage();
 
-  useEscapeKey(() => setIsSelectionMode(false), isSelectionModeActive);
+  const exitSelectionMode = () => {
+    setIsSelectionMode(false);
+    setSelectedRows(new Set());
+    if (isFunction(selection.onModeChange)) selection.onModeChange(false);
+  };
+
+  useEscapeKey(exitSelectionMode, isSelectionModeActive && !selection.isBusy);
 
   const { rows: normalizedRows, columns: normalizedColumns } = normalizeRowsAndColumns(rows, cols);
   const normalizedFilterSettings = normalizeFiltersSettings(filters);
   const normalizedStates = normalizeStateObject(states);
   const normalizedPagination = normalizePagination(pagination);
   const normalizedExtraActions = normalizeActionButtons(extraActions);
+  const visibleRowKeys = normalizedRows.map(({ id }) => type(id) === 'Object' ? id.value : id);
+  const visibleSelectedRows = new Set([...selectedRows].filter(key => visibleRowKeys.includes(key)));
 
   const selectionType = getValueOrDefault(selection.type, SELECTION_TYPES, 'none');
-  const selectionActions = isFunction(selection.actionsBySelections) ? selection.actionsBySelections(selectedRows) : [];
+  const selectionActions = isFunction(selection.actionsBySelections) ? selection.actionsBySelections(visibleSelectedRows) : [];
   const normalizedSelectionActions = normalizeActionButtons(selectionActions);
 
   const enableSearch = isFunction(search.onChange);
@@ -316,16 +327,15 @@ function Table({
   const SYSTEM_LANG = SYSTEM[language];
 
   const handleSelectionChange = (keys) => {
+    if (selection.isBusy) return;
+
     let currentKeys = keys;
 
     if (keys === 'all') {
-      const allKeys = normalizedRows.map(({ id }) => {
-        return type(id) === 'Object' ? id.value : id;
-      });
-      
-      currentKeys =  new Set(allKeys);
+      currentKeys = new Set(visibleRowKeys);
     }
 
+    currentKeys = new Set([...currentKeys].filter(key => visibleRowKeys.includes(key)));
     setSelectedRows(currentKeys);
 
     const hasListener = isNotNil(selection) && isFunction(selection.onSelectionChange);
@@ -336,8 +346,10 @@ function Table({
   };
 
   const toggleSelectionMode = () => {
-    setIsSelectionMode((currentValue) => !currentValue);
+    const nextValue = !isSelectionModeActive;
+    setIsSelectionMode(nextValue);
     setSelectedRows(new Set());
+    if (isFunction(selection.onModeChange)) selection.onModeChange(nextValue);
   };
 
   return (
@@ -357,7 +369,7 @@ function Table({
                     variant="soft"
                     className="rounded-3xl py-1.5"
                   >
-                    { `${selectedRows.size} ${ selectedRows.size === 1 ? SYSTEM_LANG.WORDS.SELECTED_SINGULAR : SYSTEM_LANG.WORDS.SELECTED_PLURAL }` }
+                    { `${visibleSelectedRows.size} ${ visibleSelectedRows.size === 1 ? SYSTEM_LANG.WORDS.SELECTED_SINGULAR : SYSTEM_LANG.WORDS.SELECTED_PLURAL }` }
                   </Chip>
                   { normalizedSelectionActions.length > 0 && <Separator variant="secondary" orientation="vertical" /> }
                   {
@@ -375,7 +387,7 @@ function Table({
                           key={ index }
                           onPress={ onPress }
                           isIconOnly={ isIconOnly }
-                          isDisabled={ isDisabled }
+                          isDisabled={ isDisabled || selection.isBusy }
                           variant={ variant }
                           size="sm"
                         >
@@ -454,11 +466,11 @@ function Table({
               )
             })
           }
-          { selectionType !== 'none' && normalizedRows.length > 0 &&
+          { selectionType !== 'none' && !normalizedStates.isFechingData && (isSelectionModeActive || normalizedRows.length >= 2) &&
             <Button
               variant={ isSelectionModeActive ? 'danger' : 'ghost' }
               onPress={ toggleSelectionMode }
-              isDisabled={ normalizedStates.isFechingData }
+              isDisabled={ selection.isBusy }
             >
               <Icon name={ isSelectionModeActive ? 'close' : 'checklist' } />
               { isSelectionModeActive ? SYSTEM_LANG.BUTTONS.CANCEL : SYSTEM_LANG.BUTTONS.SELECT }
@@ -475,7 +487,8 @@ function Table({
           pagination={ normalizedPagination }
           tableLanguage={ SYSTEM_LANG }
           isSelectionModeActive={ isSelectionModeActive }
-          selectedRows={ selectedRows }
+          isSelectionBusy={ selection.isBusy }
+          selectedRows={ visibleSelectedRows }
           handleSelectionChange={ handleSelectionChange }
         >
           { children }

@@ -1,17 +1,41 @@
-import { isNil } from '@/helpers/ramda.helpers';
-import { useLanguage } from '@/hooks/contexts';
-import { SYSTEM as SYSTEM_LANGS, TABLE_LANGS } from '@/settings/langs.settings';
-import { /* useInventoryFilterOptions, */ useInventoryPlacements } from '@/hooks/placements';
+import { useState } from 'react';
+import { Button, Dropdown, Label } from '@heroui/react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Table } from '@/components/ui';
+import { isNil } from '@/helpers/ramda.helpers';
+import { getUnlistedPlacementUrl } from '@/helpers/utilities.helpers';
+import { useAuth, useLanguage } from '@/hooks/contexts';
+import { TABLE_LANGS } from '@/settings/langs.settings';
+import { useInventoryPlacements, usePlacementStatus } from '@/hooks/placements';
+
+import { Icon, Table } from '@/components/ui';
 import IDCell from './table-elements/IDCell';
 import EmptyContent from '../../alerts/EmptyContent.view';
 import DetailsCell from './table-elements/DetailsCell';
 import LocationCell from './table-elements/LocationCell';
 import StatusCell from './table-elements/StatusCell';
-import VisibilityCell from './table-elements/VisibilityCell';
+import InventoryMapDialog from './InventoryMapDialog';
+
+const OWNER_STATUSES = ['active', 'paused'];
+const REVIEW_STATUSES = ['draft', 'pending', 'in_review', 'approved', 'suspended', 'rejected'];
+const PLACEMENT_TYPES = ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP'];
+
+const INITIAL_FILTERS = {
+  visibility: ['public', 'private', 'unlisted'],
+  owner_status: OWNER_STATUSES,
+  review_status: REVIEW_STATUSES,
+  type: PLACEMENT_TYPES
+};
 
 function InventoryTable() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isSelectionModeActive, setIsSelectionModeActive] = useState(false);
+  const [selectionReset, setSelectionReset] = useState(0);
+  const [copyFeedback, setCopyFeedback] = useState('');
+  const [isMapDialogOpen, setIsMapDialogOpen] = useState(false);
+
   const {
     placements,
     page,
@@ -34,48 +58,163 @@ function InventoryTable() {
   } = useInventoryPlacements({
     searchDebounceMs: 700,
     initialPageSize: 12,
-    initialFilters: {
-      visibility: ['public', 'private', 'unlisted'],
-      status: ['active', 'pending'],
-      type: ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP']
-    }
+    initialFilters: INITIAL_FILTERS
   });
-  /* const all = useInventoryFilterOptions(); */
-  const { language } = useLanguage();  
+  const {
+    updatingId,
+    error: actionError,
+    changeOwnerStatus,
+    changeOwnerStatuses,
+    changeReviewStatus
+  } = usePlacementStatus(refetch);
+  const { language } = useLanguage();
 
   const TABLE_LANG = TABLE_LANGS[language].INVENTORY;
-  const SYSTEM_LANG = SYSTEM_LANGS[language];
-  
+  // Owners can inspect drafts, paused and private placements through RLS.
+  // The token URL is intentionally restricted to published unlisted placements.
+  const viewDetails = (placement) => navigate(`/p/${encodeURIComponent(placement.code)}`, {
+    state: { backgroundLocation: location }
+  });
+  const copyUnlistedLink = async (placement) => {
+    try {
+      await navigator.clipboard.writeText(getUnlistedPlacementUrl(placement));
+      setCopyFeedback(language === 'en' ? 'Link copied' : 'Enlace copiado');
+    } catch {
+      setCopyFeedback(language === 'en' ? 'Could not copy the link' : 'No se pudo copiar el enlace');
+    }
+  };
+
+  const handleWithdraw = (placementId) => {
+    if (window.confirm(TABLE_LANG.WITHDRAW_CONFIRM)) {
+      changeOwnerStatus(placementId, 'withdrawn');
+    }
+  };
+
+  const handleBulkAction = async (selectedPlacements, status) => {
+    if (status === 'withdrawn' && !window.confirm(
+      TABLE_LANG.WITHDRAW_MULTIPLE_CONFIRM.replace('{count}', selectedPlacements.length)
+    )) return;
+
+    await changeOwnerStatuses(selectedPlacements.map(({ id }) => id), status);
+    setIsSelectionModeActive(false);
+    setSelectionReset(current => current + 1);
+  };
+
   const TABLE_COLS = [
     { id: 'id', displayText: TABLE_LANG.ID, isRowHeader: true },
     { id: 'details', displayText: TABLE_LANG.DETAILS },
     { id: 'location', displayText: TABLE_LANG.LOCATION },
-    { id: 'status', displayText: TABLE_LANG.STATUS },
-    { id: 'visibility', displayText: TABLE_LANG.VISIBILITY },
+    { id: 'owner_status', displayText: TABLE_LANG.OWNER_STATUS },
+    { id: 'review_status', displayText: TABLE_LANG.REVIEW_STATUS },
+    { id: 'actions', displayText: TABLE_LANG.ACTIONS },
   ];
   const TABLE_ROWS = placements.map(({
     code,
     face_count,
     id,
-    status, 
+    owner_status,
+    review_status,
+    user_id,
     type,
     visibility,
     city,
     country,
     state,
     structure_height,
-    display_name
+    display_name,
+    share_token
   }) => {
-    const STATUS_TK = (status || '').toLocaleUpperCase(); 
+    const detailPlacement = { id, code, visibility, share_token };
     const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();
-    console.log(placements);
+    const canChangeAvailability = user_id === user?.id;
+    const canRequestReview = user_id === user?.id && owner_status !== 'withdrawn'
+      && (review_status === 'draft' || review_status === 'rejected');
+    const busy = Boolean(updatingId);
+    const availabilityActionLabel = owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME;
 
     return {
-      id: { render: <IDCell code={ code } />, value: id },
-      details: { render: <DetailsCell type={ TABLE_LANG[type] } faces_count={ face_count } structure_height={ structure_height } />, value: type },
+      id: { render: <IDCell code={ code } isDisabled={ isSelectionModeActive } onPress={ () => viewDetails(detailPlacement) } />, value: id },
+      details: {
+        render: (
+          <DetailsCell
+            type={ TABLE_LANG[type] }
+            faceCount={ face_count }
+            structureHeight={ structure_height }
+            visibility={ visibility }
+            visibilityDisplay={ TABLE_LANG[VISIBILITY_TK] }
+          />
+        ),
+        value: type
+      },
       location: { render: <LocationCell display_name={ display_name } city={ city } state={ state } country={ country } />, value: display_name },
-      status: { render: <StatusCell status={ status } displayStatus={ TABLE_LANG[STATUS_TK] } />, value: status },
-      visibility: { render: <VisibilityCell visibility={ visibility } visibilityDisplay={ TABLE_LANG[VISIBILITY_TK] } />, value: visibility }
+      owner_status: {
+        render: <StatusCell status={ owner_status } displayStatus={ TABLE_LANG[owner_status.toUpperCase()] } />,
+        value: owner_status
+      },
+      review_status: {
+        render: <StatusCell status={ review_status } displayStatus={ TABLE_LANG[review_status.toUpperCase()] } />,
+        value: review_status
+      },
+      actions: {
+        value: id,
+        render: <div className="flex items-center gap-2">
+          <Dropdown>
+            <Button
+              size="lg"
+              variant="ghost"
+              className="text-xl"
+              isDisabled={ busy || isSelectionModeActive }
+            >
+              <Icon name="more-horiz" />
+            </Button>
+            <Dropdown.Popover>
+              <Dropdown.Menu>
+                <Dropdown.Item id="view-details" textValue={ language === 'en' ? 'View details' : 'Ver detalles' } onPress={ () => viewDetails(detailPlacement) }>
+                  <Label>{ language === 'en' ? 'View details' : 'Ver detalles' }</Label>
+                </Dropdown.Item>
+                { visibility === 'unlisted' && share_token && <Dropdown.Item
+                  id="copy-unlisted-link"
+                  textValue={ language === 'en' ? 'Copy private link' : 'Copiar enlace no listado' }
+                  isDisabled={ owner_status !== 'active' || review_status !== 'approved' }
+                  onPress={ () => copyUnlistedLink(detailPlacement) }
+                >
+                  <Label>{ language === 'en' ? 'Copy private link' : 'Copiar enlace no listado' }</Label>
+                </Dropdown.Item> }
+                <Dropdown.Item id="edit" textValue={ TABLE_LANG.EDIT }>
+                  <Label>{ TABLE_LANG.EDIT }</Label>
+                </Dropdown.Item>
+                { owner_status !== 'withdrawn' && <Dropdown.Item
+                  id="toggle-availability"
+                  textValue={ availabilityActionLabel }
+                  isDisabled={ !canChangeAvailability }
+                  onPress={ () => changeOwnerStatus(id, owner_status === 'active' ? 'paused' : 'active') }
+                >
+                  <Label>{ availabilityActionLabel }</Label>
+                </Dropdown.Item> }
+                { canRequestReview && 
+                  <Dropdown.Item
+                    id="send-for-review"
+                    textValue={ TABLE_LANG.SEND_FOR_REVIEW }
+                    isDisabled={ !canRequestReview }
+                    onPress={ () => changeReviewStatus(id, 'pending') }
+                  >
+                    <Label>{ TABLE_LANG.SEND_FOR_REVIEW }</Label>
+                  </Dropdown.Item>
+                }
+                <Dropdown.Item
+                  id="withdraw"
+                  textValue={ TABLE_LANG.WITHDRAW }
+                  isDisabled={ !canChangeAvailability || owner_status === 'withdrawn' }
+                  variant="danger"
+                  onPress={ () => handleWithdraw(id) }
+                >
+                  <Label>{ TABLE_LANG.WITHDRAW }</Label>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown>
+        </div>
+      }
     }
   });
   const TABLE_FILTERS = {
@@ -84,7 +223,7 @@ function InventoryTable() {
         name: 'type',
         translationKey: 'TYPE',
         defaultExpended: true,
-        initialValues: ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP'],
+        initialValues: PLACEMENT_TYPES,
         options: [
           { id: 'UNIPOLE_BILLBOARD', translationKey: 'UNIPOLE_BILLBOARD' },
           { id: 'HAND_PAINTED_MURAL', translationKey: 'HAND_PAINTED_MURAL' },
@@ -93,13 +232,27 @@ function InventoryTable() {
         ]
       },
       {
-        name: 'status',
-        translationKey: 'STATUS',
+        name: 'owner_status',
+        translationKey: 'OWNER_STATUS',
         defaultExpended: true,
-        initialValues: ['active', 'pending'],
+        initialValues: OWNER_STATUSES,
         options: [
           { id: 'active', translationKey: 'ACTIVE' },
-          { id: 'pending', translationKey: 'PENDING' }
+          { id: 'paused', translationKey: 'PAUSED' }
+        ]
+      },
+      {
+        name: 'review_status',
+        translationKey: 'REVIEW_STATUS',
+        defaultExpended: true,
+        initialValues: REVIEW_STATUSES,
+        options: [
+          { id: 'draft', translationKey: 'DRAFT' },
+          { id: 'pending', translationKey: 'PENDING' },
+          { id: 'in_review', translationKey: 'IN_REVIEW' },
+          { id: 'approved', translationKey: 'APPROVED' },
+          { id: 'suspended', translationKey: 'SUSPENDED' },
+          { id: 'rejected', translationKey: 'REJECTED' }
         ]
       },
       {
@@ -144,21 +297,32 @@ function InventoryTable() {
   };
   const TABLE_SELECTION = {
     type: 'multiple',
-    onSelectionChange: (selection) => {
-      console.log('onSelectionChange', selection);
-    },
-    actionsBySelections: (currentSelections) => {
-      console.log(currentSelections);
+    isBusy: Boolean(updatingId) || isLoading,
+    onModeChange: setIsSelectionModeActive,
+    actionsBySelections: (selectedIds) => {
+      const selectedPlacements = placements.filter(({ id }) => selectedIds.has(id));
+      const canUpdateAll = selectedPlacements.length > 0
+        && selectedPlacements.length === selectedIds.size
+        && selectedPlacements.every(({ user_id, owner_status }) =>
+          user_id === user?.id && owner_status !== 'withdrawn'
+        );
 
       return [
         {
-          displayText: SYSTEM_LANG.BUTTONS.DELETE,
-          isDisabled: currentSelections.size === 0,
+          displayText: TABLE_LANG.PAUSE,
+          isDisabled: !canUpdateAll || !selectedPlacements.some(({ owner_status }) => owner_status === 'active'),
+          onPress: () => handleBulkAction(selectedPlacements.filter(({ owner_status }) => owner_status === 'active'), 'paused')
+        },
+        {
+          displayText: TABLE_LANG.WITHDRAW,
           variant: 'danger-soft',
-          iconName: 'delete',
-          onPress: (selection) => {
-            console.log(selection);
-          }
+          isDisabled: !canUpdateAll,
+          onPress: () => handleBulkAction(selectedPlacements, 'withdrawn')
+        },
+        {
+          displayText: TABLE_LANG.RESUME,
+          isDisabled: !canUpdateAll || !selectedPlacements.some(({ owner_status }) => owner_status === 'paused'),
+          onPress: () => handleBulkAction(selectedPlacements.filter(({ owner_status }) => owner_status === 'paused'), 'active')
         }
       ];
     }
@@ -177,30 +341,42 @@ function InventoryTable() {
       displayText: TABLE_LANG.FIND_ON_MAP,
       iconName: 'map-search',
       variant: 'primary',
-      isDisabled: isEmpty,
-      onPress: () => {
-        console.log('Hi');
-      },
+      isDisabled: isEmpty || isLoading,
+      onPress: () => setIsMapDialogOpen(true),
     },
   ];
   
-  console.log({ TABLE_STATES, TABLE_ROWS });
   return (
-    <Table
-      name="inventory"
-      selection={ TABLE_SELECTION }
-      states={ TABLE_STATES }
-      cols={ TABLE_COLS }
-      rows={ TABLE_ROWS }
-      filters={ TABLE_FILTERS }
-      pagination= { TABLE_PAGINATION }
-      search={ TABLE_SEARCH }
-      extraActions={ TABLE_EXTRA_ACTIONS }
-    >
+    <>
+      { actionError && <p role="alert" className="p-2 text-danger">{ actionError }</p> }
+      { copyFeedback && <p role="status" className="p-2 text-sm">{ copyFeedback }</p> }
+      <Table
+        key={ `${page}:${pageSize}:${selectionReset}` }
+        name="inventory"
+        selection={ TABLE_SELECTION }
+        states={ TABLE_STATES }
+        cols={ TABLE_COLS }
+        rows={ TABLE_ROWS }
+        filters={ TABLE_FILTERS }
+        pagination= { TABLE_PAGINATION }
+        search={ TABLE_SEARCH }
+        extraActions={ TABLE_EXTRA_ACTIONS }
+      >
       <EmptyContent>
         Sin contenido
       </EmptyContent>
-    </Table>
+      </Table>
+      { isMapDialogOpen && <InventoryMapDialog
+        userId={ user?.id }
+        filters={ filters }
+        initialPlacement={ placements.find(item => Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude)) && item.latitude != null && item.longitude != null) }
+        onClose={ () => setIsMapDialogOpen(false) }
+        onViewDetails={ (placement) => {
+          setIsMapDialogOpen(false);
+          viewDetails(placement);
+        } }
+      /> }
+    </>
   );
 }
 

@@ -35,6 +35,34 @@ const PUBLIC_PLACEMENT_SELECT = `
   )
 `;
 
+const PLACEMENT_DETAIL_SELECT = `
+  id,
+  code,
+  user_id,
+  type,
+  latitude,
+  longitude,
+  structure_height,
+  face_count,
+  country,
+  state,
+  city,
+  display_name,
+  description,
+  visibility,
+  owner_status,
+  review_status,
+  faces:placement_faces (
+    id,
+    images,
+    display_width,
+    display_height,
+    day_range,
+    period_price,
+    created_at
+  )
+`;
+
 const toArray = (value) => {
   if (value instanceof Set) return [...value];
   if (Array.isArray(value)) return value;
@@ -531,7 +559,8 @@ const getPublicPlacementPageInView = async ({
     .from('placements')
     .select(PUBLIC_PLACEMENT_SELECT)
     .eq('visibility', 'public')
-    .eq('status', 'active')
+    .eq('owner_status', 'active')
+    .eq('review_status', 'approved')
     .in('id', placementIds);
 
   if (placementsError) {
@@ -577,6 +606,39 @@ const getPublicPlacementPageInView = async ({
 };
 
 export const placementsService = {
+  async getPlacementDetails({ code, id, shareToken }) {
+    if (id || shareToken) {
+      if (!UUID_PATTERN.test(id ?? '') || !UUID_PATTERN.test(shareToken ?? '')) {
+        return null;
+      }
+
+      const { data, error } = await supabase.rpc('get_unlisted_placement', {
+        p_placement_id: id,
+        p_share_token: shareToken
+      });
+
+      if (error) throw error;
+      if (!data?.placement) return null;
+
+      return { ...data.placement, faces: data.faces ?? [] };
+    }
+
+    if (!FULL_PLACEMENT_CODE_PATTERN.test(code?.toUpperCase() ?? '')) {
+      return null;
+    }
+
+    // RLS exposes published public placements to everyone and unpublished
+    // placements only to their owner (or the roles authorized by the database).
+    const { data, error } = await supabase
+      .from('placements')
+      .select(PLACEMENT_DETAIL_SELECT)
+      .eq('code', code.toUpperCase())
+      .maybeSingle();
+
+    if (error) throw error;
+    return data;
+  },
+
   async createPlacement(formattedData, userId) {
     const { faces, ...placementData } = formattedData;
 
@@ -672,7 +734,8 @@ export const placementsService = {
       // Keep these explicit even though RLS also enforces public visibility.
       // PostgreSQL needs the predicates to match Home's partial indexes.
       .eq('visibility', 'public')
-      .eq('status', 'active');
+      .eq('owner_status', 'active')
+      .eq('review_status', 'approved');
 
     if (normalizedSearch.exactCode) {
       query = query.eq('code', normalizedSearch.exactCode);
@@ -805,7 +868,8 @@ export const placementsService = {
       city = null,
       state = null,
       country = null,
-      status = null,
+      owner_status = null,
+      review_status = null,
       visibility = null,
       type = null
     } = filters;
@@ -831,7 +895,8 @@ export const placementsService = {
         structure_height,
         description,
         visibility,
-        status,
+        owner_status,
+        review_status,
         display_name,
         share_token,
         updated_at,
@@ -847,8 +912,9 @@ export const placementsService = {
           updated_at,
           created_at
         )
-      `, { count: 'exact' })
-      .eq('user_id', userId);
+      `, { count: 'exact' });
+
+    query = query.eq('user_id', userId).neq('owner_status', 'withdrawn');
 
     if (normalizedSearch) {
       query = FULL_PLACEMENT_CODE_PATTERN.test(normalizedSearch)
@@ -860,7 +926,8 @@ export const placementsService = {
     query = applyListFilter(query, 'city', city);
     query = applyListFilter(query, 'state', state);
     query = applyListFilter(query, 'country', country);
-    query = applyListFilter(query, 'status', status);
+    query = applyListFilter(query, 'owner_status', owner_status);
+    query = applyListFilter(query, 'review_status', review_status);
     query = applyListFilter(query, 'visibility', visibility);
     query = applyListFilter(query, 'type', type);
 
@@ -880,5 +947,83 @@ export const placementsService = {
       pageSize,
       totalPages: Math.ceil(total / pageSize)
     };
+  },
+
+  async getInventoryPlacementsInView({ userId, bounds, filters = {}, limit = 500 } = {}) {
+    if (!userId) throw new Error('USER_ID_REQUIRED');
+
+    const { south, west, north, east } = bounds ?? {};
+    if (![south, west, north, east].every(Number.isFinite) || south >= north || west >= east) {
+      throw new Error('INVALID_VIEWPORT');
+    }
+
+    const {
+      search = '', faceCount = null, city = null, state = null,
+      country = null, owner_status = null, review_status = null,
+      visibility = null, type = null
+    } = filters;
+    const normalizedSearch = typeof search === 'string' ? search.trim().toUpperCase() : '';
+
+    let query = supabase.from('placements').select(`
+      id, code, type, latitude, longitude, face_count, city, state, country,
+      display_name, owner_status, review_status, visibility, share_token
+    `)
+      .eq('user_id', userId)
+      .neq('owner_status', 'withdrawn')
+      .gte('latitude', south)
+      .lte('latitude', north);
+
+    // Mapbox may return longitudes outside [-180, 180] when the globe wraps.
+    // Restrict only if the view spans less than the full globe.
+    if (east - west < 360) {
+      const normalizedWest = ((west + 180) % 360 + 360) % 360 - 180;
+      const normalizedEast = ((east + 180) % 360 + 360) % 360 - 180;
+      query = normalizedWest <= normalizedEast
+        ? query.gte('longitude', normalizedWest).lte('longitude', normalizedEast)
+        : query.or(`longitude.gte.${normalizedWest},longitude.lte.${normalizedEast}`);
+    }
+
+    if (normalizedSearch) {
+      query = FULL_PLACEMENT_CODE_PATTERN.test(normalizedSearch)
+        ? query.eq('code', normalizedSearch)
+        : query.ilike('code', `%${normalizedSearch}%`);
+    }
+
+    query = applyListFilter(query, 'face_count', normalizeFaceCounts(faceCount));
+    query = applyListFilter(query, 'city', city);
+    query = applyListFilter(query, 'state', state);
+    query = applyListFilter(query, 'country', country);
+    query = applyListFilter(query, 'owner_status', owner_status);
+    query = applyListFilter(query, 'review_status', review_status);
+    query = applyListFilter(query, 'visibility', visibility);
+    query = applyListFilter(query, 'type', type);
+
+    const { data, error } = await query.order('code').limit(limit);
+    if (error) throw error;
+    return data ?? [];
+  },
+
+  async updatePlacementOwnerStatus(placementId, ownerStatus) {
+    const { data, error } = await supabase
+      .from('placements')
+      .update({ owner_status: ownerStatus })
+      .eq('id', placementId)
+      .select('id, owner_status, review_status')
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async updatePlacementReviewStatus(placementId, reviewStatus) {
+    const { data, error } = await supabase
+      .from('placements')
+      .update({ review_status: reviewStatus })
+      .eq('id', placementId)
+      .select('id, owner_status, review_status')
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 };

@@ -17,7 +17,8 @@ export const DEFAULT_INVENTORY_FILTERS = Object.freeze({
   city: null,
   state: null,
   country: null,
-  status: null,
+  owner_status: null,
+  review_status: null,
   visibility: null,
   type: null
 });
@@ -73,7 +74,8 @@ export const useInventoryPlacements = ({
     city: filters.city,
     state: filters.state,
     country: filters.country,
-    status: filters.status,
+    owner_status: filters.owner_status,
+    review_status: filters.review_status,
     visibility: filters.visibility,
     type: filters.type
   }), [
@@ -82,7 +84,8 @@ export const useInventoryPlacements = ({
     filters.country,
     filters.faceCount,
     filters.state,
-    filters.status,
+    filters.owner_status,
+    filters.review_status,
     filters.type,
     filters.visibility
   ]);

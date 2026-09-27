@@ -1,4 +1,3 @@
-
 export default {
   ERRORS: {
     EMPTY_FIELD: 'The field cannot be empty',
@@ -18,8 +17,6 @@ export default {
     SETTINGS: 'Settings',
   },
   TOOLTIPS: {
-    SWITCH_DARK: 'Switch to dark mode',
-    SWITCH_LIGHT: 'Switch to light mode',
     EXPAND_SIDEBAR: 'Expand menu',
     COLLAPSE_SIDEBAR: 'Collapse menu',
     REMOVE: 'Remove',
@@ -31,6 +28,7 @@ export default {
   },
   BUTTONS: {
     EXPLORE_SPACE: 'Explore Space',
+    SHOW_ON_MAP: 'Show on map',
     VIEW_DETAILS: 'View details',
     SAVE_DRAFT: 'Save draft',
     CANCEL: 'Cancel',
@@ -52,12 +50,11 @@ export default {
     FIND_LOCATION: 'Find location',
     APPLY_FILTERS: 'Apply filters',
     SELECT: 'Select',
-    DELETE: 'Delete'
+    DELETE: 'Delete',
   },
   TEXTS: {
     CLICK_BELOW_UPLOAD: 'Click the button below to upload',
     BECOME_OWNER: 'List your placements with us and earn extra money',
-    CHOCE_LANGUAGE: 'Choose your language',
     FIND_BY_PLACEMENT: 'Search by ID, location...',
     AVAILABLE_FACES: 'face(s) available',
     ADD_SUCCESS_MESSAGE: 'The item has been added successfully',
@@ -65,8 +62,6 @@ export default {
     GOOD_MORNING: 'Good morning',
     GOOD_AFTERNOON: 'Good afternoon',
     GOOD_NIGHT: 'Good evening',
-    ACCESS_YOUR_ACCOUNT: 'Access your account',
-    LOG_TO_ACCESS_TOOLS: 'Log into your account to access all the platform\'s tools and features.'
   },
   PLACEMENT: {
     TYPES: {
@@ -95,6 +90,6 @@ export default {
     SELECTED_PLURAL: 'Selected',
     PAGE: 'Page',
     RESULTS: 'results',
-    SHOWING: 'Showing'
+    SHOWING: 'Showing',
   }
 };
