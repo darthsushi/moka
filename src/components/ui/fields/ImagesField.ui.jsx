@@ -3,7 +3,6 @@ import { useController } from 'react-hook-form';
 import {
   Button,
   Card,
-  ErrorMessage,
   Input,
   Label,
   Popover,
@@ -161,7 +160,7 @@ function ImagesField({
   }, [field, maxImages, onChange]);
 
   useEffect(
-    () => { registerError(isNotNil(error) ? { ...error, field: error.ref.name } : { field: name, ref: null }) },
+    () => { registerError(isNotNil(error) ? { ...error, field: error.ref?.name } : { field: name, ref: null }) },
     [error, name, registerError]
   );
   return (
@@ -201,13 +200,9 @@ function ImagesField({
         </section>
       </FlatCard>
       { isNotNil(error) &&
-          <ErrorMessage>
-            { 
-              isEmpty(error.message)
-                ? (errors[error.type] || error.type)
-                : errors[error.message]
-            }
-          </ErrorMessage>
+          <p role="alert" className="text-xs text-danger">
+            { errors[error.message] || error.message || errors[error.type] || error.type }
+          </p>
         }
       <div
         className="hidden"
