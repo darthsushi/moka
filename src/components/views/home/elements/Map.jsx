@@ -233,7 +233,7 @@ function Map({
         height: isMapOpen ? 'calc(100% - 80px)' : '0px'
       }}
     >
-      <Card variant="secondary" className="w-full p-0 h-full rounded-[20px] overflow-hidden shadow-xl">
+      <Card variant="secondary" className="w-full p-0 h-full overflow-hidden shadow-xl">
         <Card.Content className="w-full p-0 overflow-hidden">
           <MapboxMap
             ref={mapRef}

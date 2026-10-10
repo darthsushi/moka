@@ -25,7 +25,7 @@ function AvatarAccount() {
   const TEXTS_LANG = SYSTEM_LANG[language].TEXTS;
 
   if (loading) {
-    return <Skeleton className="h-10 w-10 shrink-0 rounded-full" />;
+    return <Skeleton className="h-10 w-10 shrink-0" />;
   }
 
   if (isNotNil(user) && isNotNil(profile)) {
@@ -38,7 +38,7 @@ function AvatarAccount() {
         <Dropdown.Trigger>
           <CircleAvatar size="xs" user={ { avatar_url, name } } />
         </Dropdown.Trigger>
-        <Dropdown.Popover className="max-w-37.5 rounded-[20px]">
+        <Dropdown.Popover className="max-w-37.5">
           <div className="px-3 pt-3 pb-1">
             <div className="flex items-center gap-2">
               <CircleAvatar size="sm" user={ profile } />
@@ -54,19 +54,19 @@ function AvatarAccount() {
           </div>
           <Dropdown.Menu>
             <Dropdown.Section>
-              <Dropdown.Item className="rounded-3xl" id="dashboard" textValue="Dashboard">
+              <Dropdown.Item id="dashboard" textValue="Dashboard">
                 <Label>Dashboard</Label>
               </Dropdown.Item>
-              <Dropdown.Item className="rounded-3xl" id="profile" textValue="Profile">
+              <Dropdown.Item id="profile" textValue="Profile">
                 <Label>Profile</Label>
               </Dropdown.Item>
-              <Dropdown.Item className="rounded-3xl" id="settings" textValue="Settings">
+              <Dropdown.Item id="settings" textValue="Settings">
                 <div className="flex w-full items-center justify-between gap-2">
                   <Label>Settings</Label>
                   
                 </div>
               </Dropdown.Item>
-              <Dropdown.Item className="rounded-3xl" id="new-project" textValue="New project">
+              <Dropdown.Item id="new-project" textValue="New project">
                 <div className="flex w-full items-center justify-between gap-2">
                   <Label>Create Team</Label>
                   
@@ -77,7 +77,7 @@ function AvatarAccount() {
               <>
                 <Separator />
                 <Dropdown.Section>
-                  <Dropdown.Item className="rounded-3xl" id="new-file" textValue="New file">
+                  <Dropdown.Item id="new-file" textValue="New file">
                     <div className="flex flex-col">
                       <Label>
                         { BUTTONS_LANG.BECOME_OWNER }
@@ -97,7 +97,6 @@ function AvatarAccount() {
                 id="logout"
                 textValue={ BUTTONS_LANG.LOG_OUT }
                 variant="danger"
-                className="rounded-3xl"
               >
                 <div className="flex w-full items-center justify-between gap-2">
                   <Label>

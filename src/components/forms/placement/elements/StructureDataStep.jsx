@@ -5,14 +5,14 @@ import {
   Fieldset,
   FieldGroup,
   Form,
-  Surface,
   Typography
 } from '@heroui/react';
 
 import { isValidHeight } from '@/helpers/validators.helper';
+import { ROUNDED_CORNERS } from '@/settings/defaults.settings';
 import { OOH_TYPES } from '@/settings/keys.settings';
 
-import { SelectField, MetersField } from '@/components/ui';
+import { FlatCard, SelectField, MetersField } from '@/components/ui';
 
 const TYPE_X_FACES = {
   UNIPOLE_BILLBOARD: [1, 2, 3, 4],
@@ -23,20 +23,19 @@ const TYPE_X_FACES = {
 
 function StructureExample({ type, description }) {
   return (
-    <Surface
+    <FlatCard
       variant="secondary"
-      className="p-2 border rounded-4xl"
     >
       <img
         alt={ type }
         src={ `/assets/utils/format_examples/${type}.png` }
-        className="pointer-events-none aspect-square w-full rounded-3xl object-cover select-none"
+        className={ `pointer-events-none aspect-square w-full object-cover select-none ${ROUNDED_CORNERS.sm}` }
         loading="lazy"
       />
       <p className="text-xs font-light py-2 leading-3.5 text-justify">
         { description }
       </p>
-    </Surface>
+    </FlatCard>
   )
 };
 
@@ -89,9 +88,9 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
             />
           </div>
           <div className="col-span-1 grid grid-cols-1 h-fit gap-2">
-            <Surface
+            <FlatCard
               variant="secondary"
-              className="col-span-1 p-3 rounded-4xl"
+              className="col-span-1 p-3"
             >
               <SelectField
                 name="type"
@@ -105,10 +104,10 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
                 placeholder={ systemLabels.DEFAULTS.SELEC_ONE }
                 options={ TYPE_OPTIONS }
               />
-            </Surface>
-            <Surface
+            </FlatCard>
+            <FlatCard
               variant="secondary"
-              className="col-span-1 p-3 rounded-4xl"
+              className="col-span-1 p-3"
             >
               <SelectField
                 name="face_count"
@@ -124,10 +123,10 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
                   return [ ...facesOptions ].includes(actualValue);
                 }}
               />
-            </Surface>
-            <Surface
+            </FlatCard>
+            <FlatCard
               variant="secondary"
-              className="col-span-1 p-3 rounded-4xl"
+              className="col-span-1"
             >
               <MetersField
                 name="structure_height"
@@ -141,7 +140,7 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
                 placeholder={ formLabels.INPUT_METERS_PLACEHOLDER }
                 validate={ isValidHeight }
               />
-            </Surface>
+            </FlatCard>
           </div>
         </FieldGroup>
         <Fieldset.Actions className="w-full sticky bottom-0 bg-overlay p-2">

@@ -22,7 +22,7 @@ function OwnerButton() {
   const TEXTS_LABELS = SYSTEM_LANG[language].TEXTS;
 
   if (isAuthLoading) {
-    return <Skeleton className="h-5 w-30 rounded-lg" />;
+    return <Skeleton className="h-5 w-30" />;
   }
 
   if (isNotNil(profile)) {
@@ -43,7 +43,7 @@ function OwnerButton() {
             isModalOpen={ isModalOpen }
             setIsModalOpen={ setIsModalOpen }
             title={ BUTTONS_LABELS.NEW_PLACEMENT }
-            iconName="magnify-full-screen"
+            icon = { { name: "magnify-full-screen" } }
             isLoading={ isCreatingPlacement }
           > 
             <PlacementForm

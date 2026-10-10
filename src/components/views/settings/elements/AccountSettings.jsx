@@ -31,14 +31,14 @@ function Account() {
     return (
       <>
         <div className="w-full flex">
-          <Skeleton className="w-25 h-25 flex-none rounded-4xl" />
+          <Skeleton className="w-25 h-25 flex-none" />
           <div className="w-full p-2 flex flex-col gap-1">
-            <Skeleton className="w-full h-10 rounded-3xl" />
-            <Skeleton className="w-full h-5 rounded-2xl" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-5" />
           </div>
         </div>
-        <Skeleton className="w-full h-12 rounded-3xl" />
-        <Skeleton className="w-full h-12 rounded-3xl" />
+        <Skeleton className="w-full h-12" />
+        <Skeleton className="w-full h-12" />
       </>
     )
   }
@@ -100,7 +100,6 @@ function Account() {
                 { SETTINGS_LANG.OWNER.HEADER }
               </Header>
               <ListBox.Item
-                  className="rounded-3xl"
                 id="payment_methods"
                 textValue={ SETTINGS_LANG.OWNER.PAYMENTS_METHODS }
               >
@@ -115,7 +114,6 @@ function Account() {
           :
             <ListBox.Section>
               <ListBox.Item
-                  className="rounded-3xl"
                 id="become_owner"
                 textValue={ SETTINGS_LANG.OWNER.PAYMENTS_METHODS }
               >
@@ -138,7 +136,6 @@ function Account() {
             { SETTINGS_LANG.PRIVACITY.HEADER }
           </Header>
            <ListBox.Item
-              className="rounded-3xl"
               id="update_password"
               textValue={ SETTINGS_LANG.PRIVACITY.CHANGE_PASSWORD }
             >
@@ -157,9 +154,12 @@ function Account() {
         isModalOpen={ isEditing }
         setIsModalOpen={ setIsEditing }
         title="Edit profile"
-        isDismissable={ false }
-        isKeyboardDismissDisabled={ true }
-        showDefaultCloseButton={ false }
+        dismissOptions={
+          {
+            enabled: false,
+            disableKeyboard: true,
+          }
+        }
         size="sm"
       >
         <EditUserProfile

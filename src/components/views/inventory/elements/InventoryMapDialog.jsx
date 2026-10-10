@@ -130,13 +130,13 @@ function InventoryMapDialog({ userId, filters, initialPlacement, onClose, onView
           />
         </MapboxMap>
         <section aria-label={ labels.MAP_RESULTS }
-          className="absolute bottom-3 left-3 top-auto z-10 flex max-h-[46%] w-[calc(100%-1.5rem)] flex-col overflow-hidden rounded-2xl border border-default bg-background shadow-xl sm:bottom-4 sm:left-4 sm:top-4 sm:max-h-none sm:w-80">
+          className="absolute bottom-3 left-3 top-auto z-10 flex max-h-[46%] w-[calc(100%-1.5rem)] flex-col overflow-hidden border border-default bg-background shadow-xl sm:bottom-4 sm:left-4 sm:top-4 sm:max-h-none sm:w-80">
           <div className="shrink-0 border-b border-default p-3">
             <label htmlFor="inventory-map-search" className="sr-only">{ labels.SEARCH_BY_ID }</label>
             <input id="inventory-map-search" type="search" value={ search }
               onChange={ event => setSearch(event.target.value) }
               placeholder={ labels.SEARCH_BY_ID }
-              className="w-full rounded-xl border border-default bg-surface px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+              className="w-full border border-default bg-surface px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
             <p className="mt-2 text-xs text-default-500" role="status">
               { isLoading ? labels.MAP_LOADING : `${placements.length} ${labels.MAP_RESULTS}` }
             </p>
@@ -148,7 +148,7 @@ function InventoryMapDialog({ userId, filters, initialPlacement, onClose, onView
             { placements.map(placement => (
               <button key={ placement.id } type="button" onClick={ () => selectPlacement(placement) }
                 aria-pressed={ selected?.id === placement.id }
-                className={`mb-2 w-full rounded-xl border p-3 text-left transition-colors hover:bg-surface-secondary ${selected?.id === placement.id ? 'border-primary bg-surface-secondary' : 'border-default bg-background'}`}>
+                className={`mb-2 w-full border p-3 text-left transition-colors hover:bg-surface-secondary ${selected?.id === placement.id ? 'border-primary bg-surface-secondary' : 'border-default bg-background'}`}>
                 <span className="block font-semibold">{ placement.code }</span>
                 <span className="block truncate text-sm text-default-500">{ placement.display_name || [placement.city, placement.state].filter(Boolean).join(', ') }</span>
                 <span className="block text-xs text-default-500">{ labels[placement.type] } · { labels[placement.owner_status?.toUpperCase()] }</span>

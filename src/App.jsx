@@ -4,8 +4,9 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import { MODULES } from '@/settings/navigation.settings';
 
-import { AppLayout } from '@/components/layouts';
 import { ProtectedRoute, PublicOnlyRoute, RoleRoute } from '@/router';
+
+import { AppLayout } from '@/components/layouts';
 import { AccessDenied, Auth, HomePage, Inventory, NotFound, PlacementPage, Settings } from '@/components/views';
 import PlacementDetailsDialog from '@/components/views/home/elements/PlacementDetailsDialog';
 

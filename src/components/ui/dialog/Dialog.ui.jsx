@@ -5,19 +5,22 @@ import Icon from '../icons/Icon.ui';
 
 function Dialog({
   children = null,
-  fillIcon = true,
-  iconName = null,
-  isDismissable = true,
-  isKeyboardDismissDisabled = false,
+  icon = {},
+  dismissOptions = {},
   isLoading = false,
   isModalOpen = false,
-  placement = 'bottom',
   setIsModalOpen = noop,
-  showDefaultCloseButton = true,
+  placement = 'bottom',
   size = 'lg',
   title = '',
   variant = 'blur',
 }) {
+  const { filled: iconFilled, name: iconName } = icon;
+  const {
+    enabled: isDismissable,
+    disableKeyboard: isKeyboardDismissDisabled,
+    showCloseButton,
+  } = dismissOptions;
 
   return (
     <Modal.Backdrop
@@ -34,11 +37,14 @@ function Dialog({
         className="min-h-auto transition-all"
       >
         <Modal.Dialog
-          className={ `transition-all rounded-[28px] border-2 ${ ['sm', 'lg'].includes(size) && 'max-h-150' }` }
+          className={ `transition-all border-2 ${ ['sm', 'lg'].includes(size) && 'max-h-150' }` }
         >
           
-          { showDefaultCloseButton && 
-            <Modal.CloseTrigger isPending={ isLoading } isDisabled={ isLoading }>
+          { (showCloseButton && isDismissable) && 
+            <Modal.CloseTrigger
+              isPending={ isLoading }
+              isDisabled={ isLoading }
+            >
               <Icon name="close" />
             </Modal.CloseTrigger>
           }
@@ -46,7 +52,10 @@ function Dialog({
           <Modal.Header>
             { isNotNil(iconName) &&
               <Modal.Icon className="bg-default text-foreground text-2xl">
-                <Icon name={ iconName } filled={ fillIcon } />
+                <Icon
+                  filled={ iconFilled || true }
+                  name={ iconName }
+                />
               </Modal.Icon>
             }
             <Modal.Heading className="font-bold text-xl capitalize">

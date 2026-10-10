@@ -155,8 +155,17 @@ const normalizeFaceCounts = (faceCount) => {
   return [...new Set(normalizedValues)];
 };
 
-const parseDayRange = (range) => {
-  const match = range?.match(/^\[(\d+),(\d+)\)$/);
+// TODO: Normalizar unicamente en el servicio de los placements.
+const normalizeRange = (range) => {
+  if (Array.isArray(range)) {
+    return range.length === 2 ? range : null;
+  }
+
+  if (typeof range !== 'string') {
+    return null;
+  }
+
+  const match = range.match(/^\[(\d+),(\d+)\)$/);
 
   if (!match) {
     return null;
@@ -189,6 +198,6 @@ export {
   getValueOrDefault,
   normalizeFaceCount,
   normalizeFaceCounts,
-  parseDayRange,
+  normalizeRange,
   serializeDayRange
 };

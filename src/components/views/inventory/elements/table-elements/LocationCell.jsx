@@ -1,10 +1,10 @@
-import { Surface, Typography } from '@heroui/react';
+import { Typography } from '@heroui/react';
 import { Icon } from '@/components/ui';
 
 function LocationCell({ display_name, city, country, state }) {
 
   return (
-    <Surface className="flex items-center gap-1 cursor-pointer max-w-fit pr-3 py-1 rounded-3xl">
+    <div className="flex items-center gap-1 max-w-fit">
       <div className="flex items-center justify-center size-12">
         <Icon name="map" filled />
       </div>
@@ -16,7 +16,7 @@ function LocationCell({ display_name, city, country, state }) {
           { city }, { state }, { country }
         </Typography>
       </div>
-    </Surface>
+    </div>
   );
 }
 

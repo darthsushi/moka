@@ -3,12 +3,10 @@ import { useForm } from 'react-hook-form';
 import {
   Alert,
   Button,
-  Card,
   Fieldset,
   FieldGroup,
   Form,
   Spinner,
-  Surface,
   Tooltip,
   Typography
 } from '@heroui/react';
@@ -17,7 +15,8 @@ import { isNil, isNotNil, not } from '@/helpers/ramda.helpers';
 import { isValidCoodinates } from '@/helpers/validators.helper';
 
 import { Animations } from '@/components/animations';
-import { Icon, TextField } from '@/components/ui';
+import { FlatCard, GoogleMapsView, Icon, TextField } from '@/components/ui';
+import { Description } from '@heroui/react';
 
 const getSingleStringCoor = ({ latitude, longitude }) => {
   if (isNil(latitude) || isNil(longitude)) {
@@ -33,8 +32,6 @@ function LocationViewer({
     labels: { systemLabels, formLabels },
     actions: { editLocation }
   }) {
-  const [latitude, longitude] = coordinates.split(',');
-  const MAP_URL = `https://maps.google.com/maps?q=${latitude},${longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
 
   return (
     <>
@@ -46,15 +43,19 @@ function LocationViewer({
           { formLabels.LOCATION_DESCRIPTION }
         </Typography.Paragraph>
       </div>
-      <Card variant="secondary" className="w-full rounded-4xl">
-        <Card.Header className="w-full grid grid-cols-5">
+      <GoogleMapsView
+        name="map_preview"
+        className="grid grid-cols-5"
+        coordinates={ coordinates }
+      >
+        <>
           <div className="col-span-4">
-            <Card.Title className="leading-3.5 mb-1.5 truncate">
+            <Typography type="body-sm" weight="normal" className="leading-3.5 mb-1 truncate">
               { location.display_name }
-            </Card.Title>
-            <Card.Description className="text-xs leading-4 truncate">
+            </Typography>
+            <Description className="text-xs leading-4 truncate">
               { location.city }, { location.state }, { location.country }
-            </Card.Description> 
+            </Description> 
           </div>
           <div className="col-span-1">
             <Tooltip>
@@ -72,17 +73,8 @@ function LocationViewer({
               </Tooltip.Content>
             </Tooltip>
           </div>
-        </Card.Header>
-        <Card.Content className="w-full h-50 rounded-3xl overflow-hidden shadow-md border border-default-200">
-          <iframe
-            title="map_preview"
-            src={ MAP_URL }
-            className="w-full h-full border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        </Card.Content>
-      </Card>
+        </>
+      </GoogleMapsView>
     </>
   );
 };
@@ -216,9 +208,9 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
                   actions={ { editLocation: () => setIsValidated(false) } }
                 />
               : 
-                <Surface
+                <FlatCard
                   variant="secondary"
-                  className="w-full p-3 rounded-4xl mt-2"
+                  className="w-full p-3 mt-2"
                 >
                   <div className="w-full grid grid-cols-6">
                     <div className="col-span-1 flex items-center justify-center">
@@ -226,9 +218,12 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
                       isLoading ?
                         <Spinner size="lg" />
                       :
-                        <Surface className="w-15 h-15 flex justify-center items-center text-3xl rounded-3xl text-rose-900 bg-rose-400 border border-rose-500">
+                        <FlatCard
+                          rounded="sm"
+                          className="w-15 h-15 flex justify-center items-center text-3xl text-rose-900 bg-rose-400 border border-rose-500"
+                        >
                           <Icon filled name="add-location" />
-                        </Surface>
+                        </FlatCard>
                       }
                     </div>
                     <div className="col-span-5 h-fit">
@@ -262,7 +257,7 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
                       />
                     </div>
                   </FieldGroup>
-                </Surface>
+                </FlatCard>
             }
           </Animations.DoubleCard>
         </div>

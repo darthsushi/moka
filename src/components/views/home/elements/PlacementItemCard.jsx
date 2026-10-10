@@ -8,7 +8,7 @@ import {
   Typography
 } from '@heroui/react';
 
-import { formatCurrency, parseDayRange } from '@/helpers/utilities.helpers';
+import { formatCurrency } from '@/helpers/utilities.helpers';
 import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 import { MIN_RENT_DAYS } from '@/settings/defaults.settings';
@@ -18,7 +18,7 @@ import { Icon } from '@/components/ui';
 
 const obtainFaceData = ([{ images = [], day_range, period_price }]) => {
   const [firtImage] = images;
-  const [minDays, maxDays] = parseDayRange(day_range);
+  const [minDays, maxDays] = day_range;
 
   const lowestPrice = formatCurrency(period_price * (minDays / MIN_RENT_DAYS));
   const higherPrice = formatCurrency(period_price *  (maxDays / MIN_RENT_DAYS));
@@ -75,10 +75,10 @@ function PlacementItemCard({
 
   return (
     <Animations.HoverCard variant="mark" data-placement-id={ id }>
-      <Card className={ `col-span-1 rounded-4xl p-2 shadow-sm hover:shadow-lg ${ringCard}` }>
-        <div className="w-full h-50 grid grid-cols-1 overflow-hidden rounded-4xl relative">
+      <Card className={ `col-span-1 p-2 shadow-sm hover:shadow-lg ${ringCard}` }>
+        <div className="w-full h-50 grid grid-cols-1 overflow-hidden relative">
           <div
-            className={ `bg-center bg-cover h-full col-span-1` }
+            className={ `bg-center bg-cover h-full col-span-1 rounded-3xl` }
             style={ { backgroundImage: `url(${image})` } }
           />
           <div className="w-full h-full absolute pointer-events-none flex flex-col justify-between px-2">

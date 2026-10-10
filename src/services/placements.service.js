@@ -1,5 +1,10 @@
 import { supabase } from './supabase';
-import { applyListFilter, normalizeFaceCounts, serializeDayRange } from '@/helpers/utilities.helpers';
+import {
+  applyListFilter,
+  normalizeFaceCounts,
+  normalizeRange,
+  serializeDayRange
+} from '@/helpers/utilities.helpers';
 
 const FULL_PLACEMENT_CODE_PATTERN = /^(?:[A-Z]{2}-[A-Z0-9]{1,3}|OTR)-\d+$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -444,8 +449,16 @@ const applyPublicCursor = (query, cursor) => {
   );
 };
 
-const toPublicPlacement = (placement) => ({
+const normalizePlacement = (placement) => placement && ({
   ...placement,
+  faces: (placement.faces ?? []).map(face => ({
+    ...face,
+    day_range: normalizeRange(face.day_range)
+  }))
+});
+
+const toPublicPlacement = (placement) => ({
+  ...normalizePlacement(placement),
 
   // Temporary compatibility layer for the current Home card in main.
   // The persisted `location` JSON is deprecated and no longer stored.
@@ -620,7 +633,7 @@ export const placementsService = {
       if (error) throw error;
       if (!data?.placement) return null;
 
-      return { ...data.placement, faces: data.faces ?? [] };
+      return normalizePlacement({ ...data.placement, faces: data.faces ?? [] });
     }
 
     if (!FULL_PLACEMENT_CODE_PATTERN.test(code?.toUpperCase() ?? '')) {
@@ -636,7 +649,7 @@ export const placementsService = {
       .maybeSingle();
 
     if (error) throw error;
-    return data;
+    return normalizePlacement(data);
   },
 
   async createPlacement(formattedData, userId) {
@@ -674,7 +687,10 @@ export const placementsService = {
         ...placement,
         face_count: createdFaces.length
       },
-      faces: createdFaces
+      faces: createdFaces.map(face => ({
+        ...face,
+        day_range: normalizeRange(face.day_range)
+      }))
     };
   },
 
@@ -941,7 +957,7 @@ export const placementsService = {
     const total = count ?? 0;
 
     return {
-      placements: data ?? [],
+      placements: (data ?? []).map(normalizePlacement),
       total,
       page,
       pageSize,

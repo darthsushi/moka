@@ -28,7 +28,7 @@ function Settings() {
       <div className="w-full h-auto pt-4 p-2">
         <div className="w-full max-w-300 m-auto grid grid-cols-6 gap-2">
           <div aria-label="settings-aside" className="col-span-2 p-1 grid grid-cols-1 h-fit">
-            <Card className="rounded-4xl">
+            <Card>
               <Account />
             </Card>
           </div>

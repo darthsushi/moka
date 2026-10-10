@@ -3,8 +3,6 @@ import { Icon } from '@/components/ui';
 
 function DetailsCell({
     type,
-    faceCount,
-    structureHeight,
     visibility,
     visibilityDisplay
   }) {
@@ -40,20 +38,6 @@ function DetailsCell({
             name={ VISIBILITY_ICON[visibility] }
           />
           { visibilityDisplay }
-        </Chip>
-        <Chip className="flex items-center gap-1">
-          <Icon 
-            filled
-            name="faces"
-          />
-          { faceCount }
-        </Chip>
-        <Chip className="flex items-center gap-1">
-          <Icon
-            filled
-            name="height"
-          />
-          { structureHeight }
         </Chip>
       </div>
     </div>

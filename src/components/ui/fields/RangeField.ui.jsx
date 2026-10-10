@@ -1,7 +1,8 @@
 import { useController } from 'react-hook-form';
-import { Input, Label, Slider, Surface } from '@heroui/react';
+import { Input, Label, Slider } from '@heroui/react';
 
 import { noop } from '@/helpers/ramda.helpers';
+import FlatCard from '../containers/FlatCard.ui';
 
 function RangeField({
   control,
@@ -28,7 +29,7 @@ function RangeField({
   }
 
   return (
-    <Surface variant="transparent" className="py-2 rounded-4xl">
+    <FlatCard className="py-2">
       <Slider
         className="w-full"
         step={ step }
@@ -73,7 +74,7 @@ function RangeField({
           className="hidden"
         />
       </div>
-    </Surface>
+    </FlatCard>
   );
 };
 
