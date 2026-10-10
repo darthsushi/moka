@@ -21,7 +21,7 @@ const MODULES = {
     label: 'REVIEW_HUB',
     icon: 'fact-check',
     requiresAuth: true,
-    roles: [PROFILES.ROLES.MODERATOR]
+    roles: [PROFILES.ROLES.MODERATOR, PROFILES.ROLES.ADMIN]
   },
   SETTINGS: {
     id: 'settings',
