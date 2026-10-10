@@ -6,7 +6,7 @@ import { isNil } from '@/helpers/ramda.helpers';
 import { getUnlistedPlacementUrl } from '@/helpers/utilities.helpers';
 import { useAuth, useLanguage } from '@/hooks/contexts';
 import { TABLE_LANGS } from '@/settings/langs.settings';
-import { useInventoryPlacements, usePlacementStatus } from '@/hooks/placements';
+import { useInventoryFilterOptions, useInventoryPlacements, usePlacementStatus } from '@/hooks/placements';
 
 import { Icon, Table } from '@/components/ui';
 import IDCell from './table-elements/IDCell';
@@ -21,6 +21,9 @@ const REVIEW_STATUSES = ['draft', 'pending', 'in_review', 'approved', 'suspended
 const PLACEMENT_TYPES = ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP'];
 
 const INITIAL_FILTERS = {
+  country: null,
+  state: null,
+  city: null,
   visibility: ['public', 'private', 'unlisted'],
   owner_status: OWNER_STATUSES,
   review_status: REVIEW_STATUSES,
@@ -35,6 +38,13 @@ function InventoryTable() {
   const [selectionReset, setSelectionReset] = useState(0);
   const [copyFeedback, setCopyFeedback] = useState('');
   const [isMapDialogOpen, setIsMapDialogOpen] = useState(false);
+  const {
+    countries,
+    states,
+    cities,
+    isLoading: areFilterOptionsLoading,
+    error: filterOptionsError
+  } = useInventoryFilterOptions();
 
   const {
     placements,
@@ -219,6 +229,31 @@ function InventoryTable() {
   });
   const TABLE_FILTERS = {
     filters: [
+      ...[
+        {
+          name: 'country',
+          translationKey: 'COUNTRY',
+          defaultExpended: true,
+          initialValues: countries.map(({ value }) => value),
+          options: countries.map(({ value, label }) => ({ id: value, label }))
+        },
+        {
+          name: 'state',
+          translationKey: 'STATE',
+          initialValues: states.map(({ value }) => value),
+          options: states.map(({ value, label, country }) => ({
+            id: value, label: [label, country].filter(Boolean).join(', ')
+          }))
+        },
+        {
+          name: 'city',
+          translationKey: 'CITY',
+          initialValues: cities.map(({ value }) => value),
+          options: cities.map(({ value, label, state, country }) => ({
+            id: value, label: [label, state, country].filter(Boolean).join(', ')
+          }))
+        }
+      ].filter(({ options }) => options.length > 0),
       {
         name: 'type',
         translationKey: 'TYPE',
@@ -270,13 +305,23 @@ function InventoryTable() {
     activeFiltersCount,
     hasActiveFilters,
     filtersActived: filters,
-    isPending: false,
+    isPending: areFilterOptionsLoading,
     clearFilters,
     onApplyingFilters: (actualFilters) => {
       if (isNil(actualFilters)) {
         clearFilters()
       } else {
-        updateFilters(actualFilters)
+        const selection = (name, options) => {
+          const selected = actualFilters[name] ?? [];
+          return selected.length === options.length ? null : selected;
+        };
+
+        updateFilters({
+          ...actualFilters,
+          country: selection('country', countries),
+          state: selection('state', states),
+          city: selection('city', cities)
+        })
       }
     }
   };
@@ -348,6 +393,7 @@ function InventoryTable() {
   
   return (
     <>
+      { filterOptionsError && <p role="alert" className="p-2 text-danger">{ filterOptionsError }</p> }
       { actionError && <p role="alert" className="p-2 text-danger">{ actionError }</p> }
       { copyFeedback && <p role="status" className="p-2 text-sm">{ copyFeedback }</p> }
       <Table

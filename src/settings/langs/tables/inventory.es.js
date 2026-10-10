@@ -6,6 +6,7 @@ export default {
   DETAILS: 'Detalles',
   LOCATION: 'Ubicación',
   CITY: 'Ciudad',
+  STATE: 'Estado',
   COUNTRY: 'País',
   OWNER_STATUS: 'Disponibilidad',
   REVIEW_STATUS: 'Revisión',
