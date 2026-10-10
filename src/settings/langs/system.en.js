@@ -10,10 +10,12 @@ export default {
   SIDEBAR: {
     HOME: 'home',
     INVENTORY: 'Inventory',
+    REVIEW_HUB: 'Review Hub',
     SETTINGS: 'Settings',
   },
   PAGES: {
     INVENTORY: 'Inventory',
+    REVIEW_HUB: 'Review Hub',
     SETTINGS: 'Settings',
   },
   TOOLTIPS: {

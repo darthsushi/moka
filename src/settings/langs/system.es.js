@@ -10,10 +10,12 @@ export default {
   SIDEBAR: {
     HOME: 'Inicio',
     INVENTORY: 'Inventario',
+    REVIEW_HUB: 'Centro de revisión',
     SETTINGS: 'Configuración'
   },
   PAGES: {
     INVENTORY: 'Inventario',
+    REVIEW_HUB: 'Centro de revisión',
     SETTINGS: 'Configuración'
   },
   TOOLTIPS: {

@@ -57,6 +57,7 @@ import AutoDelete from './svg-icons/AutoDelete.svg.jsx';
 import EditDocument from './svg-icons/EditDocument.svg.jsx';
 import PauseCircle from './svg-icons/PauseCircle.svg.jsx';
 import PlayCircle from './svg-icons/PlayCircle.svg.jsx';
+import FactCheck from './svg-icons/FactCheck.svg.jsx';
 
 function Icon({ name, filled }) {
   const SGVS = {
@@ -81,6 +82,7 @@ function Icon({ name, filled }) {
     'edit-document': EditDocument,
     'error': Error,
     'faces': Faces,
+    'fact-check': FactCheck,
     'favorite': Favorite,
     'filter': Filter,
     'filter-off': FilterOff,

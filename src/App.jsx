@@ -7,7 +7,7 @@ import { MODULES } from '@/settings/navigation.settings';
 import { ProtectedRoute, PublicOnlyRoute, RoleRoute } from '@/router';
 
 import { AppLayout } from '@/components/layouts';
-import { AccessDenied, Auth, HomePage, Inventory, NotFound, PlacementPage, Settings } from '@/components/views';
+import { AccessDenied, Auth, HomePage, Inventory, NotFound, PlacementPage, ReviewHub, Settings } from '@/components/views';
 import PlacementDetailsDialog from '@/components/views/home/elements/PlacementDetailsDialog';
 
 import './App.css';
@@ -39,6 +39,17 @@ function App() {
               <Route
                 path={ MODULES.INVENTORY.id }
                 element={ <Inventory /> }
+              />
+            </Route>
+          </Route>
+          
+          <Route element={ <ProtectedRoute /> }>
+            <Route element={
+              <RoleRoute allowedRoles={ MODULES.REVIEW_HUB.roles } />
+            }>
+              <Route
+                path={ MODULES.REVIEW_HUB.id }
+                element={ <ReviewHub />}
               />
             </Route>
           </Route>

@@ -15,6 +15,14 @@ const MODULES = {
     requiresAuth: true,
     roles: [PROFILES.ROLES.OWNER]
   },
+  REVIEW_HUB: {
+    id: 'review-hub',
+    path: '/review-hub',
+    label: 'REVIEW_HUB',
+    icon: 'fact-check',
+    requiresAuth: true,
+    roles: [PROFILES.ROLES.MODERATOR]
+  },
   SETTINGS: {
     id: 'settings',
     path: '/settings',
