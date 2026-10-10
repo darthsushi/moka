@@ -43,7 +43,8 @@ function InventoryTable() {
     states,
     cities,
     isLoading: areFilterOptionsLoading,
-    error: filterOptionsError
+    error: filterOptionsError,
+    refetch: refetchFilterOptions
   } = useInventoryFilterOptions();
 
   const {
@@ -70,13 +71,14 @@ function InventoryTable() {
     initialPageSize: 12,
     initialFilters: INITIAL_FILTERS
   });
+  const refreshInventory = () => Promise.all([refetch(), refetchFilterOptions()]);
   const {
     updatingId,
     error: actionError,
     changeOwnerStatus,
     changeOwnerStatuses,
     changeReviewStatus
-  } = usePlacementStatus(refetch);
+  } = usePlacementStatus(refreshInventory);
   const { language } = useLanguage();
 
   const TABLE_LANG = TABLE_LANGS[language].INVENTORY;
@@ -336,7 +338,7 @@ function InventoryTable() {
   const TABLE_STATES = {
     isFechingData: isLoading,
     errorObject: error,
-    updateContent: refetch,
+    updateContent: refreshInventory,
     isEmpty,
     hasNoMatches
   };
