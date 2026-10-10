@@ -17,7 +17,7 @@ import StatusCell from './table-elements/StatusCell';
 import InventoryMapDialog from './InventoryMapDialog';
 
 const OWNER_STATUSES = ['active', 'paused'];
-const REVIEW_STATUSES = ['draft', 'pending', 'in_review', 'approved', 'suspended', 'rejected'];
+const REVIEW_STATUSES = ['pending', 'in_review', 'approved', 'suspended', 'rejected'];
 const PLACEMENT_TYPES = ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP'];
 
 const INITIAL_FILTERS = {
@@ -82,7 +82,7 @@ function InventoryTable() {
   const { language } = useLanguage();
 
   const TABLE_LANG = TABLE_LANGS[language].INVENTORY;
-  // Owners can inspect drafts, paused and private placements through RLS.
+  // Owners can inspect pending, paused and private placements through RLS.
   // The token URL is intentionally restricted to published unlisted placements.
   const viewDetails = (placement) => navigate(`/p/${encodeURIComponent(placement.code)}`, {
     state: { backgroundLocation: location }
@@ -140,7 +140,7 @@ function InventoryTable() {
     const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();
     const canChangeAvailability = user_id === user?.id;
     const canRequestReview = user_id === user?.id && owner_status !== 'withdrawn'
-      && (review_status === 'draft' || review_status === 'rejected');
+      && review_status === 'rejected';
     const busy = Boolean(updatingId);
     const availabilityActionLabel = owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME;
 
@@ -284,7 +284,6 @@ function InventoryTable() {
         defaultExpended: true,
         initialValues: REVIEW_STATUSES,
         options: [
-          { id: 'draft', translationKey: 'DRAFT' },
           { id: 'pending', translationKey: 'PENDING' },
           { id: 'in_review', translationKey: 'IN_REVIEW' },
           { id: 'approved', translationKey: 'APPROVED' },

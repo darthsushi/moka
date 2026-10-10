@@ -7,14 +7,12 @@ const STATE_COLOR = {
   'approved': 'success',
   'paused': 'warning',
   'withdrawn': 'danger',
-  'draft': 'secondary',
   'in_review': 'accent',
   'suspended': 'danger',
   'rejected': 'danger'
 };
 
 const STATE_ICON = {
-  'draft': 'draft',
   'pending': 'schedule',
   'active': 'play-circle',
   'approved': 'verified',

@@ -24,7 +24,6 @@ export default {
   ACTIVE: 'Activo',
   PAUSED: 'Pausado',
   WITHDRAWN: 'Retirado',
-  DRAFT: 'Borrador',
   IN_REVIEW: 'En revisión',
   APPROVED: 'Aprobado',
   SUSPENDED: 'Suspendido',
