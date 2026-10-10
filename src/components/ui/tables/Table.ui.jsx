@@ -159,7 +159,7 @@ function TableContent({
     <HeroTable
       data-generic-table
       aria-label={ `${name} table` }
-      className="w-full rounded-4xl h-full"
+      className="w-full h-full"
     >
       <HeroTable.ScrollContainer>
         <HeroTable.Content
@@ -354,7 +354,7 @@ function Table({
 
   return (
     <>
-      <NavBar className="grid grid-cols-2 gap-1">
+      <NavBar contentClassName="grid grid-cols-2 gap-1">
         <div data-table-left-actions className="w-full h-full">
           <Animations.DoubleCard
             animationId={ isSelectionModeActive ? 'selection-mode' : 'table-options' }
@@ -367,7 +367,7 @@ function Table({
                     color="accent"
                     size="lg"
                     variant="soft"
-                    className="rounded-3xl py-1.5"
+                    className="py-1.5"
                   >
                     { `${visibleSelectedRows.size} ${ visibleSelectedRows.size === 1 ? SYSTEM_LANG.WORDS.SELECTED_SINGULAR : SYSTEM_LANG.WORDS.SELECTED_PLURAL }` }
                   </Chip>

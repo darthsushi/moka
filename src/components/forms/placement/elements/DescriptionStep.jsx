@@ -1,7 +1,7 @@
 
 import { useForm } from 'react-hook-form';
-import { Button, Fieldset, FieldGroup, Form, Spinner, Surface } from '@heroui/react';
-import { DescriptionField, SelectField } from '@/components/ui';
+import { Button, Fieldset, FieldGroup, Form, Spinner } from '@heroui/react';
+import { DescriptionField, FlatCard, SelectField } from '@/components/ui';
 
 function DescriptionStep({
     placement,
@@ -17,6 +17,7 @@ function DescriptionStep({
       visibility: placement.visibility || 'public'
     },
   });
+  console.log('DescriptionStep render', placement);
 
   return (
     <Form
@@ -32,7 +33,10 @@ function DescriptionStep({
           className="w-full px-2 grid grid-cols-4"
         >
           <div data-description-group className="col-span-4 py-2 flex flex-col gap-2">
-            <Surface className="w-full p-3 rounded-4xl bg-default">
+            <FlatCard
+              variant="secondary"
+              className="w-full"
+            >
               <FieldGroup className="w-full grid grid-cols-1 gap-2">
                 <DescriptionField
                   label={ formLabels.DESCRIPTION }
@@ -43,10 +47,13 @@ function DescriptionStep({
                   rows={ 5 }
                 />
               </FieldGroup>
-            </Surface>
+            </FlatCard>
           </div>
           <div data-visibility-group className="col-span-2 py-2 flex flex-col gap-2">
-            <Surface className="w-full p-3 rounded-4xl bg-default">
+            <FlatCard
+              variant="secondary"
+              className="w-full"
+            >
               <FieldGroup className="w-full grid grid-cols-1 gap-2">
                 <SelectField
                   label={ formLabels.VISIBILITY }
@@ -61,7 +68,7 @@ function DescriptionStep({
                   ] }
                 />
               </FieldGroup>
-            </Surface>
+            </FlatCard>
           </div>
         </div>
         <Fieldset.Actions className="w-full grid grid-cols-6 gap-1 sticky bottom-0 bg-overlay p-2">

@@ -57,10 +57,10 @@ function PopupContent({
     <Animations.HoverCard disableHoverAnimation tabAnimation>
       <Card
         onClick={ () => onViewDetails?.(placement) }
-        className="w-full p-2 shadow-2xl rounded-4xl cursor-pointer select-none"
+        className="w-full p-2 shadow-2xl cursor-pointer select-none"
       >
         <Card.Content className="grid grid-cols-3 gap-1">
-          <div className="col-span-1 h-20 rounded-4xl overflow-hidden bg-surface-secondary">
+          <div className="col-span-1 h-20 overflow-hidden bg-surface-secondary">
             {/* Poner imagen aqui */}
           </div>
           <div className="col-span-2 row-span-2">

@@ -45,8 +45,8 @@ function PlacementMapMarker({
           ${isSelected ? 'scale-110' : ''}
         `}
       >
-        <span className={ `flex size-8 p-0.5 rounded-full shadow-2xl ${isSelected ? 'bg-accent border-2 border-accent' : 'bg-default border border-default'}` }>
-          <span className={ `relative w-full h-full rounded-full z-2 ${isSelected ? 'bg-default' : 'bg-accent'}` }>
+        <span className={ `flex size-8 p-0.5 shadow-2xl ${isSelected ? 'bg-accent border-2 border-accent' : 'bg-default border border-default'}` }>
+          <span className={ `relative w-full h-full z-2 ${isSelected ? 'bg-default' : 'bg-accent'}` }>
             <img src='/assets/moka/logo.png' className="w-full h-full object-contain" />
           </span>
         </span>

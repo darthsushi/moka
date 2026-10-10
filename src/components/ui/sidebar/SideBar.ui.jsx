@@ -1,10 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  Button,
   Label,
   ListBox,
-  Separator,
-  Surface,
   Tooltip
 } from '@heroui/react';
 
@@ -16,21 +13,19 @@ import { NAVIGATION_ITEMS } from '@/settings/navigation.settings';
 
 import Icon from '../icons/Icon.ui';
 import Logo from '../brand/Logo.ui';
+import FlatCard from '../containers/FlatCard.ui';
 
 function SideBar() {
   const { isAuthenticated, roles } = useAuth();
   const { language } = useLanguage();
   const {
     isSidebarOpen,
-    theme,
-    toggleTheme,
   } = useUI();
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const SIDEBAR_LANG = SYSTEM_LANG[language].SIDEBAR;
-  const TOOLTIPS_LANG = SYSTEM_LANG[language].TOOLTIPS;
 
   const navigationItems = NAVIGATION_ITEMS.filter(
     item => canAccessModule(item, isAuthenticated, roles)
@@ -58,17 +53,13 @@ function SideBar() {
     'flex flex-col',
     'transition-all duration-100',
   ];
-  const FOOTER_CLASS = [
-    isSidebarOpen ? 'grid-cols-2' : 'grid-cols-1',
-    'grid p-1 gap-1 rounded-3xl mt-1'
-  ];
 
   return (
     <nav className={ classNameParser(SIDE_BAR_CLASS) } >
       <div className="w-full h-auto flex flex-col items-center">
         <Logo small={ not(isSidebarOpen) } />
         <div className="w-full min-h-2 pt-2">
-          <Surface
+          <FlatCard
             className="w-full"
             variant="transparent"
           >
@@ -126,42 +117,9 @@ function SideBar() {
                 }
               </ListBox.Section>
             </ListBox>
-          </Surface>
+          </FlatCard>
         </div>
       </div>
-      {/* <div className="w-full h-auto">
-        <Separator
-          variant="secondary"
-        />
-        <Surface
-          variant="tertiary"
-          className={ classNameParser(FOOTER_CLASS) }
-        >
-          <Tooltip>
-            <Button
-              fullWidth
-              size="lg"
-              variant="secondary"
-              className="text-1xl flex justify-center items-center col-span-1"
-              onPress={ toggleTheme }
-            >
-              <Icon
-                filled
-                name={ theme === 'dark' ? 'light-mode' : 'dark-mode' }
-              />
-            </Button>
-            <Tooltip.Content
-              placement={ isSidebarOpen ? 'top' : 'left' }
-            >
-              { 
-                theme === 'dark'
-                ? TOOLTIPS_LANG.SWITCH_LIGHT
-                : TOOLTIPS_LANG.SWITCH_DARK
-              }
-            </Tooltip.Content>
-          </Tooltip>
-        </Surface>
-      </div> */}
     </nav>
   );
 }

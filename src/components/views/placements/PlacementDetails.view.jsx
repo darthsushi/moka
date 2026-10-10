@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@heroui/react';
+import { Button, Chip, Typography } from '@heroui/react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { formatCurrency, parseDayRange } from '@/helpers/utilities.helpers';
+import { formatCurrency } from '@/helpers/utilities.helpers';
+import { not } from '@/helpers/ramda.helpers';
 import { useAuth, useLanguage } from '@/hooks/contexts';
 import { MIN_RENT_DAYS } from '@/settings/defaults.settings';
 import { SYSTEM } from '@/settings/langs.settings';
 import { placementsService } from '@/services/placements.service';
-import { Icon } from '@/components/ui';
+import { FlatCard, Icon, GoogleMapsView, Header } from '@/components/ui';
 
 const COPY = {
   es: {
@@ -41,7 +42,7 @@ const COPY = {
 };
 
 const facePrice = (face) => {
-  const range = parseDayRange(face?.day_range);
+  const range = face?.day_range;
   const price = Number(face?.period_price);
 
   if (!range || face?.period_price == null || !Number.isFinite(price)) return null;
@@ -123,137 +124,175 @@ function PlacementDetails({ isDialog = false }) {
   };
 
   return (
-    <article className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8">
-      <div className="mb-5 flex items-center justify-between gap-3 text-sm text-muted">
-        <nav aria-label="Breadcrumb">
-          <Link to="/" className="hover:underline">{ text.home }</Link> / { placement.code }
-        </nav>
-        { isDialog && <Button variant="ghost" onPress={ () => navigate(-1) }>
-          {/* Icono sugerido: close */}
-          <Icon name="favorite" /> { text.close }
-        </Button> }
-      </div>
-
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="mb-1 text-sm font-semibold text-accent">{ typeLabel } · { placement.code }</p>
-          <h1 className="text-2xl font-semibold sm:text-3xl">{ placement.display_name || [typeLabel, location].filter(Boolean).join(' · ') }</h1>
-          { location && <p className="mt-2 flex items-center gap-2 text-sm text-muted">
-            {/* Icono sugerido: pin-drop */}
-            <Icon name="favorite" /> { location }
-          </p> }
+    <>
+      { not(isDialog) &&
+        <Header>
+          <div className="w-full h-full flex items-center">
+            <Typography type="h4" className="truncate">
+              <p className="truncate">
+                { placement.code }
+              </p>
+            </Typography>
+          </div>
+        </Header>
+      }
+      <article className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8">
+        <div className="mb-5 flex items-center justify-between gap-3 text-sm text-muted">
+          <nav aria-label="Breadcrumb">
+            <Link to="/" className="hover:underline">{ text.home }</Link> / { placement.code }
+          </nav>
+          { isDialog && <Button variant="ghost" onPress={ () => navigate(-1) }>
+            <Icon name="close" /> { text.close }
+          </Button> }
         </div>
-        <span className="rounded-full bg-surface-secondary px-3 py-1.5 text-sm">
-          { faces.length } { text.faces.toLowerCase() }
-        </span>
-      </div>
 
-      <div className={ `grid gap-2 ${images.length > 1 ? 'sm:grid-cols-[2fr_1fr]' : ''}` }>
-        <div className="flex min-h-55 items-center justify-center overflow-hidden rounded-2xl bg-surface-secondary sm:min-h-72">
-          { selectedImage
-            ? <img src={ selectedImage } alt={ `${placement.code} · ${text.face} ${selectedIndex + 1}` } className="h-full max-h-110 w-full object-cover" />
-            : <div className="flex flex-col items-center gap-2 text-muted">
-                {/* Icono sugerido: image */}
-                <Icon name="favorite" />
-                <span>{ text.noImages }</span>
-              </div>
-          }
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="mb-1 text-sm font-semibold text-accent">{ typeLabel } · { placement.code }</p>
+            <h1 className="text-2xl font-semibold sm:text-3xl">{ placement.display_name || [typeLabel, location].filter(Boolean).join(' · ') }</h1>
+            {/* { location && <p className="mt-2 flex items-center gap-2 text-sm text-muted">
+              <Icon name="pin-drop" filled /> { location }
+            </p> } */}
+          </div>
+          <FlatCard className="py-1.5 text-sm">
+            { faces.length } { text.faces.toLowerCase() }
+          </FlatCard>
         </div>
-        { images.length > 1 && <div className="grid grid-cols-2 gap-2 sm:grid-cols-1">
-          { images.slice(0, 2).map((image, index) => (
+
+        <div className={ `grid gap-2 ${images.length > 1 ? 'sm:grid-cols-[2fr_1fr]' : ''}` }>
+          <div className="flex min-h-55 items-center justify-center overflow-hidden bg-surface-secondary sm:min-h-72">
+            { selectedImage
+              ? <img src={ selectedImage } alt={ `${placement.code} · ${text.face} ${selectedIndex + 1}` } className="h-full max-h-110 w-full object-cover" />
+              : <div className="flex flex-col items-center gap-2 text-muted">
+                  <Icon name="image" />
+                  <span>{ text.noImages }</span>
+                </div>
+            }
+          </div>
+          { images.length > 1 && <div className="grid grid-cols-2 gap-2 sm:grid-cols-1">
+            { images.slice(0, 2).map((image, index) => (
+              <button
+                key={ `${image}-${index}` }
+                type="button"
+                aria-label={ `${text.view} ${index + 1}` }
+                aria-pressed={ selectedImageIndex === index }
+                onClick={ () => setSelectedImageIndex(index) }
+                className={ `min-h-25 overflow-hidden bg-surface-secondary focus-visible:outline-2 focus-visible:outline-accent ${selectedImageIndex === index ? 'ring-2 ring-accent' : ''}` }
+              >
+                <img src={ image } alt="" className="h-full max-h-36 w-full object-cover" />
+              </button>
+            )) }
+          </div> }
+        </div>
+        { images.length > 2 && <div className="mt-2 flex flex-wrap gap-2">
+          { images.slice(2).map((image, index) => (
             <button
-              key={ `${image}-${index}` }
+              key={ `${image}-${index + 2}` }
               type="button"
-              aria-label={ `${text.view} ${index + 1}` }
-              aria-pressed={ selectedImageIndex === index }
-              onClick={ () => setSelectedImageIndex(index) }
-              className={ `min-h-25 overflow-hidden rounded-2xl bg-surface-secondary focus-visible:outline-2 focus-visible:outline-accent ${selectedImageIndex === index ? 'ring-2 ring-accent' : ''}` }
+              aria-label={ `${text.view} ${index + 3}` }
+              aria-pressed={ selectedImageIndex === index + 2 }
+              onClick={ () => setSelectedImageIndex(index + 2) }
+              className={ `h-20 w-24 overflow-hidden bg-surface-secondary focus-visible:outline-2 focus-visible:outline-accent ${selectedImageIndex === index + 2 ? 'ring-2 ring-accent' : ''}` }
             >
-              <img src={ image } alt="" className="h-full max-h-36 w-full object-cover" />
+              <img src={ image } alt="" className="h-full w-full object-cover" />
             </button>
           )) }
         </div> }
-      </div>
-      { images.length > 2 && <div className="mt-2 flex flex-wrap gap-2">
-        { images.slice(2).map((image, index) => (
-          <button
-            key={ `${image}-${index + 2}` }
-            type="button"
-            aria-label={ `${text.view} ${index + 3}` }
-            aria-pressed={ selectedImageIndex === index + 2 }
-            onClick={ () => setSelectedImageIndex(index + 2) }
-            className={ `h-20 w-24 overflow-hidden rounded-xl bg-surface-secondary focus-visible:outline-2 focus-visible:outline-accent ${selectedImageIndex === index + 2 ? 'ring-2 ring-accent' : ''}` }
-          >
-            <img src={ image } alt="" className="h-full w-full object-cover" />
-          </button>
-        )) }
-      </div> }
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(230px,320px)]">
-        <div className="space-y-8">
-          <section>
-            <h2 className="mb-3 text-lg font-semibold">{ text.description }</h2>
-            <p className="whitespace-pre-line text-sm leading-7 text-muted">{ placement.description || text.noDescription }</p>
-            { placement.structure_height != null && <p className="mt-4 flex items-center gap-2 text-sm">
-              {/* Icono sugerido: height */}
-              <Icon name="favorite" /> { text.height }: { placement.structure_height } { text.meters }
-            </p> }
-          </section>
+        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(230px,320px)]">
+          <div className="space-y-8">
+            <section>
+              <h2 className="mb-3 text-lg font-semibold">{ text.description }</h2>
+              <p className="whitespace-pre-line text-sm leading-7 text-muted">{ placement.description || text.noDescription }</p>
+              { placement.structure_height != null && <p className="mt-4 flex items-center gap-2 text-sm">
+                <Icon name="height" /> { text.height }: { placement.structure_height } { text.meters }
+              </p> }
+            </section>
 
-          <section>
-            <h2 className="mb-3 text-lg font-semibold">{ text.faces }</h2>
-            <div className="flex flex-wrap gap-2" role="group" aria-label={ text.faces }>
-              { faces.map((face, index) => (
-                <Button
-                  key={ face.id }
-                  variant={ selectedIndex === index ? 'primary' : 'secondary' }
-                  aria-pressed={ selectedIndex === index }
-                  onPress={ () => { setSelectedFaceId(face.id); setSelectedImageIndex(0); } }
+            <section>
+              <h2 className="mb-3 text-lg font-semibold">{ text.faces }</h2>
+              <div className="flex flex-wrap gap-2" role="group" aria-label={ text.faces }>
+                { faces.map((face, index) => (
+                  <Button
+                    key={ face.id }
+                    variant={ selectedIndex === index ? 'primary' : 'secondary' }
+                    aria-pressed={ selectedIndex === index }
+                    onPress={ () => { setSelectedFaceId(face.id); setSelectedImageIndex(0); } }
+                  >
+                    { text.face } { index + 1 }
+                  </Button>
+                )) }
+              </div>
+              { selectedFace && 
+              <FlatCard className="mt-4 grid gap-3 p-4 text-sm sm:grid-cols-2">
+                { selectedFace.display_width != null && selectedFace.display_height != null && 
+                <div>
+                  <dt className="text-muted">{ text.dimensions }</dt>
+                  <dd className="mt-1 font-medium">{ selectedFace.display_width } × { selectedFace.display_height } { text.meters }</dd>
+                </div> }
+                { pricing && <div>
+                  <dt className="text-muted">{ text.days }</dt>
+                  <dd className="mt-1 font-medium">{ pricing.range[0] }–{ pricing.range[1] } { text.dayUnit }</dd>
+                </div> }
+              </FlatCard> }
+            </section>
+
+            { location && <section>
+              <h2 className="mb-2 text-lg font-semibold">
+                { text.location } 
+                {/* <Chip>
+                  { latitude }, { longitude }
+                </Chip> */}
+              </h2>
+              { hasCoordinates &&
+                <GoogleMapsView
+                  name={ `${placement.code}-map` }
+                  coordinates={ `${latitude},${longitude}` }
+                  className="w-full flex flex-row gap-2 items-center"
                 >
-                  { text.face } { index + 1 }
+                  <FlatCard
+                    rounded="sm"
+                    variant="tertiary"
+                    className="w-10 h-10 flex items-center justify-center"
+                  >
+                    <span className="text-lg">
+                      <Icon name="pin-drop" filled />
+                    </span>
+                  </FlatCard>
+                  <div className="w-full flex flex-col overflow-hidden gap-1">
+                    <p className="text-sm text-muted truncate">{ location }</p>
+                    <Chip>
+                      { latitude }, { longitude }
+                    </Chip>
+                  </div>
+                </GoogleMapsView>
+              }
+              { /* <a
+                href={ `https://www.google.com/maps/search/?api=1&query=${latitude}%2C${longitude}` }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block text-sm text-accent underline"
+              >{ text.map }</a> */}
+            </section> }
+          </div>
+
+          <FlatCard className="h-fit p-5">
+            <p className="text-sm text-muted">{ selectedFace ? `${text.face} ${selectedIndex + 1}` : text.faces }</p>
+            <h2 className="mt-2 text-xl font-semibold">{ pricing ? `${text.from} ${pricing.formatted}` : text.noPrice }</h2>
+            { pricing && <p className="mt-1 text-sm text-muted">{ pricing.range[0] } { text.dayUnit }</p> }
+            { canShare
+              ? <Button className="mt-5 w-full" variant="primary" onPress={ copyLink }>
+                  {/* Icono sugerido: link */}
+                  <Icon name="favorite" /> { text.share }
                 </Button>
-              )) }
-            </div>
-            { selectedFace && <dl className="mt-4 grid gap-3 rounded-xl bg-surface-secondary p-4 text-sm sm:grid-cols-2">
-              { selectedFace.display_width != null && selectedFace.display_height != null && <div>
-                <dt className="text-muted">{ text.dimensions }</dt>
-                <dd className="mt-1 font-medium">{ selectedFace.display_width } × { selectedFace.display_height } { text.meters }</dd>
-              </div> }
-              { pricing && <div>
-                <dt className="text-muted">{ text.days }</dt>
-                <dd className="mt-1 font-medium">{ pricing.range[0] }–{ pricing.range[1] } { text.dayUnit }</dd>
-              </div> }
-            </dl> }
-          </section>
-
-          { location && <section>
-            <h2 className="mb-2 text-lg font-semibold">{ text.location }</h2>
-            <p className="text-sm text-muted">{ location }</p>
-            { hasCoordinates && <a
-              href={ `https://www.google.com/maps/search/?api=1&query=${latitude}%2C${longitude}` }
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-block text-sm text-accent underline"
-            >{ text.map }</a> }
-          </section> }
+              : <p className="mt-5 text-sm text-muted">{ placement.visibility === 'unlisted' ? text.unlistedOwner : text.ownerOnly }</p>
+            }
+            { copyState && <p className="mt-2 text-sm" role="status">{ copyState === 'copied' ? text.copied : text.copyError }</p> }
+            <p className="mt-4 border-t border-border pt-3 text-xs text-muted">{ text.noAvailability }</p>
+          </FlatCard>
         </div>
-
-        <aside className="h-fit rounded-2xl border border-border bg-surface p-5 shadow-sm">
-          <p className="text-sm text-muted">{ selectedFace ? `${text.face} ${selectedIndex + 1}` : text.faces }</p>
-          <h2 className="mt-2 text-xl font-semibold">{ pricing ? `${text.from} ${pricing.formatted}` : text.noPrice }</h2>
-          { pricing && <p className="mt-1 text-sm text-muted">{ pricing.range[0] } { text.dayUnit }</p> }
-          { canShare
-            ? <Button className="mt-5 w-full" variant="primary" onPress={ copyLink }>
-                {/* Icono sugerido: link */}
-                <Icon name="favorite" /> { text.share }
-              </Button>
-            : <p className="mt-5 text-sm text-muted">{ placement.visibility === 'unlisted' ? text.unlistedOwner : text.ownerOnly }</p>
-          }
-          { copyState && <p className="mt-2 text-sm" role="status">{ copyState === 'copied' ? text.copied : text.copyError }</p> }
-          <p className="mt-4 border-t border-border pt-3 text-xs text-muted">{ text.noAvailability }</p>
-        </aside>
-      </div>
-    </article>
+      </article>
+    </>
   );
 }
 

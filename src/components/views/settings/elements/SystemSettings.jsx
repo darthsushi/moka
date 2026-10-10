@@ -28,7 +28,7 @@ function SystemSettings() {
       <Header className="pb-2">
         { SETTINGS_LANG.SYSTEM.HEADER }
       </Header>
-      <Card className="w-full rounded-4xl">
+      <Card className="w-full">
         <Card.Content className="flex flex-cols gap-3">
           <div className="w-full grid grid-cols-2">
             <div className="col-span-1 flex flex-col">

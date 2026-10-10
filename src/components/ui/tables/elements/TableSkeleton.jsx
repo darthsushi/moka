@@ -1,25 +1,26 @@
-import { Skeleton, Surface } from '@heroui/react';
+import { Skeleton } from '@heroui/react';
+import FlatCard from '../../containers/FlatCard.ui';
 
 function TableSkeleton({ columns = [],  }) {
   const repetitions = 5;
 
   return (
-    <Surface
+    <FlatCard
       variant="secondary"
-      className="w-full h-full overflow-hidden grid grid-cols-1 gap-0.5 rounded-4xl py-8 px-2"
+      className="w-full h-full overflow-hidden grid grid-cols-1 gap-0.5 py-8 px-2"
     >
       { 
         Array.from({ length: repetitions }).map((_, index) => (
           <Skeleton
             key={ index }
             animationType="shimmer"
-            className="flex h-25 col-span-1 gap-1 p-3 justify-center items-center rounded-2xl"
+            className="flex h-25 col-span-1 gap-1 p-3 justify-center items-center"
           >
-            {  columns.map((_, index) => (<Skeleton key={ index } className="h-full w-full rounded" />)) }
+            {  columns.map((_, index) => (<Skeleton key={ index } className="h-full w-full" />)) }
           </Skeleton>
         ))
       }
-    </Surface>
+    </FlatCard>
   )
 };
 

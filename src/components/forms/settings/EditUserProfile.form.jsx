@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Fieldset, Form, Spinner, Surface, Tabs } from '@heroui/react';
+import { Button, Fieldset, Form, Spinner, Tabs } from '@heroui/react';
 
 import { noop, not } from '@/helpers/ramda.helpers';
 import { useProfileSettings } from '@/hooks/profile';
 
-import { AvatarField, TextField } from '@/components/ui';
+import { AvatarField, FlatCard, TextField } from '@/components/ui';
 
 function EditUserProfile({ closeModal = noop, user = {} }) {
   const { handleSubmit, control } = useForm();
@@ -45,7 +45,7 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
   return (
     <Tabs className="w-full max-w-md" isDisabled={ isLoading }>
       <Tabs.ListContainer>
-        <Tabs.List className="rounded-4xl" aria-label="Options">
+        <Tabs.List aria-label="Options">
           <Tabs.Tab id="name">
             Nombre
             <Tabs.Indicator />
@@ -66,9 +66,9 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
         >
           <Fieldset>
             <Fieldset.Group>
-              <Surface
+              <FlatCard
                   variant="secondary"
-                  className="col-span-1 p-3 rounded-4xl"
+                  className="col-span-1"
                 >
                   <TextField
                     control={ control }
@@ -87,7 +87,7 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
                       }
                     }
                   />
-              </Surface>
+              </FlatCard>
             </Fieldset.Group>
             <Fieldset.Actions className="flex gap-1">
               <Button
@@ -120,9 +120,9 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
         >
           <Fieldset>
             <Fieldset.Group>
-              <Surface
+              <FlatCard
                 variant="secondary"
-                className="col-span-1 p-3 rounded-[22px]"
+                className="col-span-1 p-3"
               >  
                 <AvatarField
                   user={ user }
@@ -130,7 +130,7 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
                   onChange={ () => setIsEditingAvatar(true) }
                   name="avatar_url"
                 />
-              </Surface>
+              </FlatCard>
             </Fieldset.Group>
             <Fieldset.Actions className="flex gap-1">
               <Button

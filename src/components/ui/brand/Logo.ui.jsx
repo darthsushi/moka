@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
 function Logo({ small }) {
-  const LOGO = small ? './assets/moka/logo.png' : './assets/moka/letters.svg';
+  const origin = window.location.origin;
+  const LOGO = small ? `${origin}/assets/moka/logo.png` : `${origin}/assets/moka/letters.svg`;
   const navigate = useNavigate();
 
   return (

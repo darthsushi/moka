@@ -5,16 +5,14 @@ import {
   Fieldset,
   FieldGroup,
   Form,
-  Surface,
   Tabs,
   Typography,
 } from '@heroui/react';
 
 import { isNil } from '@/helpers/ramda.helpers';
-import { parseDayRange } from '@/helpers/utilities.helpers';
 import { isPositiveNumber, isValidHeight } from '@/helpers/validators.helper';
 
-import { ImageField, MetersField, NumberField, RangeField } from '@/components/ui';
+import { FlatCard, ImageField, MetersField, NumberField, RangeField } from '@/components/ui';
 import { MAX_RENT_DAYS, MIN_RENT_DAYS } from '@/settings/defaults.settings';
 
 const normalizeFaces = (actualFaces, actualValues) => {
@@ -40,11 +38,12 @@ const buildStepObjects = (actualPlacement) => {
   const faceByFormSelector = Array.from({ length: actualPlacement.face_count || 1 }, () => ({}));
   const actualFaces = isFacesNumberSync ? (actualPlacement.faces || faceByFormSelector) : faceByFormSelector;
 
+  console.log('FacesDataStep buildStepObjects', actualFaces);
   const actualFields = actualFaces.reduce((acc, item, index) => {
     acc[`display_width_face_${index + 1}`] = item.display_width;
     acc[`display_height_face_${index + 1}`] = item.display_height;
     acc[`period_price_face_${index + 1}`] = item.period_price;
-    acc[`day_range_face_${index + 1}`] = parseDayRange(item.day_range) || [30, 90];
+    acc[`day_range_face_${index + 1}`] = item.day_range || [30, 90];
     acc[`images_face_${index + 1}`] = item.images || [];
 
     return acc;
@@ -81,7 +80,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
             <Tabs.ListContainer>
               <Tabs.List
                 aria-label="vertical tabs faces"
-                className="rounded-4xl sticky top-1 bg-surface-secondary"
+                className=" sticky top-1 bg-surface-secondary"
               >
                 {
                   faces.map((_, face_index) => {
@@ -123,9 +122,9 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                           { formLabels.IMAGES_DESCRIPTION }
                         </Typography.Paragraph>
                       </div>
-                      <Surface
+                      <FlatCard
                         variant="secondary"
-                        className="w-full p-3 rounded-4xl"
+                        className="w-full"
                       >
                         <ImageField
                           name={ `images_face_${face_index + 1}` }
@@ -138,7 +137,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                             'max': systemLabels.ERRORS.MAX_ALLOWED_ITEMS,
                           }}
                         />
-                      </Surface>
+                      </FlatCard>
                     </div>
                     <div className="w-full py-2 flex flex-col gap-2">
                       <div className="px-1">
@@ -146,9 +145,9 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                           { formLabels.DISPLAY_SIZES }
                         </Typography.Heading>
                       </div>
-                      <Surface
+                      <FlatCard
                         variant="secondary"
-                        className="w-full grid grid-cols-4 gap-2 p-3 rounded-4xl"
+                        className="w-full grid grid-cols-4 gap-2"
                       >
                         <div className="col-span-2">
                           <MetersField
@@ -178,7 +177,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                             validate={ isValidHeight }
                           />
                         </div>
-                      </Surface>
+                      </FlatCard>
                     </div>
                     <div className="w-full py-2 flex flex-col gap-2">
                       <div className="px-1">
@@ -186,10 +185,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                           { formLabels.RENTAL_PERIOD }
                         </Typography.Heading>
                       </div>
-                      <Surface
-                        variant="secondary"
-                        className="w-full grid grid-cols-4 gap-2 p-3 rounded-4xl"
-                      >
+                      <FlatCard className="w-full grid grid-cols-4 gap-2">
                         <div className="col-span-4">
                           <RangeField
                             label={ formLabels.RANGE_DAYS }
@@ -226,7 +222,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                             }}
                           />
                         </div>
-                      </Surface>
+                      </FlatCard>
                     </div>
                   </Tabs.Panel>
                 );

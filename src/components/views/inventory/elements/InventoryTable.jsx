@@ -362,9 +362,9 @@ function InventoryTable() {
         search={ TABLE_SEARCH }
         extraActions={ TABLE_EXTRA_ACTIONS }
       >
-      <EmptyContent>
-        Sin contenido
-      </EmptyContent>
+        <EmptyContent>
+          Sin contenido
+        </EmptyContent>
       </Table>
       { isMapDialogOpen && <InventoryMapDialog
         userId={ user?.id }

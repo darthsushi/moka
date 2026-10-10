@@ -2,6 +2,8 @@ export { default as SideBar } from './sidebar/SideBar.ui';
 export { default as Header } from './header/Header.ui';
 export { default as NavBar } from './navbar/NavBar.ui';
 
+export { default as FlatCard } from './containers/FlatCard.ui';
+
 export { default as Icon } from './icons/Icon.ui'
 export { default as Dialog } from './dialog/Dialog.ui';
 
@@ -18,6 +20,8 @@ export { default as RangeField } from './fields/RangeField.ui';
 
 export { default as SearchInput } from './filters/SearchInput.ui';
 export { default as FiltersList } from './filters/FiltersList.ui';
+
+export { default as GoogleMapsView } from './maps/GoogleMapsView.ui';
 
 export { default as CircleAvatar } from './profile/CircleAvatar.ui';
 

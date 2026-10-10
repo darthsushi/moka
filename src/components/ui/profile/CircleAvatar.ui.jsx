@@ -4,10 +4,10 @@ import { not } from '@/helpers/ramda.helpers';
 import { getValueOrDefault } from '@/helpers/utilities.helpers';
 
 const SHAPE_SIZES = {
-  xs: 'w-10 h-10 border-1 shadow-xs rounded-3xl',
-  sm: 'w-12 h-12 border-2 shadow-sm rounded-4xl',
-  md: 'w-25 h-25 border-2 shadow-sm rounded-[30px]',
-  lg: 'w-37 h-37 border-2 shadow-sm rounded-[40px]'
+  xs: 'w-10 h-10 border-1 shadow-xs',
+  sm: 'w-12 h-12 border-2 shadow-sm',
+  md: 'w-25 h-25 border-2 shadow-sm',
+  lg: 'w-37 h-37 border-2 shadow-sm'
 };
 
 const FALLBACK_SIZE = {
@@ -44,7 +44,7 @@ function CircleAvatar({ user = {}, size }) {
     <Avatar color="accent" className={ `flex-none m-0.5 border-accent-soft ${SHAPE_SIZES[actualSize]}` }>
       <Avatar.Image
         alt={ name }
-        src={ avatar_url }
+        src={ `${avatar_url}` }
       />
       <Avatar.Fallback>
         <span className={ FALLBACK_SIZE[actualSize] }>

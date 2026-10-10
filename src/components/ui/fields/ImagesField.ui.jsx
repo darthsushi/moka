@@ -7,7 +7,6 @@ import {
   Input,
   Label,
   Popover,
-  Surface,
   Tooltip,
   Typography
 } from '@heroui/react';
@@ -17,6 +16,7 @@ import { useLanguage } from '@/hooks/contexts';
 import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
 import Icon from '../icons/Icon.ui';
+import FlatCard from '../containers/FlatCard.ui';
 
 function ImagesVisualizer({ images = [], removeImage, systemLabels }) {
 
@@ -38,11 +38,11 @@ function ImagesVisualizer({ images = [], removeImage, systemLabels }) {
           return (
             <Card
               key={ index }
-              className="relative col-span-1 p-1 rounded-4xl"
+              className="relative col-span-1 p-1"
               variant="tertiary"
             >
               <div
-                className="bg-cover bg-center h-28 col-span-1 rounded-3xl"
+                className="bg-cover bg-center h-28 col-span-1"
                 style={ { backgroundImage: `url(${actualImageURL})` } }
               />
               <Card.Footer className="grid grid-cols-4 gap-1">
@@ -175,7 +175,7 @@ function ImagesField({
         >
         { label }
       </Label>
-      <Surface className={ `w-full flex flex-col gap-1 p-2 shadow rounded-4xl ${ invalid && ' border border-danger' }` }>
+      <FlatCard className={ `w-full flex flex-col gap-1 shadow ${ invalid && ' border border-danger' }` }>
         { not(isEmpty(field.value)) &&
           <ImagesVisualizer
             removeImage = { handleRemoveImage }
@@ -199,7 +199,7 @@ function ImagesField({
               { SYSTEM_LABELS.BUTTONS['BROWSE_IMAGES'] }
           </Button>
         </section>
-      </Surface>
+      </FlatCard>
       { isNotNil(error) &&
           <ErrorMessage>
             { 

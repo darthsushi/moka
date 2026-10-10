@@ -1,13 +1,16 @@
 import { Card } from '@heroui/react';
 
-function NavBar({ children, className, stickyTop }) {
-  const sticky = stickyTop >= 0 ? `sticky top-${stickyTop} z-10` : '';
+function NavBar({
+  children,
+  className = '',
+  contentClassName = '',
+}) {
 
   return (
-    <section data-table-actions className={ `w-full h-15 px-2 ${sticky}` }>
+    <section data-table-actions className={ `w-full h-15 px-2 ${className}` }>
       <Card
-        variant="secondary"
-        className={ `w-full h-full py-2 px-3 rounded-4xl ${className}` }
+        variant="default"
+        className={ `w-full h-full py-2 px-3 ${contentClassName}` }
       >
         { children }
       </Card>

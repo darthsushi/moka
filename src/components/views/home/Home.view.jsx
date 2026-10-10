@@ -145,7 +145,7 @@ function Home() {
         <div className="w-full h-full flex items-center gap-2">
           { 
             loading ?
-              <Skeleton className="w-[90%] h-[70%] rounded-3xl" />
+              <Skeleton className="w-[90%] h-[70%]" />
             : 
               (
                 isAuthenticated &&
@@ -162,7 +162,10 @@ function Home() {
         className={ `transition-all ${ isMapOpen ? 'w-[50%]' : 'w-full'}` }
         style={ { minHeight: 'calc(100% - 80px)' } }
       >
-        <NavBar stickyTop={ 20 } className="flex flex-row gap-2 items-center">
+        <NavBar
+          className="sticky top-21 z-10"
+          contentClassName="flex flex-row gap-2 items-center"
+        >
           <SearchInput
             isDisabled={ isLoading }
             name={ 'placements' }

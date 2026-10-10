@@ -10,7 +10,7 @@ function PlacementDetailsDialog() {
       isModalOpen
       setIsModalOpen={ (isOpen) => { if (!isOpen) navigate(-1); } }
       size="cover"
-      showDefaultCloseButton={ false }
+      dismissOptions={ { showCloseButton: false } }
     >
       <PlacementDetails isDialog />
     </Dialog>
