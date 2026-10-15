@@ -27,7 +27,7 @@ export default function ReviewAssignmentDialog({ placement, action, text, onClos
     if (inFlight.current || (transfer && (!message.trim() || !reviewerId))) return;
     inFlight.current = true; setBusy(true); setError(null);
     try {
-      await reviewHubService.act({ placement, action, reviewerId, message });
+      await reviewHubService.act({ placement, action, reviewerId: transfer ? reviewerId : null, message });
       onSuccess();
     } catch (err) { setError(err); }
     finally { inFlight.current = false; setBusy(false); }
