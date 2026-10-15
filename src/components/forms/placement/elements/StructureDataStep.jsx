@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -39,10 +40,11 @@ function StructureExample({ type, description }) {
   )
 };
 
-function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
+function StructureDataStep({ placement, nextStep }) {
+  const { t } = useTranslation();
   const [selectedType, setSelectedType] = useState(placement.type || OOH_TYPES[0]);
   const [facesOptions, setFacesOptions] = useState(TYPE_X_FACES[selectedType]);
-  
+
   const { handleSubmit, control } = useForm({
     defaultValues: {
       type: placement.type || OOH_TYPES[0],
@@ -53,7 +55,7 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
 
   const TYPE_OPTIONS = OOH_TYPES.map((type) => ({
     id: type,
-    label: formLabels.OPTIONS[type]
+    label: t(`placements:types.${type}`)
   }));
 
   const onTypeSelectedChange = (actualTypeSelected) => {
@@ -63,7 +65,7 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
 
   return (
     <Form
-      aria-label="structure-data-step"
+      aria-label={ t('placements:a11y.structure') }
       className="w-ful"
       onSubmit={ handleSubmit(nextStep) }
     >
@@ -71,20 +73,20 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
         <FieldGroup className="w-full grid grid-cols-2 gap-1 px-2">
           <div className="col-span-2">
             <Typography.Heading level={ 6 }>
-              { formLabels.STRUCTURE_DETAILS }
+              { t('placements:form.structureDetails') }
             </Typography.Heading>
             <Typography.Paragraph
               color="muted"
               size="xs"
               className="leading-3"
             >
-              { formLabels.STRUCTURE_DETAILS_DESCRIPTION }
+              { t('placements:form.structureDetailsDescription') }
             </Typography.Paragraph>
           </div>
           <div className="col-span-1 h-fit">
             <StructureExample
               type={ selectedType }
-              description={ formLabels.OPTIONS[`${selectedType}_DESCRIPTION`] }
+              description={ t(`placements:form.options.${selectedType}_DESCRIPTION`) }
             />
           </div>
           <div className="col-span-1 grid grid-cols-1 h-fit gap-2">
@@ -94,14 +96,14 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
             >
               <SelectField
                 name="type"
-                label={ formLabels.TYPE }
+                label={ t('placements:form.type') }
                 control={ control }
                 isRequired
                 onChange={ onTypeSelectedChange }
                 errors={{
-                  'required': systemLabels.ERRORS.EMPTY_FIELD
+                  'required': t('validation:EMPTY_FIELD')
                 }}
-                placeholder={ systemLabels.DEFAULTS.SELEC_ONE }
+                placeholder={ t('common:defaults.selectOne') }
                 options={ TYPE_OPTIONS }
               />
             </FlatCard>
@@ -111,13 +113,13 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
             >
               <SelectField
                 name="face_count"
-                label={ formLabels.FACES }
+                label={ t('placements:form.faces') }
                 control={ control }
                 isRequired
                 options={ [...facesOptions] }
                 errors={{
-                  'required': systemLabels.ERRORS.EMPTY_FIELD,
-                  'validate': systemLabels.ERRORS.INVALID_VALUE
+                  'required': t('validation:EMPTY_FIELD'),
+                  'validate': t('validation:INVALID_VALUE')
                 }}
                 validate={ (actualValue) => {
                   return [ ...facesOptions ].includes(actualValue);
@@ -132,12 +134,12 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
                 name="structure_height"
                 control={ control }
                 isRequired
-                label={ formLabels.STRUCTURE_HEIGHT }
+                label={ t('placements:form.structureHeight') }
                 errors={{
-                  'required': systemLabels.ERRORS.EMPTY_FIELD,
-                  'validate': systemLabels.ERRORS.INVALID_VALUE
+                  'required': t('validation:EMPTY_FIELD'),
+                  'validate': t('validation:INVALID_VALUE')
                 }}
-                placeholder={ formLabels.INPUT_METERS_PLACEHOLDER }
+                placeholder={ t('placements:form.inputMetersPlaceholder') }
                 validate={ isValidHeight }
               />
             </FlatCard>
@@ -149,7 +151,7 @@ function StructureDataStep({ placement, formLabels, systemLabels, nextStep }) {
             type="submit"
             size="lg"
           >
-            { systemLabels.BUTTONS.SAVE_CONTINUE }
+            { t('common:actions.saveContinue') }
           </Button>
         </Fieldset.Actions>
       </Fieldset>

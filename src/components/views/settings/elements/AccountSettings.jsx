@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -12,20 +13,16 @@ import {
 } from '@heroui/react';
 
 import { not } from '@/helpers/ramda.helpers';
-import { useAuth, useLanguage } from '@/hooks/contexts';
+import { useAuth } from '@/hooks/contexts';
 
 import { EditUserProfile } from '@/components/forms';
 import { CircleAvatar, Dialog, Icon } from '@/components/ui';
 
-import { SETTINGS_LANGS } from '../langs';
-
 function Account() {
+  const { t } = useTranslation();
   const { isAuthenticated, /* user, */ signOut, loading, profile } = useAuth();
-  const { language } = useLanguage();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-
-  const SETTINGS_LANG = SETTINGS_LANGS[language];
 
   if (loading) {
     return (
@@ -47,14 +44,14 @@ function Account() {
     return (
       <div className="w-full">
         <Typography type="h6" className="mb-1.5">
-          { SETTINGS_LANG.USER.ACCESS }
+          { t('settings:user.access') }
         </Typography>
         <Typography type="body-xs" color="muted" className="leading-3.5">
-          { SETTINGS_LANG.USER.ACCESS_DESCRIPTION }
+          { t('settings:user.accessDescription') }
         </Typography>
         <div className="w-full flex justify-between mt-5 items-end">
           <Button size="lg" variant="tertiary" onPress={ () => navigate('/auth') }>
-            { SETTINGS_LANG.USER.LOG_IN }
+            { t('common:actions.login') }
           </Button>
           <div className="billboard-asset asset-top-30 w-30 h-30" />
         </div>
@@ -79,35 +76,35 @@ function Account() {
             variant="primary"
             onPress={ () => setIsEditing(true) }
           >
-            { SETTINGS_LANG.USER.EDIT }
+            { t('common:tooltips.edit') }
           </Button>
           <Button onPress={ signOut } size="sm" variant="danger-soft">
-            { SETTINGS_LANG.USER.LOG_OUT }
+            { t('common:actions.logOut') }
           </Button>
         </div>
       </section>
       <Separator variant="secondary" />
       <ListBox
-        aria-label="File actions"
+        aria-label={ t('settings:profile.actions') }
         className="w-full"
         selectionMode="none"
-        onAction={(key) => alert(`Selected item: ${key}`)}
+        onAction={(key) => alert(t('settings:profile.selectedAction', { action: key }))}
       >
-        { 
+        {
           isOwner ?
             <ListBox.Section>
               <Header>
-                { SETTINGS_LANG.OWNER.HEADER }
+                { t('settings:owner.header') }
               </Header>
               <ListBox.Item
                 id="payment_methods"
-                textValue={ SETTINGS_LANG.OWNER.PAYMENTS_METHODS }
+                textValue={ t('settings:owner.paymentsMethods') }
               >
                 <div className="flex h-8 items-center text-lg justify-center pt-px">
                   <Icon filled name="payments" />
                 </div>
                 <div className="flex flex-col">
-                  <Label>{ SETTINGS_LANG.OWNER.PAYMENTS_METHODS }</Label>
+                  <Label>{ t('settings:owner.paymentsMethods') }</Label>
                 </div>
               </ListBox.Item>
             </ListBox.Section>
@@ -115,17 +112,17 @@ function Account() {
             <ListBox.Section>
               <ListBox.Item
                 id="become_owner"
-                textValue={ SETTINGS_LANG.OWNER.PAYMENTS_METHODS }
+                textValue={ t('settings:owner.paymentsMethods') }
               >
                 <div className="flex h-8 items-start justify-center pt-px">
                   <Icon filled name="bar-chart" />
                 </div>
                 <div className="flex flex-col">
                   <Label>
-                    { SETTINGS_LANG.ADVERTISER.BECOME_OWNER }
+                    { t('settings:advertiser.becomeOwner') }
                   </Label>
                   <Description>
-                   { SETTINGS_LANG.ADVERTISER.BECOME_OWNER_DESCRIPTION }
+                   { t('settings:advertiser.becomeOwnerDescription') }
                   </Description>
                 </div>
               </ListBox.Item>
@@ -133,18 +130,18 @@ function Account() {
         }
         <ListBox.Section>
           <Header>
-            { SETTINGS_LANG.PRIVACITY.HEADER }
+            { t('settings:privacity.header') }
           </Header>
            <ListBox.Item
               id="update_password"
-              textValue={ SETTINGS_LANG.PRIVACITY.CHANGE_PASSWORD }
+              textValue={ t('settings:privacity.changePassword') }
             >
               <div className="flex h-8 items-center text-lg justify-center pt-px">
                 <Icon filled name="shield-lock" />
               </div>
               <div className="flex flex-col">
                 <Label>
-                  { SETTINGS_LANG.PRIVACITY.CHANGE_PASSWORD }
+                  { t('settings:privacity.changePassword') }
                 </Label>
               </div>
             </ListBox.Item>
@@ -153,7 +150,7 @@ function Account() {
       <Dialog
         isModalOpen={ isEditing }
         setIsModalOpen={ setIsEditing }
-        title="Edit profile"
+        title={ t('settings:profile.edit') }
         dismissOptions={
           {
             enabled: false,
@@ -164,8 +161,8 @@ function Account() {
       >
         <EditUserProfile
           closeModal={ () => setIsEditing(false) }
-          user={ { name, avatar_url } } 
-        /> 
+          user={ { name, avatar_url } }
+        />
       </Dialog>
     </>
   );

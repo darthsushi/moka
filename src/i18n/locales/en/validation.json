@@ -1,0 +1,14 @@
+{
+  "EMPTY_FIELD": "The field cannot be empty",
+  "INVALID_VALUE": "Invalid value",
+  "MAX_ALLOWED_ITEMS": "Cannot add more items.",
+  "INVALID_COORDINATES": "Invalid coordinates",
+  "ACTION_NOT_ALLOWED": "You do not have permission to perform this action",
+  "UNEXPECTED_ERROR": "An unexpected error occurred. Please try again later",
+  "required": "This field is required.",
+  "min": "The minimum value is {{min}}.",
+  "max": "The maximum value is {{max}}.",
+  "minLength": "Enter at least {{min}} characters.",
+  "maxLength": "Enter at most {{max}} characters.",
+  "invalid": "The value is invalid."
+}

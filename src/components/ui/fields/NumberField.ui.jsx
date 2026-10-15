@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
+import { fieldError } from '@/i18n/errors';
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { FieldError, Label, NumberField } from '@heroui/react';
 
-import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
+import { isNotNil, noop } from '@/helpers/ramda.helpers';
 
 import Icon from '../icons/Icon.ui';
 
@@ -26,6 +28,7 @@ function NumberInputField({
   registerError = noop,
   validate = () => true,
 }) {
+  const { t } = useTranslation();
   const {
     field,
     fieldState: { invalid, error },
@@ -58,7 +61,6 @@ function NumberInputField({
     <>
       <NumberField
         fullWidth
-        locales="es-MX"
         name={ field.name }
         inputRef={ field.ref }
         value={ field.value }
@@ -89,10 +91,8 @@ function NumberInputField({
         </NumberField.Group>
         { isNotNil(error) &&
           <FieldError>
-            { 
-              isEmpty(error.message)
-                ? (errors[error.type] || error.type)
-                : errors[error.message]
+            {
+              fieldError(t, error, errors, { min, max, minLength, maxLength })
             }
           </FieldError>
         }

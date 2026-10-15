@@ -1,0 +1,132 @@
+{
+  "sidebar": {
+    "home": "Inicio",
+    "inventory": "Inventario",
+    "reviewHub": "Centro de revisión",
+    "settings": "Configuración"
+  },
+  "pages": {
+    "inventory": "Inventario",
+    "reviewHub": "Centro de revisión",
+    "settings": "Configuración"
+  },
+  "tooltips": {
+    "expandSidebar": "Expandir menú",
+    "collapseSidebar": "Contraer menú",
+    "remove": "Remover",
+    "markFavorite": "Marcar como favorito",
+    "edit": "Editar",
+    "resetFilters": "Restablecer filtros",
+    "adjustFilters": "Ajustar filtros",
+    "refresh": "Actualizar"
+  },
+  "texts": {
+    "clickBelowUpload": "Haz clic en el botón de abajo para subir.",
+    "becomeOwner": "Publica tu espacio con nosotros y gana dinero extra",
+    "findByPlacement": "Buscar por ID, ubicación...",
+    "addSuccessMessage": "El elemento se ha agregado correctamente",
+    "nothingToShow": "No hay nada por aquí"
+  },
+  "defaults": {
+    "selectOne": "Selecciona uno",
+    "find": "Buscar..."
+  },
+  "words": {
+    "days": "días",
+    "from": "desde",
+    "upTo": "por hasta",
+    "meters": "Metros",
+    "hi": "Hola",
+    "filters": "Filtros",
+    "all": "Todos"
+  },
+  "actions": {
+    "saveDraft": "Borrador",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "remove": "Remover",
+    "complete": "Finalizar",
+    "browseImages": "Explorar imágenes",
+    "nextStep": "Siguiente paso",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "previousStep": "Paso anterior",
+    "continue": "Continuar",
+    "saveContinue": "Guardar y continuar",
+    "applyFilters": "Aplicar filtros",
+    "select": "Seleccionar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "refresh": "Actualizar",
+    "retry": "Reintentar",
+    "exploreSpace": "Explorar espacio",
+    "showOnMap": "Ubicar en el mapa",
+    "viewDetails": "Ver detalles",
+    "browse": "Explorar",
+    "login": "Identifícate",
+    "logOut": "Cerrar sesión",
+    "becomeOwner": "Publica tus espacios",
+    "newPlacement": "Nuevo espacio",
+    "findLocation": "Buscar ubicación"
+  },
+  "language": {
+    "choose": "Selecciona tu idioma"
+  },
+  "loading": "Cargando…",
+  "errors": {
+    "unexpected": "No se pudo completar la solicitud. Inténtalo de nuevo.",
+    "AUTH_REQUIRED": "Debes iniciar sesión para realizar esta acción.",
+    "ACTION_NOT_ALLOWED": "No tienes permiso para realizar esta acción.",
+    "NAME_TOO_SHORT": "El nombre debe contener al menos 5 caracteres.",
+    "INVALID_AVATAR": "Selecciona una imagen JPEG, PNG o WebP para tu avatar.",
+    "AVATAR_TOO_LARGE": "El avatar no puede pesar más de 10 MB.",
+    "NO_PROFILE_CHANGES": "No hay cambios de perfil para guardar.",
+    "invalid_credentials": "El correo electrónico o la contraseña no son correctos.",
+    "email_not_confirmed": "Confirma tu correo electrónico antes de iniciar sesión.",
+    "over_request_rate_limit": "Has realizado demasiados intentos. Espera un momento y vuelve a intentarlo.",
+    "BULK_UPDATE_FAILED": "Se actualizaron {{updated}} espacios; no se pudieron actualizar {{failed}}."
+  },
+  "pagination": {
+    "range": "Mostrando {{start}} a {{end}} de {{total}} resultados",
+    "page": "Página {{page}} de {{total}}"
+  },
+  "selection": {
+    "count_one": "{{count}} seleccionado",
+    "count_other": "{{count}} seleccionados",
+    "count_many": "{{count}} seleccionados"
+  },
+  "a11y": {
+    "navigation": "Navegación principal",
+    "toggleSidebar": "Mostrar u ocultar el menú",
+    "breadcrumb": "Ruta de navegación",
+    "placementOptions": "Opciones del espacio",
+    "selectAll": "Seleccionar todas las filas",
+    "selectRow": "Seleccionar fila {{row}}",
+    "formContent": "Contenido del formulario",
+    "images": "Imágenes",
+    "uploadActions": "Acciones de imágenes",
+    "fileInput": "Seleccionar archivo",
+    "rangeInput": "Rango seleccionado",
+    "imagePreview": "Vista previa de imágenes",
+    "table": "Tabla de resultados"
+  },
+  "account": {
+    "dashboard": "Panel",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "createTeam": "Crear equipo"
+  },
+  "alerts": {
+    "forbidden": "No tienes permiso para acceder a esta página.",
+    "notFound": "No encontramos esta página."
+  },
+  "map": {
+    "title": "Ubicación en el mapa"
+  },
+  "greetings": {
+    "goodMorning": "Buenos días, {{name}}",
+    "goodAfternoon": "Buenas tardes, {{name}}",
+    "goodNight": "Buenas noches, {{name}}"
+  }
+}

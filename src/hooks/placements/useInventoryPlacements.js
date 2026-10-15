@@ -139,7 +139,7 @@ export const useInventoryPlacements = ({
       setPlacements([]);
       setTotal(0);
       setTotalPages(0);
-      setError(err.message);
+      setError(err);
     } finally {
       if (requestId === requestIdRef.current) {
         setIsLoading(false);

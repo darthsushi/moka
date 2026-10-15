@@ -1,0 +1,38 @@
+{
+  "user": {
+    "access": "Accede a tu cuenta",
+    "accessDescription": "Ingresa a tu cuenta para acceder a todas las herramientas de la plataforma"
+  },
+  "advertiser": {
+    "becomeOwner": "Publica tus espacios",
+    "becomeOwnerDescription": "Publica tu espacio con nosotros y gana dinero extra"
+  },
+  "owner": {
+    "header": "Propietario",
+    "paymentsMethods": "Métodos de pago"
+  },
+  "privacity": {
+    "header": "Privacidad",
+    "changePassword": "Cambiar contraseña"
+  },
+  "system": {
+    "header": "Configuración del sistema",
+    "language": "Idioma",
+    "chooseLang": "Selecciona tu idioma",
+    "theme": "Apariencia",
+    "chooseTheme": "Elige el tema del sistema",
+    "darkMode": "Modo oscuro",
+    "lightMode": "Modo claro",
+    "switchDark": "Cambiar a modo oscuro",
+    "switchLight": "Cambiar a modo claro"
+  },
+  "profile": {
+    "name": "Nombre",
+    "avatar": "Avatar",
+    "edit": "Editar perfil",
+    "namePlaceholder": "Escribe tu nombre",
+    "upload": "Subir foto",
+    "actions": "Opciones de la cuenta",
+    "selectedAction": "Opción seleccionada: {{action}}"
+  }
+}

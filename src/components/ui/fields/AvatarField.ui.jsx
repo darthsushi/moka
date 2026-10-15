@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { Button, Input } from '@heroui/react';
@@ -14,6 +15,7 @@ function AvatarField({
   onChange = noop,
  /*  registerError = noop, */
 }) {
+  const { t } = useTranslation();
   const fileInputRef = useRef(null);
   const previewUrlRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(() => user);
@@ -63,7 +65,7 @@ function AvatarField({
 
     const preview = URL.createObjectURL(currentAvatar);
     previewUrlRef.current = preview;
-    
+
     field.onChange(currentAvatar);
 
     onChange(currentAvatar);
@@ -82,13 +84,13 @@ function AvatarField({
 
   return (
     <section
-      aria-label="images field"
+      aria-label={ t('common:a11y.images') }
       className="w-full gap-1 flex"
     >
       <CircleAvatar user={ currentUser } size="md" />
       <div className="grid grid-rows-2 gap-1 w-full p-1 h-fit">
         <Button size="lg" fullWidth onPress={ handleUploadPress }>
-          Subir foto
+          { t('settings:profile.upload') }
         </Button>
         <Button
           fullWidth
@@ -96,14 +98,15 @@ function AvatarField({
           isDisabled={ isNil(currentUser.avatar_url) }
           onPress={ handleOnRemoveAvatar }
         >
-          Eliminar
+          { t('common:actions.delete') }
         </Button>
       </div>
       <div
         className="hidden"
-        aria-label="input file hidden"
+        aria-label={ t('common:a11y.fileInput') }
       >
         <Input
+          aria-label={ t('settings:profile.upload') }
           onChange={ handleOnChange }
           onBlur={ field.onBlur }
           name={ field.name }

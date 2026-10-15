@@ -1,25 +1,22 @@
+import { translateError } from '@/i18n/errors';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Button, Skeleton, toast } from '@heroui/react';
 
 import { isNotNil } from '@/helpers/ramda.helpers';
-import { useAuth, useLanguage } from '@/hooks/contexts';
+import { useAuth } from '@/hooks/contexts';
 import { useCreatePlacement } from '@/hooks/placements';
-import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
 import { PROFILES } from '@/settings/keys.settings';
 
 import { PlacementForm } from '@/components/forms';
 import Dialog from '../../dialog/Dialog.ui';
 
 function OwnerButton() {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(() => false);
 
-  const { language } = useLanguage();
   const { profile, loading: isAuthLoading } = useAuth();
   const { create: createPlacement, isLoading: isCreatingPlacement } = useCreatePlacement();
-
-  const BUTTONS_LABELS = SYSTEM_LANG[language].BUTTONS;
-  const ERRORS_LABELS = SYSTEM_LANG[language].ERRORS;
-  const TEXTS_LABELS = SYSTEM_LANG[language].TEXTS;
 
   if (isAuthLoading) {
     return <Skeleton className="h-5 w-30" />;
@@ -37,15 +34,15 @@ function OwnerButton() {
             size="lg"
             variant="primary"
           >
-            { BUTTONS_LABELS.NEW_PLACEMENT }
+            { t('common:actions.newPlacement') }
           </Button>
           <Dialog
             isModalOpen={ isModalOpen }
             setIsModalOpen={ setIsModalOpen }
-            title={ BUTTONS_LABELS.NEW_PLACEMENT }
+            title={ t('common:actions.newPlacement') }
             icon = { { name: "magnify-full-screen" } }
             isLoading={ isCreatingPlacement }
-          > 
+          >
             <PlacementForm
               placement={ {} }
               isEditing={ false }
@@ -56,9 +53,9 @@ function OwnerButton() {
                   console.log(placementCreated);
 
                   setIsModalOpen(false);
-                  toast.success(TEXTS_LABELS.ADD_SUCCESS_MESSAGE);
-                } catch ({ label: errorLabel })  {
-                  toast.danger(ERRORS_LABELS[errorLabel] || ERRORS_LABELS.UNEXPECTED_ERROR);
+                  toast.success(t('common:texts.addSuccessMessage'));
+                } catch (error)  {
+                  toast.danger(translateError(t, error));
                 }
               }}
             />
@@ -69,10 +66,10 @@ function OwnerButton() {
 
     return (
       <Button
-        size="lg"  
+        size="lg"
         variant="primary"
       >
-        { BUTTONS_LABELS.BECOME_OWNER }
+        { t('common:actions.becomeOwner') }
       </Button>
     );
   }
@@ -82,7 +79,7 @@ function OwnerButton() {
       size="lg"
       variant="ghost"
     >
-      { BUTTONS_LABELS.BECOME_OWNER }
+      { t('common:actions.becomeOwner') }
     </Button>
   );
 }

@@ -1,9 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import { SearchField } from '@heroui/react';
 
 import { noop } from '@/helpers/ramda.helpers';
-import { useLanguage } from '@/hooks/contexts';
-import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
-
 
 function SearchInput({
   name = 'page',
@@ -13,8 +11,7 @@ function SearchInput({
   defaultValue = '',
   placeholder = null,
 }) {
-  const { language } = useLanguage();
-  const SYSTEM_LANG = SYSTEM_LANGS[language];
+  const { t } = useTranslation();
 
   return (
     <div data-table-search className="w-full max-w-65 h-full flex items-center">
@@ -31,7 +28,7 @@ function SearchInput({
           <SearchField.SearchIcon />
           <SearchField.Input
             aria-label={ `Search Input ${name}` }
-            placeholder={ placeholder || SYSTEM_LANG.DEFAULTS.FIND }
+            placeholder={ placeholder || t('common:defaults.find') }
           />
           <SearchField.ClearButton />
         </SearchField.Group>

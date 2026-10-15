@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { Typography } from '@heroui/react';
 import { Card } from '@heroui/react';
@@ -8,6 +9,7 @@ import { Logo } from '@/components/ui';
 import { SignInForm, SignUpForm } from '@/components/forms';
 
 function Auth() {
+  const { t } = useTranslation();
   const { hash } = useLocation();
 
   const isSignUp = hash.includes('#signup');
@@ -19,7 +21,7 @@ function Auth() {
         <Logo small />
       </header>
       <Card variant="transparent" className="w-full min-w-80 max-w-100">
-        { 
+        {
           isSignUp ?
             <SignUpForm />
           :
@@ -28,7 +30,7 @@ function Auth() {
       </Card>
       <footer className="w-full p-2 flex justify-center sticky bottom-0">
         <Typography type="body-xs">
-          { `By continuing, you agree to ${APP_NAME}'s Terms and Privacy` }
+          { t('auth:terms', { app: APP_NAME }) }
         </Typography>
       </footer>
     </div>

@@ -1,17 +1,13 @@
+import { changeLanguage } from '@/i18n';
+import { AVAILABLE_LANGUAGES } from '@/i18n/languages';
+import { useTranslation } from 'react-i18next';
 import { Button, Header, Dropdown, Label, Tooltip } from '@heroui/react';
-
-import {
-  AVAILABLE_LANGUAGES,
-  SYSTEM as SYSTEM_LANG
-} from '@/settings/langs.settings';
-import { useLanguage } from '@/hooks/contexts';
 
 import Icon from '../../icons/Icon.ui';
 
 function LanguageButton() {
-  const { language, setLanguage } = useLanguage();
-
-  const SYSTEM_LABELS = SYSTEM_LANG[language];
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage;
 
   return (
     <Dropdown>
@@ -19,26 +15,26 @@ function LanguageButton() {
         <Button
           size="lg"
           variant="outline"
-          aria-label="Menu"
+          aria-label={ t('common:language.choose') }
           className="text-xl"
         >
           <Icon name='language' />
         </Button>
         <Tooltip.Content>
-          { SYSTEM_LABELS.TEXTS.CHOCE_LANGUAGE }
+          { t('common:language.choose') }
         </Tooltip.Content>
       </Tooltip>
       <Dropdown.Popover className="min-w-[256px]">
         <Dropdown.Menu
           selectedKeys={ [language] }
           selectionMode="single"
-          onSelectionChange={ ([lang]) => setLanguage(lang) }
+          onSelectionChange={ ([lang]) => changeLanguage(lang) }
         >
           <Dropdown.Section>
             <Header>
-              { SYSTEM_LABELS.TEXTS.CHOCE_LANGUAGE }
+              { t('common:language.choose') }
             </Header>
-            { 
+            {
               AVAILABLE_LANGUAGES.map((availableLanguage) => {
                 return (
                   <Dropdown.Item

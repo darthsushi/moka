@@ -1,3 +1,6 @@
+import { changeLanguage } from '@/i18n';
+import { AVAILABLE_LANGUAGES } from '@/i18n/languages';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   Description,
@@ -9,43 +12,41 @@ import {
   Tooltip
 } from '@heroui/react';
 
-import { useLanguage, useUI } from '@/hooks/contexts';
-import { AVAILABLE_LANGUAGES } from '@/settings/langs.settings';
+import { useUI } from '@/hooks/contexts';
 
 import { Icon } from '@/components/ui';
 
-import { SETTINGS_LANGS } from '../langs';
 import { Label } from '@heroui/react';
 
 function SystemSettings() {
-  const { language, setLanguage } = useLanguage();
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage;
   const { setTheme, theme } = useUI();
-  
-  const SETTINGS_LANG = SETTINGS_LANGS[language];
 
   return (
     <>
       <Header className="pb-2">
-        { SETTINGS_LANG.SYSTEM.HEADER }
+        { t('settings:system.header') }
       </Header>
       <Card className="w-full">
         <Card.Content className="flex flex-cols gap-3">
           <div className="w-full grid grid-cols-2">
             <div className="col-span-1 flex flex-col">
               <Label>
-                { SETTINGS_LANG.SYSTEM.LANGUAGE }
+                { t('settings:system.language') }
               </Label>
               <Description>
-                { SETTINGS_LANG.SYSTEM.CHOOSE_LANG }
+                { t('settings:system.chooseLang') }
               </Description>
             </div>
             <div className="col-span-1 flex items-center">
               <Select
-                placeholder={ SETTINGS_LANG.SYSTEM.CHOOSE_LANG }
+                aria-label={ t('settings:system.language') }
+                placeholder={ t('settings:system.chooseLang') }
                 fullWidth
                 variant="secondary"
                 value={ language }
-                onChange={ (value) => setLanguage(value) }
+                onChange={ (value) => changeLanguage(value) }
               >
                 <Select.Trigger>
                   <Select.Value />
@@ -70,10 +71,10 @@ function SystemSettings() {
           <div className="w-full grid grid-cols-2">
             <div className="col-span-1 flex flex-col">
               <Label>
-                { SETTINGS_LANG.SYSTEM.THEME }
+                { t('settings:system.theme') }
               </Label>
               <Description>
-                { SETTINGS_LANG.SYSTEM.CHOOSE_THEME }
+                { t('settings:system.chooseTheme') }
               </Description>
             </div>
             <div className="col-span-1 flex items-center gap-1">
@@ -85,11 +86,11 @@ function SystemSettings() {
                     onPress={ () => setTheme('dark') }
                   >
                     <Icon filled name="dark-mode" />
-                    { SETTINGS_LANG.SYSTEM.DARK_MODE }
+                    { t('settings:system.darkMode') }
                   </ToggleButton>
                 </Tooltip.Trigger>
                 <Tooltip.Content>
-                  { SETTINGS_LANG.SYSTEM.SWITCH_DARK }
+                  { t('settings:system.switchDark') }
                 </Tooltip.Content>
               </Tooltip>
               <Tooltip>
@@ -100,11 +101,11 @@ function SystemSettings() {
                     onPress={ () => setTheme('light') }
                   >
                     <Icon filled name="light-mode" />
-                    { SETTINGS_LANG.SYSTEM.LIGHT_MODE }
+                    { t('settings:system.lightMode') }
                   </ToggleButton>
                 </Tooltip.Trigger>
                 <Tooltip.Content>
-                  { SETTINGS_LANG.SYSTEM.SWITCH_LIGHT }
+                  { t('settings:system.switchLight') }
                 </Tooltip.Content>
               </Tooltip>
             </div>

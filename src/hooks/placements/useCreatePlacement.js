@@ -79,7 +79,7 @@ export const useCreatePlacement = () => {
       };
 
     } catch (err) {
-      setError(err.message);
+      setError(err);
       setIsLoading(false);
       throw err;
     }

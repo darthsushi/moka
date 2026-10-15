@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Marker } from 'react-map-gl/mapbox';
 
 function PlacementMapMarker({
@@ -5,6 +6,7 @@ function PlacementMapMarker({
   isSelected = false,
   onClick
 }) {
+  const { t } = useTranslation();
   const latitude = Number(placement.latitude);
   const longitude = Number(placement.longitude);
 
@@ -30,7 +32,7 @@ function PlacementMapMarker({
     >
       <button
         type="button"
-        aria-label={ `Explorar ${placement.code}` }
+        aria-label={ t('placements:exploreCode', { code: placement.code }) }
         title={ placement.code }
         className={`
           group

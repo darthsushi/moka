@@ -1,0 +1,31 @@
+{
+  "id": "ID",
+  "details": "Detalles",
+  "actions": "Acciones",
+  "edit": "Editar",
+  "pause": "Pausar",
+  "resume": "Reactivar",
+  "withdraw": "Retirar",
+  "withdrawConfirm": "Este espacio dejará de mostrarse de inmediato. Se conservarán sus datos y caras. ¿Quieres retirarlo?",
+  "withdrawMultipleConfirm": "Estos {{count}} espacios dejarán de mostrarse de inmediato. Se conservarán sus datos y caras. ¿Quieres retirarlos?",
+  "sendForReview": "Enviar a revisión",
+  "searchPlacement": "Buscar por código",
+  "searchById": "Buscar por ID",
+  "findOnMap": "Buscar en el mapa",
+  "mapLoading": "Buscando espacios…",
+  "mapEmpty": "No hay espacios en esta zona con los filtros actuales.",
+  "mapError": "No se pudieron cargar los espacios del mapa.",
+  "viewDetails": "Ver detalles",
+  "copyUnlistedLink": "Copiar enlace no listado",
+  "linkCopied": "Enlace copiado",
+  "copyLinkError": "No se pudo copiar el enlace",
+  "empty": "Sin contenido",
+  "mapResults_one": "{{count}} espacio en el mapa",
+  "mapResults_other": "{{count}} espacios en el mapa",
+  "errors": {
+    "load": "No se pudo cargar el inventario. Inténtalo de nuevo.",
+    "filters": "No se pudieron cargar los filtros. Inténtalo de nuevo.",
+    "update": "No se pudo actualizar el espacio. Inténtalo de nuevo."
+  },
+  "mapResults_many": "{{count}} espacios en el mapa"
+}

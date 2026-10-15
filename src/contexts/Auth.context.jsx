@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (changes) => {
     if (not(user?.id)) {
-      throw new Error('Debes iniciar sesión para actualizar tu perfil.');
+      throw new Error('AUTH_REQUIRED');
     }
 
     const updatedProfile = await profileService.updateProfile(user.id, changes);
@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
     hasAnyRole: (allowedRoles = []) => (
       allowedRoles.some(role => roles.includes(role))
     ),
-    
+
     signUp: authService.signUp,
     signIn: authService.signIn,
     signOut: authService.signOut,

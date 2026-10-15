@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useController } from 'react-hook-form';
 import { Input, Label, Slider } from '@heroui/react';
 
@@ -16,6 +17,7 @@ function RangeField({
   defaultValue = [0, 100],
   onChange = noop,
 }) {
+  const { t } = useTranslation();
   const { field } = useController({
     name,
     control,
@@ -61,9 +63,10 @@ function RangeField({
       </Slider>
       <div
         className="hidden"
-        aria-label="input slider hidden"
+        aria-label={ t('common:a11y.rangeInput') }
       >
         <Input
+          aria-label={ t('common:a11y.rangeInput') }
           multiple
           onBlur={ field.onBlur }
           name={ field.name }

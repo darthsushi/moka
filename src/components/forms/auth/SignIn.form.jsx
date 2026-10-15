@@ -1,6 +1,7 @@
+import { translateError } from '@/i18n/errors';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { toast, Button, Fieldset, Form, Typography } from '@heroui/react';
-
 
 import { useAuth } from '@/hooks/contexts';
 import { APP_NAME } from '@/settings/keys.settings';
@@ -8,38 +9,39 @@ import { APP_NAME } from '@/settings/keys.settings';
 import { TextField } from '@/components/ui';
 
 function SignInForm() {
+  const { t } = useTranslation();
   const { handleSubmit, control } = useForm();
   const { loading, signIn } = useAuth()
 
   const onSubmit = async ({ email, password }) => {
     const { data, error } = await signIn(email, password);
 
-    if (data.user) {
-      toast.success('Welcome :)');
+    if (data?.user) {
+      toast.success(t('auth:welcome'));
       return;
     }
 
-    toast.danger(error?.message);
+    toast.danger(translateError(t, error));
   };
 
   return (
     <div className="w-full flex flex-col items-center gap-3">
       <Typography type="body">
-        Welcome back!
+        { t('auth:welcomeBack') }
       </Typography>
       <Typography type="body-xs" color="muted">
-        { `Sign in to your ${APP_NAME} account` }
+        { t('auth:accountHint', { app: APP_NAME }) }
       </Typography>
       <Form
         onSubmit={ handleSubmit(onSubmit) }
         className="w-full pt-3"
         id="signin-form"
-        aria-label="signin-form"
+        aria-label={ t('auth:signIn') }
       >
         <Fieldset>
            <div
             data-form-content
-            aria-label="form-content"
+            aria-label={ t('common:a11y.formContent') }
             className="w-full px-2 grid grid-cols-4"
           >
             <div
@@ -48,10 +50,10 @@ function SignInForm() {
             >
               <TextField
                 name="email"
-                label="Email"
+                label={ t('auth:email') }
                 type="email"
                 control={ control }
-                placeholder="Email address"
+                placeholder={ t('auth:emailPlaceholder') }
                 isDisabled={ loading }
               />
             </div>
@@ -61,10 +63,10 @@ function SignInForm() {
             >
               <TextField
                 name="password"
-                label="Password"
+                label={ t('auth:password') }
                 type="password"
                 control={ control }
-                placeholder="Password"
+                placeholder={ t('auth:password') }
                 isDisabled={ loading }
               />
             </div>
@@ -77,7 +79,7 @@ function SignInForm() {
               size="lg"
               isPending={ loading }
             >
-              Sign in
+              { t('auth:signIn') }
             </Button>
           </Fieldset.Actions>
         </Fieldset>

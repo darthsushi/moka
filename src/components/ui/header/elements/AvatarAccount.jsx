@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Button,
@@ -9,20 +10,16 @@ import {
 } from '@heroui/react';
 
 import { isNotNil, not } from '@/helpers/ramda.helpers';
-import { useAuth, useLanguage } from '@/hooks/contexts';
+import { useAuth } from '@/hooks/contexts';
 import { PROFILES } from '@/settings/keys.settings';
-import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
 
 import CircleAvatar from '../../profile/CircleAvatar.ui';
 
 function AvatarAccount() {
+  const { t } = useTranslation();
   const { loading, user, signOut, profile } = useAuth();
-  const { language } = useLanguage();
-  
-  const navigate = useNavigate();
 
-  const BUTTONS_LANG = SYSTEM_LANG[language].BUTTONS;
-  const TEXTS_LANG = SYSTEM_LANG[language].TEXTS;
+  const navigate = useNavigate();
 
   if (loading) {
     return <Skeleton className="h-10 w-10 shrink-0" />;
@@ -54,22 +51,22 @@ function AvatarAccount() {
           </div>
           <Dropdown.Menu>
             <Dropdown.Section>
-              <Dropdown.Item id="dashboard" textValue="Dashboard">
-                <Label>Dashboard</Label>
+              <Dropdown.Item id="dashboard" textValue={ t('common:account.dashboard') }>
+                <Label>{ t('common:account.dashboard') }</Label>
               </Dropdown.Item>
-              <Dropdown.Item id="profile" textValue="Profile">
-                <Label>Profile</Label>
+              <Dropdown.Item id="profile" textValue={ t('common:account.profile') }>
+                <Label>{ t('common:account.profile') }</Label>
               </Dropdown.Item>
-              <Dropdown.Item id="settings" textValue="Settings">
+              <Dropdown.Item id="settings" textValue={ t('common:account.settings') }>
                 <div className="flex w-full items-center justify-between gap-2">
-                  <Label>Settings</Label>
-                  
+                  <Label>{ t('common:account.settings') }</Label>
+
                 </div>
               </Dropdown.Item>
-              <Dropdown.Item id="new-project" textValue="New project">
+              <Dropdown.Item id="new-project" textValue={ t('common:account.createTeam') }>
                 <div className="flex w-full items-center justify-between gap-2">
-                  <Label>Create Team</Label>
-                  
+                  <Label>{ t('common:account.createTeam') }</Label>
+
                 </div>
               </Dropdown.Item>
             </Dropdown.Section>
@@ -77,13 +74,13 @@ function AvatarAccount() {
               <>
                 <Separator />
                 <Dropdown.Section>
-                  <Dropdown.Item id="new-file" textValue="New file">
+                  <Dropdown.Item id="new-file" textValue={ t('common:actions.becomeOwner') }>
                     <div className="flex flex-col">
                       <Label>
-                        { BUTTONS_LANG.BECOME_OWNER }
+                        { t('common:actions.becomeOwner') }
                       </Label>
                       <Description>
-                        { TEXTS_LANG.BECOME_OWNER }
+                        { t('common:texts.becomeOwner') }
                       </Description>
                     </div>
                   </Dropdown.Item>
@@ -95,12 +92,12 @@ function AvatarAccount() {
               <Dropdown.Item
                 onPress={ signOut }
                 id="logout"
-                textValue={ BUTTONS_LANG.LOG_OUT }
+                textValue={ t('common:actions.logOut') }
                 variant="danger"
               >
                 <div className="flex w-full items-center justify-between gap-2">
                   <Label>
-                    { BUTTONS_LANG.LOG_OUT }
+                    { t('common:actions.logOut') }
                   </Label>
                 </div>
               </Dropdown.Item>
@@ -116,7 +113,7 @@ function AvatarAccount() {
         variant="primary"
         onPress={ () => navigate('/auth') }
       >
-        { BUTTONS_LANG.LOGIN }
+        { t('common:actions.login') }
       </Button>
     );
   }

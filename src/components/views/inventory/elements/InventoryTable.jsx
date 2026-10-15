@@ -1,11 +1,12 @@
+import { translateError } from '@/i18n/errors';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Button, Dropdown, Label } from '@heroui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { isNil } from '@/helpers/ramda.helpers';
 import { getUnlistedPlacementUrl } from '@/helpers/utilities.helpers';
-import { useAuth, useLanguage } from '@/hooks/contexts';
-import { TABLE_LANGS } from '@/settings/langs.settings';
+import { useAuth } from '@/hooks/contexts';
 import { useInventoryFilterOptions, useInventoryPlacements, usePlacementStatus } from '@/hooks/placements';
 
 import { Icon, Table } from '@/components/ui';
@@ -31,6 +32,7 @@ const INITIAL_FILTERS = {
 };
 
 function InventoryTable() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -79,9 +81,7 @@ function InventoryTable() {
     changeOwnerStatuses,
     changeReviewStatus
   } = usePlacementStatus(refreshInventory);
-  const { language } = useLanguage();
 
-  const TABLE_LANG = TABLE_LANGS[language].INVENTORY;
   // Owners can inspect pending, paused and private placements through RLS.
   // The token URL is intentionally restricted to published unlisted placements.
   const viewDetails = (placement) => navigate(`/p/${encodeURIComponent(placement.code)}`, {
@@ -90,21 +90,21 @@ function InventoryTable() {
   const copyUnlistedLink = async (placement) => {
     try {
       await navigator.clipboard.writeText(getUnlistedPlacementUrl(placement));
-      setCopyFeedback(language === 'en' ? 'Link copied' : 'Enlace copiado');
+      setCopyFeedback('inventory:linkCopied');
     } catch {
-      setCopyFeedback(language === 'en' ? 'Could not copy the link' : 'No se pudo copiar el enlace');
+      setCopyFeedback('inventory:copyLinkError');
     }
   };
 
   const handleWithdraw = (placementId) => {
-    if (window.confirm(TABLE_LANG.WITHDRAW_CONFIRM)) {
+    if (window.confirm(t('inventory:withdrawConfirm'))) {
       changeOwnerStatus(placementId, 'withdrawn');
     }
   };
 
   const handleBulkAction = async (selectedPlacements, status) => {
     if (status === 'withdrawn' && !window.confirm(
-      TABLE_LANG.WITHDRAW_MULTIPLE_CONFIRM.replace('{count}', selectedPlacements.length)
+      t('inventory:withdrawMultipleConfirm', { count: selectedPlacements.length })
     )) return;
 
     await changeOwnerStatuses(selectedPlacements.map(({ id }) => id), status);
@@ -113,12 +113,12 @@ function InventoryTable() {
   };
 
   const TABLE_COLS = [
-    { id: 'id', displayText: TABLE_LANG.ID, isRowHeader: true },
-    { id: 'details', displayText: TABLE_LANG.DETAILS },
-    { id: 'location', displayText: TABLE_LANG.LOCATION },
-    { id: 'owner_status', displayText: TABLE_LANG.OWNER_STATUS },
-    { id: 'review_status', displayText: TABLE_LANG.REVIEW_STATUS },
-    { id: 'actions', displayText: TABLE_LANG.ACTIONS },
+    { id: 'id', displayText: t('inventory:id'), isRowHeader: true },
+    { id: 'details', displayText: t('inventory:details') },
+    { id: 'location', displayText: t('placements:fields.location') },
+    { id: 'owner_status', displayText: t('placements:fields.ownerStatus') },
+    { id: 'review_status', displayText: t('placements:fields.reviewStatus') },
+    { id: 'actions', displayText: t('inventory:actions') },
   ];
   const TABLE_ROWS = placements.map(({
     code,
@@ -137,34 +137,33 @@ function InventoryTable() {
     share_token
   }) => {
     const detailPlacement = { id, code, visibility, share_token };
-    const VISIBILITY_TK = (visibility || '').toLocaleUpperCase();
     const canChangeAvailability = user_id === user?.id;
     const canRequestReview = user_id === user?.id && owner_status !== 'withdrawn'
       && review_status === 'rejected';
     const busy = Boolean(updatingId);
-    const availabilityActionLabel = owner_status === 'active' ? TABLE_LANG.PAUSE : TABLE_LANG.RESUME;
+    const availabilityActionLabel = owner_status === 'active' ? t('inventory:pause') : t('inventory:resume');
 
     return {
       id: { render: <IDCell code={ code } isDisabled={ isSelectionModeActive } onPress={ () => viewDetails(detailPlacement) } />, value: id },
       details: {
         render: (
           <DetailsCell
-            type={ TABLE_LANG[type] }
+            type={ t(`placements:types.${type}`) }
             faceCount={ face_count }
             structureHeight={ structure_height }
             visibility={ visibility }
-            visibilityDisplay={ TABLE_LANG[VISIBILITY_TK] }
+            visibilityDisplay={ t(`placements:visibility.${visibility}`) }
           />
         ),
         value: type
       },
       location: { render: <LocationCell display_name={ display_name } city={ city } state={ state } country={ country } />, value: display_name },
       owner_status: {
-        render: <StatusCell status={ owner_status } displayStatus={ TABLE_LANG[owner_status.toUpperCase()] } />,
+        render: <StatusCell status={ owner_status } displayStatus={ t(`placements:ownerStatuses.${owner_status}`) } />,
         value: owner_status
       },
       review_status: {
-        render: <StatusCell status={ review_status } displayStatus={ TABLE_LANG[review_status.toUpperCase()] } />,
+        render: <StatusCell status={ review_status } displayStatus={ t(`placements:reviewStatuses.${review_status}`) } />,
         value: review_status
       },
       actions: {
@@ -181,19 +180,19 @@ function InventoryTable() {
             </Button>
             <Dropdown.Popover>
               <Dropdown.Menu>
-                <Dropdown.Item id="view-details" textValue={ language === 'en' ? 'View details' : 'Ver detalles' } onPress={ () => viewDetails(detailPlacement) }>
-                  <Label>{ language === 'en' ? 'View details' : 'Ver detalles' }</Label>
+                <Dropdown.Item id="view-details" textValue={ t('inventory:viewDetails') } onPress={ () => viewDetails(detailPlacement) }>
+                  <Label>{ t('inventory:viewDetails') }</Label>
                 </Dropdown.Item>
                 { visibility === 'unlisted' && share_token && <Dropdown.Item
                   id="copy-unlisted-link"
-                  textValue={ language === 'en' ? 'Copy private link' : 'Copiar enlace no listado' }
+                  textValue={ t('inventory:copyUnlistedLink') }
                   isDisabled={ owner_status !== 'active' || review_status !== 'approved' }
                   onPress={ () => copyUnlistedLink(detailPlacement) }
                 >
-                  <Label>{ language === 'en' ? 'Copy private link' : 'Copiar enlace no listado' }</Label>
+                  <Label>{ t('inventory:copyUnlistedLink') }</Label>
                 </Dropdown.Item> }
-                <Dropdown.Item id="edit" textValue={ TABLE_LANG.EDIT }>
-                  <Label>{ TABLE_LANG.EDIT }</Label>
+                <Dropdown.Item id="edit" textValue={ t('inventory:edit') }>
+                  <Label>{ t('inventory:edit') }</Label>
                 </Dropdown.Item>
                 { owner_status !== 'withdrawn' && <Dropdown.Item
                   id="toggle-availability"
@@ -203,24 +202,24 @@ function InventoryTable() {
                 >
                   <Label>{ availabilityActionLabel }</Label>
                 </Dropdown.Item> }
-                { canRequestReview && 
+                { canRequestReview &&
                   <Dropdown.Item
                     id="send-for-review"
-                    textValue={ TABLE_LANG.SEND_FOR_REVIEW }
+                    textValue={ t('inventory:sendForReview') }
                     isDisabled={ !canRequestReview }
                     onPress={ () => changeReviewStatus(id, 'pending') }
                   >
-                    <Label>{ TABLE_LANG.SEND_FOR_REVIEW }</Label>
+                    <Label>{ t('inventory:sendForReview') }</Label>
                   </Dropdown.Item>
                 }
                 <Dropdown.Item
                   id="withdraw"
-                  textValue={ TABLE_LANG.WITHDRAW }
+                  textValue={ t('inventory:withdraw') }
                   isDisabled={ !canChangeAvailability || owner_status === 'withdrawn' }
                   variant="danger"
                   onPress={ () => handleWithdraw(id) }
                 >
-                  <Label>{ TABLE_LANG.WITHDRAW }</Label>
+                  <Label>{ t('inventory:withdraw') }</Label>
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown.Popover>
@@ -234,14 +233,14 @@ function InventoryTable() {
       ...[
         {
           name: 'country',
-          translationKey: 'COUNTRY',
+          translationKey: 'placements:fields.country',
           defaultExpended: true,
           initialValues: countries.map(({ value }) => value),
           options: countries.map(({ value, label }) => ({ id: value, label }))
         },
         {
           name: 'state',
-          translationKey: 'STATE',
+          translationKey: 'placements:fields.state',
           initialValues: states.map(({ value }) => value),
           options: states.map(({ value, label, country }) => ({
             id: value, label: [label, country].filter(Boolean).join(', ')
@@ -249,7 +248,7 @@ function InventoryTable() {
         },
         {
           name: 'city',
-          translationKey: 'CITY',
+          translationKey: 'placements:fields.city',
           initialValues: cities.map(({ value }) => value),
           options: cities.map(({ value, label, state, country }) => ({
             id: value, label: [label, state, country].filter(Boolean).join(', ')
@@ -258,48 +257,48 @@ function InventoryTable() {
       ].filter(({ options }) => options.length > 0),
       {
         name: 'type',
-        translationKey: 'TYPE',
+        translationKey: 'placements:fields.type',
         defaultExpended: true,
         initialValues: PLACEMENT_TYPES,
         options: [
-          { id: 'UNIPOLE_BILLBOARD', translationKey: 'UNIPOLE_BILLBOARD' },
-          { id: 'HAND_PAINTED_MURAL', translationKey: 'HAND_PAINTED_MURAL' },
-          { id: 'BARRICADE', translationKey: 'BARRICADE' },
-          { id: 'BUILDING_WRAP', translationKey: 'BUILDING_WRAP' },
+          { id: 'UNIPOLE_BILLBOARD', translationKey: 'placements:types.UNIPOLE_BILLBOARD' },
+          { id: 'HAND_PAINTED_MURAL', translationKey: 'placements:types.HAND_PAINTED_MURAL' },
+          { id: 'BARRICADE', translationKey: 'placements:types.BARRICADE' },
+          { id: 'BUILDING_WRAP', translationKey: 'placements:types.BUILDING_WRAP' },
         ]
       },
       {
         name: 'owner_status',
-        translationKey: 'OWNER_STATUS',
+        translationKey: 'placements:fields.ownerStatus',
         defaultExpended: true,
         initialValues: OWNER_STATUSES,
         options: [
-          { id: 'active', translationKey: 'ACTIVE' },
-          { id: 'paused', translationKey: 'PAUSED' }
+          { id: 'active', translationKey: 'placements:ownerStatuses.active' },
+          { id: 'paused', translationKey: 'placements:ownerStatuses.paused' }
         ]
       },
       {
         name: 'review_status',
-        translationKey: 'REVIEW_STATUS',
+        translationKey: 'placements:fields.reviewStatus',
         defaultExpended: true,
         initialValues: REVIEW_STATUSES,
         options: [
-          { id: 'pending', translationKey: 'PENDING' },
-          { id: 'in_review', translationKey: 'IN_REVIEW' },
-          { id: 'approved', translationKey: 'APPROVED' },
-          { id: 'suspended', translationKey: 'SUSPENDED' },
-          { id: 'rejected', translationKey: 'REJECTED' }
+          { id: 'pending', translationKey: 'placements:reviewStatuses.pending' },
+          { id: 'in_review', translationKey: 'placements:reviewStatuses.in_review' },
+          { id: 'approved', translationKey: 'placements:reviewStatuses.approved' },
+          { id: 'suspended', translationKey: 'placements:reviewStatuses.suspended' },
+          { id: 'rejected', translationKey: 'placements:reviewStatuses.rejected' }
         ]
       },
       {
         name: 'visibility',
-        translationKey: 'VISIBILITY',
+        translationKey: 'placements:fields.visibility',
         defaultExpended: true,
         initialValues: ['public', 'private', 'unlisted'],
         options: [
-          { id: 'public', translationKey: 'PUBLIC' },
-          { id: 'private', translationKey: 'PRIVATE' },
-          { id: 'unlisted', translationKey: 'UNLISTED' }
+          { id: 'public', translationKey: 'placements:visibility.public' },
+          { id: 'private', translationKey: 'placements:visibility.private' },
+          { id: 'unlisted', translationKey: 'placements:visibility.unlisted' }
         ]
       }
     ],
@@ -355,18 +354,18 @@ function InventoryTable() {
 
       return [
         {
-          displayText: TABLE_LANG.PAUSE,
+          displayText: t('inventory:pause'),
           isDisabled: !canUpdateAll || !selectedPlacements.some(({ owner_status }) => owner_status === 'active'),
           onPress: () => handleBulkAction(selectedPlacements.filter(({ owner_status }) => owner_status === 'active'), 'paused')
         },
         {
-          displayText: TABLE_LANG.WITHDRAW,
+          displayText: t('inventory:withdraw'),
           variant: 'danger-soft',
           isDisabled: !canUpdateAll,
           onPress: () => handleBulkAction(selectedPlacements, 'withdrawn')
         },
         {
-          displayText: TABLE_LANG.RESUME,
+          displayText: t('inventory:resume'),
           isDisabled: !canUpdateAll || !selectedPlacements.some(({ owner_status }) => owner_status === 'paused'),
           onPress: () => handleBulkAction(selectedPlacements.filter(({ owner_status }) => owner_status === 'paused'), 'active')
         }
@@ -374,7 +373,7 @@ function InventoryTable() {
     }
   };
   const TABLE_SEARCH = {
-    placeholder: TABLE_LANG.SEARCH_BY_ID,
+    placeholder: t('inventory:searchById'),
     defaultValue: filters.search,
     onChange: (value) => {
       updateFilters({
@@ -384,19 +383,19 @@ function InventoryTable() {
   };
   const TABLE_EXTRA_ACTIONS = [
     {
-      displayText: TABLE_LANG.FIND_ON_MAP,
+      displayText: t('inventory:findOnMap'),
       iconName: 'map-search',
       variant: 'primary',
       isDisabled: isEmpty || isLoading,
       onPress: () => setIsMapDialogOpen(true),
     },
   ];
-  
+
   return (
     <>
-      { filterOptionsError && <p role="alert" className="p-2 text-danger">{ filterOptionsError }</p> }
-      { actionError && <p role="alert" className="p-2 text-danger">{ actionError }</p> }
-      { copyFeedback && <p role="status" className="p-2 text-sm">{ copyFeedback }</p> }
+      { filterOptionsError && <p role="alert" className="p-2 text-danger">{ translateError(t, filterOptionsError, 'inventory:errors.filters') }</p> }
+      { actionError && <p role="alert" className="p-2 text-danger">{ translateError(t, actionError, 'inventory:errors.update') }</p> }
+      { copyFeedback && <p role="status" className="p-2 text-sm">{ t(copyFeedback) }</p> }
       <Table
         key={ `${page}:${pageSize}:${selectionReset}` }
         name="inventory"
@@ -410,7 +409,7 @@ function InventoryTable() {
         extraActions={ TABLE_EXTRA_ACTIONS }
       >
         <EmptyContent>
-          Sin contenido
+          { t('inventory:empty') }
         </EmptyContent>
       </Table>
       { isMapDialogOpen && <InventoryMapDialog

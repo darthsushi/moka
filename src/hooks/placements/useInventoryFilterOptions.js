@@ -55,7 +55,7 @@ export const useInventoryFilterOptions = () => {
       }
 
       setOptions(EMPTY_OPTIONS);
-      setError(err.message);
+      setError(err);
     } finally {
       if (requestId === requestIdRef.current) {
         setIsLoading(false);

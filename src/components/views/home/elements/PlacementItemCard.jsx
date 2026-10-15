@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Card,
@@ -8,20 +9,18 @@ import {
   Typography
 } from '@heroui/react';
 
-import { formatCurrency } from '@/helpers/utilities.helpers';
-import { useLanguage } from '@/hooks/contexts';
-import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
+import { formatCurrency } from '@/i18n/formatters';
 import { MIN_RENT_DAYS } from '@/settings/defaults.settings';
 
 import { Animations } from '@/components/animations';
 import { Icon } from '@/components/ui';
 
-const obtainFaceData = ([{ images = [], day_range, period_price }]) => {
+const obtainFaceData = ([{ images = [], day_range, period_price }], language) => {
   const [firtImage] = images;
   const [minDays, maxDays] = day_range;
 
-  const lowestPrice = formatCurrency(period_price * (minDays / MIN_RENT_DAYS));
-  const higherPrice = formatCurrency(period_price *  (maxDays / MIN_RENT_DAYS));
+  const lowestPrice = formatCurrency(period_price * (minDays / MIN_RENT_DAYS), 'MXN', language);
+  const higherPrice = formatCurrency(period_price * (maxDays / MIN_RENT_DAYS), 'MXN', language);
 
   return {
     image: firtImage,
@@ -36,12 +35,10 @@ function PlacementItemCard({
   onExplorePlacement,
   onViewDetails
 }) {
-  const { language } = useLanguage();
-  
-  const SYSTEM_LANG = SYSTEM_LANGS[language];
+  const { t, i18n } = useTranslation();
 
-  const primaryActionLabel = SYSTEM_LANG.BUTTONS.EXPLORE_SPACE;
-  const secondaryActionLabel = SYSTEM_LANG.BUTTONS.SHOW_ON_MAP;
+  const primaryActionLabel = t('common:actions.exploreSpace');
+  const secondaryActionLabel = t('common:actions.showOnMap');
 
   const handleExplorePlacement = () => {
     onExplorePlacement?.(placement);
@@ -58,7 +55,7 @@ function PlacementItemCard({
   const handleSecondaryAction = () => {
     handleExplorePlacement();
   };
-  
+
   const {
     id,
     city,
@@ -68,9 +65,9 @@ function PlacementItemCard({
     type,
     faces
   } = placement || {};
-  const { image, priceRange: [lowestPrice, higherPrice] } = obtainFaceData(faces);
+  const { image, priceRange: [lowestPrice, higherPrice] } = obtainFaceData(faces, i18n.resolvedLanguage);
   const placementLocation =  `${state}, ${country}`;
-  const placementDiplayName = `${SYSTEM_LANG.PLACEMENT.TYPES[type]} ${SYSTEM_LANG.WORDS.IN} ${city}`;
+  const placementDiplayName = t('placements:nameInCity', { type: t(`placements:types.${type}`), city });
   const ringCard = isSelected && isMapOpen && 'ring-2 ring-accent shadow-lg';
 
   return (
@@ -145,7 +142,7 @@ function PlacementItemCard({
               size="lg"
               variant="tertiary"
               className="col-span-1 text-xl"
-              aria-label="Placement options"
+              aria-label={ t('common:a11y.placementOptions') }
             >
               <Icon name="more-horiz" />
             </Button>

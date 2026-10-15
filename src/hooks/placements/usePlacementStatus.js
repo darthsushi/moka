@@ -14,7 +14,7 @@ export const usePlacementStatus = (onSuccess) => {
       await operation();
       await onSuccess();
     } catch (err) {
-      setError(err.message || 'No se pudo actualizar el espacio.');
+      setError(err);
     } finally {
       setUpdatingId(null);
     }
@@ -40,10 +40,10 @@ export const usePlacementStatus = (onSuccess) => {
       if (updated > 0) await onSuccess();
 
       if (failures.length > 0) {
-        setError(`${updated} actualizados; ${failures.length} no se pudieron actualizar. ${failures[0]?.message || ''}`);
+        setError({ code: 'BULK_UPDATE_FAILED', updated, failed: failures.length });
       }
     } catch (err) {
-      setError(err.message || 'No se pudo actualizar el inventario.');
+      setError(err);
     } finally {
       setUpdatingId(null);
     }

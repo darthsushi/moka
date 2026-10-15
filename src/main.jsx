@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 
 import { AuthProvider } from '@/contexts/Auth.context.jsx';
-import { LanguageProvider } from '@/contexts/Language.context.jsx';
+import '@/i18n';
+import LanguageProvider from '@/i18n/LanguageProvider';
 import { UIProvider } from '@/contexts/UI.context.jsx';
 
 import App from './App.jsx';

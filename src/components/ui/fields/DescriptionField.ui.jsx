@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next';
+import { fieldError } from '@/i18n/errors';
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { FieldError, Label, TextArea, TextField } from '@heroui/react';
 
-import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
+import { isNotNil, noop } from '@/helpers/ramda.helpers';
 
 function DescriptionField({
   control,
@@ -23,6 +25,7 @@ function DescriptionField({
   registerError = noop,
   validate = () => true,
 }) {
+  const { t } = useTranslation();
   const {
     field,
     fieldState: { invalid, error },
@@ -57,7 +60,7 @@ function DescriptionField({
         fullWidth
         onChange={ handleOnChange }
         onBlur={ field.onBlur }
-        value={ field.value }
+        value={ field.value ?? '' }
         name={ field.name }
         inputRef={ field.ref }
         isInvalid={ invalid }
@@ -73,10 +76,8 @@ function DescriptionField({
         <TextArea className="max-h-50 min-h-25" />
         { isNotNil(error) &&
           <FieldError>
-            { 
-              isEmpty(error.message)
-                ? (errors[error.type] || error.type)
-                : errors[error.message]
+            {
+              fieldError(t, error, errors, { min, max, minLength, maxLength })
             }
           </FieldError>
         }

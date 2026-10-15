@@ -1,10 +1,10 @@
+import { fieldError } from '@/i18n/errors';
+import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { FieldError, Label, ListBox, Select } from '@heroui/react';
 
-import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
-import { useLanguage } from '@/hooks/contexts';
-import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
+import { isNotNil, noop } from '@/helpers/ramda.helpers';
 
 function SelectField({
   control,
@@ -21,7 +21,7 @@ function SelectField({
   registerError = noop,
   validate = () => true,
 }) {
-  const { language } = useLanguage();
+  const { t } = useTranslation();
   const {
     field,
     fieldState: { invalid, error },
@@ -35,8 +35,6 @@ function SelectField({
       validate
     },
   });
-
-  const SYSTEM_LABELS = SYSTEM_LANGS[language];
 
   const handleOnChange = (actualValue) => {
     field.onChange(actualValue);
@@ -57,7 +55,7 @@ function SelectField({
       name={ field.name }
       inputRef={ field.ref }
       isInvalid={ invalid }
-      placeholder={ placeholder || SYSTEM_LABELS.DEFAULTS['SELECT_ONE'] }
+      placeholder={ placeholder || t('common:defaults.selectOne') }
       isDisabled={ isDisabled }
       autoFocus={ autoFocus }
     >
@@ -88,10 +86,8 @@ function SelectField({
       </Select.Popover>
       { isNotNil(error) &&
         <FieldError>
-          { 
-            isEmpty(error.message)
-              ? (errors[error.type] || error.type)
-              : errors[error.message]
+          {
+            fieldError(t, error, errors)
           }
         </FieldError>
       }

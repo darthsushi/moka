@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import MapboxMap, { NavigationControl } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -5,15 +6,13 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Dialog } from '@/components/ui';
 import PlacementMapMarker from '@/components/views/home/elements/PlacementMapMarker';
 import PlacementMapPopup from '@/components/views/home/elements/PlacementMapPopup';
-import { useLanguage } from '@/hooks/contexts';
-import { TABLE_LANGS } from '@/settings/langs.settings';
 import { placementsService } from '@/services/placements.service';
 
 const DEFAULT_VIEW = { longitude: -89.6237, latitude: 20.9674, zoom: 12 };
 
 function InventoryMapDialog({ userId, filters, initialPlacement, onClose, onViewDetails }) {
-  const { language } = useLanguage();
-  const labels = TABLE_LANGS[language].INVENTORY;
+  const { t } = useTranslation();
+
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
   const requestId = useRef(0);
@@ -104,7 +103,7 @@ function InventoryMapDialog({ userId, filters, initialPlacement, onClose, onView
 
   return (
     <Dialog isModalOpen setIsModalOpen={ isOpen => { if (!isOpen) onClose(); } }
-      size="cover" title={ labels.FIND_ON_MAP }>
+      size="cover" title={ t('inventory:findOnMap') }>
       <div ref={ mapContainerRef } className="relative h-[min(78dvh,760px)] min-h-100 w-full overflow-hidden rounded-b-3xl">
         <MapboxMap
           ref={ mapRef }
@@ -129,29 +128,29 @@ function InventoryMapDialog({ userId, filters, initialPlacement, onClose, onView
             onViewDetails={ onViewDetails }
           />
         </MapboxMap>
-        <section aria-label={ labels.MAP_RESULTS }
+        <section aria-label={ t('inventory:findOnMap') }
           className="absolute bottom-3 left-3 top-auto z-10 flex max-h-[46%] w-[calc(100%-1.5rem)] flex-col overflow-hidden border border-default bg-background shadow-xl sm:bottom-4 sm:left-4 sm:top-4 sm:max-h-none sm:w-80">
           <div className="shrink-0 border-b border-default p-3">
-            <label htmlFor="inventory-map-search" className="sr-only">{ labels.SEARCH_BY_ID }</label>
+            <label htmlFor="inventory-map-search" className="sr-only">{ t('inventory:searchById') }</label>
             <input id="inventory-map-search" type="search" value={ search }
               onChange={ event => setSearch(event.target.value) }
-              placeholder={ labels.SEARCH_BY_ID }
+              placeholder={ t('inventory:searchById') }
               className="w-full border border-default bg-surface px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
             <p className="mt-2 text-xs text-default-500" role="status">
-              { isLoading ? labels.MAP_LOADING : `${placements.length} ${labels.MAP_RESULTS}` }
+              { isLoading ? t('inventory:mapLoading') : t('inventory:mapResults', { count: placements.length }) }
             </p>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto p-2">
-            { error && <p role="alert" className="p-3 text-sm text-danger">{ labels.MAP_ERROR }</p> }
+            { error && <p role="alert" className="p-3 text-sm text-danger">{ t('inventory:mapError') }</p> }
             { !error && !isLoading && placements.length === 0 &&
-              <p className="p-3 text-sm text-default-500">{ labels.MAP_EMPTY }</p> }
+              <p className="p-3 text-sm text-default-500">{ t('inventory:mapEmpty') }</p> }
             { placements.map(placement => (
               <button key={ placement.id } type="button" onClick={ () => selectPlacement(placement) }
                 aria-pressed={ selected?.id === placement.id }
                 className={`mb-2 w-full border p-3 text-left transition-colors hover:bg-surface-secondary ${selected?.id === placement.id ? 'border-primary bg-surface-secondary' : 'border-default bg-background'}`}>
                 <span className="block font-semibold">{ placement.code }</span>
                 <span className="block truncate text-sm text-default-500">{ placement.display_name || [placement.city, placement.state].filter(Boolean).join(', ') }</span>
-                <span className="block text-xs text-default-500">{ labels[placement.type] } · { labels[placement.owner_status?.toUpperCase()] }</span>
+                <span className="block text-xs text-default-500">{ t(`placements:types.${placement.type}`) } · { t(`placements:ownerStatuses.${placement.owner_status}`) }</span>
               </button>
             )) }
           </div>

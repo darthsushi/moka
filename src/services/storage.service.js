@@ -54,7 +54,7 @@ export const storageService = {
     const fileExtension = PROFILE_AVATAR_EXTENSIONS[file.type];
 
     if (!fileExtension) {
-      throw new Error('El avatar debe ser una imagen JPEG, PNG o WebP.');
+      throw new Error('INVALID_AVATAR');
     }
 
     const filePath = `${userId}/${crypto.randomUUID()}.${fileExtension}`;

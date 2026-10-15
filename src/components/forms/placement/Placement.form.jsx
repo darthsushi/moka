@@ -1,18 +1,13 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 
-import {
-  FORMS as FORMS_LANGS,
-  SYSTEM as SYSTEM_LANGS
-} from '@/settings/langs.settings';
 import { isNil, noop } from '@/helpers/ramda.helpers';
-import { useLanguage } from '@/hooks/contexts';
 
 import StrutctureDataStep from './elements/StructureDataStep';
 import CoordinatesStep from './elements/CoordinatesStep';
 import FacesDataStep from './elements/FacesDataStep';
 import DescriptionStep from './elements/DescriptionStep';
-
 
 function PlacementForm({
   isEditing = false,
@@ -20,13 +15,9 @@ function PlacementForm({
   placement = {},
   onSubmit = noop,
 }) {
+  const { t } = useTranslation();
   const [currentPlacement, setCurrentPlacement] = useState({ ...placement });
   const [currentStep, setCurrentStep] = useState(isEditing ? 3 : 1);
-
-  const { language } = useLanguage();
-
-  const FORM_LABELS = FORMS_LANGS[language].NEW_PLACEMENT;
-  const SYSTEM_LABELS = SYSTEM_LANGS[language];
 
   const nextStep = (actualStepValues, isComplete) => {
     if (isPending) return;
@@ -35,7 +26,7 @@ function PlacementForm({
       if (isNil(actualStepValues)) {
         return prevPlacement;
       }
-      
+
       return {
         ...prevPlacement,
         ...actualStepValues
@@ -66,7 +57,7 @@ function PlacementForm({
 
   return (
     <section
-      aria-label="placement-form"
+      aria-label={ t('placements:a11y.form') }
       className="w-full"
     >
       <AnimatePresence>
@@ -79,8 +70,7 @@ function PlacementForm({
           >
             <StrutctureDataStep
               placement={ currentPlacement }
-              formLabels={ FORM_LABELS }
-              systemLabels={ SYSTEM_LABELS }
+
               nextStep={ nextStep }
             />
           </motion.div>
@@ -96,8 +86,7 @@ function PlacementForm({
           >
             <CoordinatesStep
               placement={ currentPlacement }
-              formLabels={ FORM_LABELS }
-              systemLabels={ SYSTEM_LABELS }
+
               nextStep={ nextStep }
               previousStep={ previousStep }
             />
@@ -115,8 +104,7 @@ function PlacementForm({
             <FacesDataStep
               isEditing={ isEditing }
               placement={ currentPlacement }
-              formLabels={ FORM_LABELS }
-              systemLabels={ SYSTEM_LABELS }
+
               nextStep={ nextStep }
               previousStep={ previousStep }
             />
@@ -134,8 +122,7 @@ function PlacementForm({
             <DescriptionStep
               isPending={ isPending }
               placement={ currentPlacement }
-              formLabels={ FORM_LABELS }
-              systemLabels={ SYSTEM_LABELS }
+
               nextStep={ nextStep }
               previousStep={ previousStep }
             />

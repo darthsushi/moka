@@ -1,13 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { Typography } from '@heroui/react';
 
-import { useLanguage } from '@/hooks/contexts';
 import { isNotNil } from '@/helpers/ramda.helpers';
-import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
 function EmptyContent({ children }) {
-  const { language } = useLanguage();
-
-  const SYSTEM_LANG = SYSTEM_LANGS[language];
+  const { t } = useTranslation();
 
   return (
     <section data-alerts-empty-content className="w-full flex justify-center items-center h-full min-h-60">
@@ -16,7 +13,7 @@ function EmptyContent({ children }) {
             children
           :
           <Typography type="h4">
-            { SYSTEM_LANG.TEXTS.NOTHING_TO_SHOW }
+            { t('common:texts.nothingToShow') }
           </Typography>
         }
       </div>

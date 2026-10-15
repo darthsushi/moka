@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Label,
@@ -7,8 +8,7 @@ import {
 
 import { not } from '@/helpers/ramda.helpers';
 import { canAccessModule, classNameParser } from '@/helpers/utilities.helpers';
-import { useAuth, useLanguage, useUI } from '@/hooks/contexts';
-import { SYSTEM as SYSTEM_LANG } from '@/settings/langs.settings';
+import { useAuth, useUI } from '@/hooks/contexts';
 import { NAVIGATION_ITEMS } from '@/settings/navigation.settings';
 
 import Icon from '../icons/Icon.ui';
@@ -16,8 +16,8 @@ import Logo from '../brand/Logo.ui';
 import FlatCard from '../containers/FlatCard.ui';
 
 function SideBar() {
+  const { t } = useTranslation();
   const { isAuthenticated, roles } = useAuth();
-  const { language } = useLanguage();
   const {
     isSidebarOpen,
   } = useUI();
@@ -25,12 +25,9 @@ function SideBar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const SIDEBAR_LANG = SYSTEM_LANG[language].SIDEBAR;
-
   const navigationItems = NAVIGATION_ITEMS.filter(
     item => canAccessModule(item, isAuthenticated, roles)
   );
-
 
   const SIDE_BAR_CLASS = [
     isSidebarOpen ? 'w-[280px] md:w-[350px]' : 'w-[50px] md:w-[100px]',
@@ -64,15 +61,15 @@ function SideBar() {
             variant="transparent"
           >
             <ListBox
-              aria-label="side-bar"
+              aria-label={ t('common:a11y.navigation') }
               className="w-full p-2 text-gray-600"
               selectionMode="none"
               onAction={ (key) => navigate(String(key)) }
             >
               <ListBox.Section className="flex flex-col gap-1">
-                { 
+                {
                   navigationItems.map(item => {
-                    const label = SIDEBAR_LANG[item.label];
+                    const label = t(`common:sidebar.${item.id === 'review-hub' ? 'reviewHub' : item.id}`);
                     const isActive = location.pathname === item.path;
 
                     return (
@@ -80,7 +77,7 @@ function SideBar() {
                         key={ item.id }
                         id={ item.path }
                         textValue={ label }
-                        className={ 
+                        className={
                           classNameParser([
                             ...LIST_ITEM_CLASS,
                             isActive && 'bg-default'
@@ -113,7 +110,7 @@ function SideBar() {
                         }
                       </ListBox.Item>
                     );
-                  }) 
+                  })
                 }
               </ListBox.Section>
             </ListBox>
