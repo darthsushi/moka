@@ -15,6 +15,7 @@ export const reviewHubService = {
   reviewers: () => rpc('review_hub_reviewers'),
   act: ({ placement, action, reviewerId = null, message = null }) => rpc('review_hub_action', {
     p_placement_id: placement.id, p_expected_revision: placement.review_revision,
-    p_action: action, p_reviewer_id: reviewerId, p_message: message?.trim() || null
+    p_action: action, p_reviewer_id: action === 'reassign' ? reviewerId?.trim() || null : null,
+    p_message: message?.trim() || null
   })
 };
