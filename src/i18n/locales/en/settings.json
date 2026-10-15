@@ -1,0 +1,38 @@
+{
+  "user": {
+    "access": "Access your account",
+    "accessDescription": "Log into your account to access all the platform's tools and features."
+  },
+  "advertiser": {
+    "becomeOwner": "List your placements",
+    "becomeOwnerDescription": "List your placements with us and earn extra money"
+  },
+  "owner": {
+    "header": "Owner",
+    "paymentsMethods": "Payments methods"
+  },
+  "privacity": {
+    "header": "Privacity",
+    "changePassword": "Change password"
+  },
+  "system": {
+    "header": "System settings",
+    "language": "Language",
+    "chooseLang": "Choose your language",
+    "theme": "Appearance",
+    "chooseTheme": "Choose the system theme",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
+    "switchDark": "Switch to dark mode",
+    "switchLight": "Switch to light mode"
+  },
+  "profile": {
+    "name": "Name",
+    "avatar": "Avatar",
+    "edit": "Edit profile",
+    "namePlaceholder": "Enter your name",
+    "upload": "Upload photo",
+    "actions": "Account options",
+    "selectedAction": "Selected option: {{action}}"
+  }
+}

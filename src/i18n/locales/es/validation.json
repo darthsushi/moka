@@ -1,0 +1,14 @@
+{
+  "EMPTY_FIELD": "El campo no puede estar vacio",
+  "INVALID_VALUE": "Valor invalido",
+  "MAX_ALLOWED_ITEMS": "No es posible agregar más elementos.",
+  "INVALID_COORDINATES": "Coordenadas no válidas",
+  "ACTION_NOT_ALLOWED": "No tienes permiso para realizar esta acción",
+  "UNEXPECTED_ERROR": "Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo más tarde",
+  "required": "Este campo es obligatorio.",
+  "min": "El valor mínimo es {{min}}.",
+  "max": "El valor máximo es {{max}}.",
+  "minLength": "Escribe al menos {{min}} caracteres.",
+  "maxLength": "Escribe como máximo {{max}} caracteres.",
+  "invalid": "El valor no es válido."
+}

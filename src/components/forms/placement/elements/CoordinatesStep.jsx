@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -29,18 +30,18 @@ const getSingleStringCoor = ({ latitude, longitude }) => {
 function LocationViewer({
     coordinates,
     location,
-    labels: { systemLabels, formLabels },
     actions: { editLocation }
   }) {
+  const { t } = useTranslation();
 
   return (
     <>
       <div className="w-full pb-3">
         <Typography.Heading level={ 6 }>
-          { formLabels.LOCATION }
+          { t('placements:form.location') }
         </Typography.Heading>
         <Typography.Paragraph color="muted" size="xs" className="leading-3">
-          { formLabels.LOCATION_DESCRIPTION }
+          { t('placements:form.locationDescription') }
         </Typography.Paragraph>
       </div>
       <GoogleMapsView
@@ -55,7 +56,7 @@ function LocationViewer({
             </Typography>
             <Description className="text-xs leading-4 truncate">
               { location.city }, { location.state }, { location.country }
-            </Description> 
+            </Description>
           </div>
           <div className="col-span-1">
             <Tooltip>
@@ -68,7 +69,7 @@ function LocationViewer({
               </Button>
               <Tooltip.Content>
                 <p>
-                  { systemLabels.TOOLTIPS.EDIT }
+                  { t('common:tooltips.edit') }
                 </p>
               </Tooltip.Content>
             </Tooltip>
@@ -79,7 +80,8 @@ function LocationViewer({
   );
 };
 
-function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, nextStep }) {;
+function CoordinatesStep({ placement, previousStep, nextStep }) {
+  const { t } = useTranslation();
   const [coordinates, setCoordinates] = useState(() => getSingleStringCoor(placement));
   const [isValidated, setIsValidated] = useState(() => isNotNil(coordinates));
   const [location, setLocation] = useState(placement.location || {});
@@ -109,7 +111,7 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
       });
 
       const nominatimResponse = await fetch(nominatimURL);
-      
+
       if (not(nominatimResponse.ok)) {
         throw new Error(`Error HTTP: ${nominatimResponse.status}`);
       }
@@ -175,14 +177,14 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
 
     fetchOpenStreetMap(formValues.coordinates || '');
   };
-  
+
   return (
     <Form
       id="coordinates-form"
-      aria-label="coordinates-form"
+      aria-label={ t('placements:a11y.coordinates') }
       className="w-full"
       onSubmit={ handleSubmit(onSubmit) }
-    > 
+    >
       <Fieldset className="w-full">
         <div className="w-full px-2 py-3">
           { isError &&
@@ -190,31 +192,30 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
               <Alert.Indicator />
               <Alert.Content>
                 <Alert.Title>
-                  { formLabels.ERRORS.LOCATION_NOT_FOUND_TITLE }
+                  { t('placements:form.errors.locationNotFoundTitle') }
                 </Alert.Title>
                 <Alert.Description>
-                  { formLabels.ERRORS.LOCATION_NOT_FOUND }
+                  { t('placements:form.errors.locationNotFound') }
                 </Alert.Description>
               </Alert.Content>
             </Alert>
           }
           <Animations.DoubleCard animationId={ isValidated ? 'map-preview' : 'coordinates-input' }>
-            { 
+            {
               isValidated ?
                 <LocationViewer
                   coordinates={ coordinates }
                   location={ location }
-                  labels={ { systemLabels, formLabels } }
                   actions={ { editLocation: () => setIsValidated(false) } }
                 />
-              : 
+              :
                 <FlatCard
                   variant="secondary"
                   className="w-full p-3 mt-2"
                 >
                   <div className="w-full grid grid-cols-6">
                     <div className="col-span-1 flex items-center justify-center">
-                      { 
+                      {
                       isLoading ?
                         <Spinner size="lg" />
                       :
@@ -228,14 +229,14 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
                     </div>
                     <div className="col-span-5 h-fit">
                       <Typography.Heading level={ 6 }>
-                        { formLabels.LATITUDE_LONGITUDE }
+                        { t('placements:form.latitudeLongitude') }
                       </Typography.Heading>
                       <Typography.Paragraph
                         color="muted"
                         size="xs"
                         className="leading-3"
                       >
-                        { formLabels.LATITUDE_LONGITUDE_DESCRIPTION }
+                        { t('placements:form.latitudeLongitudeDescription') }
                       </Typography.Paragraph>
                     </div>
                   </div>
@@ -248,11 +249,11 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
                         autoFocus
                         onChange={ () => setIsValidated(false) }
                         errors={{
-                          'required': systemLabels.ERRORS.EMPTY_FIELD,
-                          'validate': systemLabels.ERRORS.INVALID_COORDINATES
+                          'required': t('validation:EMPTY_FIELD'),
+                          'validate': t('validation:INVALID_COORDINATES')
                         }}
                         isDisabled={ isLoading }
-                        placeholder={ formLabels.LATITUDE_LONGITUDE_PLACEHOLDER }
+                        placeholder={ t('placements:form.latitudeLongitudePlaceholder') }
                         validate={ isValidCoodinates }
                       />
                     </div>
@@ -269,7 +270,7 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
             size="lg"
             onPress={ previousStep }
           >
-            { systemLabels.BUTTONS.PREVIOUS_STEP }
+            { t('common:actions.previousStep') }
           </Button>
           <Button
             fullWidth
@@ -283,8 +284,8 @@ function CoordinatesStep({ placement, formLabels, systemLabels, previousStep, ne
             { isLoading ? <Spinner color="current" size="sm" /> : null }
             {
               isValidated
-              ? systemLabels.BUTTONS.SAVE_CONTINUE
-              : systemLabels.BUTTONS.FIND_LOCATION
+              ? t('common:actions.saveContinue')
+              : t('common:actions.findLocation')
             }
           </Button>
         </Fieldset.Actions>

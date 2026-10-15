@@ -1,3 +1,5 @@
+import { translateError } from '@/i18n/errors';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, Fieldset, Form, Spinner, Tabs } from '@heroui/react';
@@ -8,22 +10,24 @@ import { useProfileSettings } from '@/hooks/profile';
 import { AvatarField, FlatCard, TextField } from '@/components/ui';
 
 function EditUserProfile({ closeModal = noop, user = {} }) {
+  const { t } = useTranslation();
   const { handleSubmit, control } = useForm();
   const { updateAvatar, updateName } = useProfileSettings();
-  
+
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
-  // TODO: Apply error messages.
   const onNameFormSubmit = async ({ name }) => {
     setIsLoading(true);
+    setSubmitError(null);
 
     try {
       await updateName(name);
       closeModal();
     } catch (error) {
-      console.log(error);
+      setSubmitError(error);
     } finally {
       setIsLoading(false);
     }
@@ -31,12 +35,13 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
 
   const onAvatarFormSubmit = async ({ avatar_url }) => {
     setIsLoading(true);
+    setSubmitError(null);
 
     try {
       await updateAvatar(avatar_url);
       closeModal();
     } catch (error) {
-      console.log(error);
+      setSubmitError(error);
     } finally {
       setIsLoading(false);
     }
@@ -45,14 +50,14 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
   return (
     <Tabs className="w-full max-w-md" isDisabled={ isLoading }>
       <Tabs.ListContainer>
-        <Tabs.List aria-label="Options">
+        <Tabs.List aria-label={ t('settings:profile.edit') }>
           <Tabs.Tab id="name">
-            Nombre
+            { t('settings:profile.name') }
             <Tabs.Indicator />
           </Tabs.Tab>
           <Tabs.Tab id="avatar">
             <Tabs.Separator />
-            Avatar
+            { t('settings:profile.avatar') }
             <Tabs.Indicator />
           </Tabs.Tab>
         </Tabs.List>
@@ -61,9 +66,10 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
         <Form
           className="w-full pt-3"
           id="edit-name-profile-form"
-          aria-label="edit-name-profile-form"
+          aria-label={ t('settings:profile.name') }
           onSubmit={ handleSubmit(onNameFormSubmit) }
         >
+          { submitError && <p role="alert" className="text-sm text-danger">{ translateError(t, submitError) }</p> }
           <Fieldset>
             <Fieldset.Group>
               <FlatCard
@@ -77,13 +83,13 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
                     defaultValue={ user.name }
                     maxLength={ 200 }
                     minLength={ 5 }
-                    label="Nombre"
+                    label={ t('settings:profile.name') }
                     onChange={ () => setIsEditingName(true) }
-                    placeholder="El nombre no puede estar en blanco"
+                    placeholder={ t('settings:profile.namePlaceholder') }
                     errors={
                       {
-                        required: 'El nombre no puede quedar vacio',
-                        minLength: 'Requiere mas de 5'
+                        required: t('validation:required'),
+                        minLength: t('validation:minLength', { min: 5 })
                       }
                     }
                   />
@@ -96,7 +102,7 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
                 onPress={ closeModal }
                 isDisabled={ isLoading }
               >
-                Cancelar
+                { t('common:actions.cancel') }
               </Button>
               <Button
                 fullWidth
@@ -105,7 +111,7 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
                 isDisabled={ not(isEditingName) || isLoading }
               >
                 { isLoading && <Spinner size="sm" color="current" /> }
-                Guardar
+                { t('common:actions.save') }
               </Button>
             </Fieldset.Actions>
           </Fieldset>
@@ -115,15 +121,16 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
         <Form
           className="w-full pt-3"
           id="edit-avatar-profile-form"
-          aria-label="edit-avatar-profile-form"
+          aria-label={ t('settings:profile.avatar') }
           onSubmit={ handleSubmit(onAvatarFormSubmit) }
         >
+          { submitError && <p role="alert" className="text-sm text-danger">{ translateError(t, submitError) }</p> }
           <Fieldset>
             <Fieldset.Group>
               <FlatCard
                 variant="secondary"
                 className="col-span-1 p-3"
-              >  
+              >
                 <AvatarField
                   user={ user }
                   control={ control }
@@ -139,7 +146,7 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
                 onPress={ closeModal }
                 isDisabled={ isLoading }
               >
-                Cancelar
+                { t('common:actions.cancel') }
               </Button>
               <Button
                 fullWidth
@@ -148,7 +155,7 @@ function EditUserProfile({ closeModal = noop, user = {} }) {
                 isDisabled={ not(isEditingAvatar) || isLoading }
               >
                 { isLoading && <Spinner size="sm" color="current" /> }
-                Guardar
+                { t('common:actions.save') }
               </Button>
             </Fieldset.Actions>
           </Fieldset>

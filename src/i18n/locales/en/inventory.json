@@ -1,0 +1,30 @@
+{
+  "id": "ID",
+  "details": "Details",
+  "actions": "Actions",
+  "edit": "Edit",
+  "pause": "Pause",
+  "resume": "Resume",
+  "withdraw": "Withdraw",
+  "withdrawConfirm": "This placement will disappear from public listings immediately. Its data and faces will be kept. Withdraw it?",
+  "withdrawMultipleConfirm": "These {{count}} placements will disappear from public listings immediately. Their data and faces will be kept. Withdraw them?",
+  "sendForReview": "Submit for review",
+  "searchPlacement": "Search by code",
+  "searchById": "Search by ID",
+  "findOnMap": "Search on map",
+  "mapLoading": "Finding placements…",
+  "mapEmpty": "No placements in this area match the current filters.",
+  "mapError": "Could not load placements on the map.",
+  "viewDetails": "View details",
+  "copyUnlistedLink": "Copy unlisted link",
+  "linkCopied": "Link copied",
+  "copyLinkError": "Could not copy the link",
+  "empty": "No content",
+  "mapResults_one": "{{count}} placement on the map",
+  "mapResults_other": "{{count}} placements on the map",
+  "errors": {
+    "load": "Could not load inventory. Please try again.",
+    "filters": "Could not load filters. Please try again.",
+    "update": "Could not update the placement. Please try again."
+  }
+}

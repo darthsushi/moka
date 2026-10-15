@@ -1,3 +1,5 @@
+import { translateError } from '@/i18n/errors';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import {
   Button,
@@ -10,8 +12,7 @@ import {
 import { isEmpty, isNil, isNotEmpty, isNotNil, not, type } from '@/helpers/ramda.helpers';
 import { getValueOrDefault } from '@/helpers/utilities.helpers';
 import { isFunction } from '@/helpers/validators.helper';
-import { useLanguage, useEscapeKey } from '@/hooks/contexts';
-import { SYSTEM } from '@/settings/langs.settings';
+import { useEscapeKey } from '@/hooks/contexts';
 
 import Icon from '../icons/Icon.ui';
 import TableSkeleton from './elements/TableSkeleton';
@@ -51,7 +52,7 @@ const normalizeStateObject = ({ isFechingData, errorObject, updateContent, isEmp
   hasNoMatches: isNotNil(hasNoMatches) ? hasNoMatches : false,
   isEmpty: isNotNil(isEmpty) ? isEmpty : false,
   isFechingData: isNotNil(isFechingData) ? isFechingData : false,
-  errorObject: isNotNil(errorObject) && isNotEmpty(errorObject) ? errorObject : null,
+  errorObject: errorObject || null,
   updateContent: isFunction(updateContent) ? updateContent : null,
 });
 
@@ -91,7 +92,7 @@ const normalizePagination = ({
 }) => {
   const start = (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, totalContent);
-  
+
   return {
     page,
     totalPages,
@@ -129,18 +130,17 @@ const SELECTION_TYPES = [
 // TODO: Allow ShortBy
 
 function TableContent({
-  name,
   rows,
   columns,
   states,
   pagination,
-  tableLanguage,
   children = null,
   isSelectionModeActive,
   isSelectionBusy,
   selectedRows,
   handleSelectionChange
 }) {
+  const { t } = useTranslation();
 
   if (states.isFechingData) return (
     <TableSkeleton
@@ -148,6 +148,11 @@ function TableContent({
       repetitions={ pagination.pageSize }
     />
   );
+
+  if (states.errorObject) return <div role="alert" className="p-4 text-danger">
+    <p>{ translateError(t, states.errorObject) }</p>
+    { states.updateContent && <Button onPress={ states.updateContent }>{ t('common:actions.retry') }</Button> }
+  </div>;
 
   if (states.hasNoMatches) return <EmptyContent />
 
@@ -158,7 +163,7 @@ function TableContent({
   return (
     <HeroTable
       data-generic-table
-      aria-label={ `${name} table` }
+      aria-label={ t('common:a11y.table') }
       className="w-full h-full"
     >
       <HeroTable.ScrollContainer>
@@ -176,7 +181,7 @@ function TableContent({
               { isSelectionModeActive &&
                 <HeroTable.Column className="pr-0">
                   <Checkbox
-                    aria-label="Select all rows"
+                    aria-label={ t('common:a11y.selectAll') }
                     slot="selection"
                     isDisabled={ isSelectionBusy }
                   >
@@ -215,7 +220,7 @@ function TableContent({
                     { isSelectionModeActive &&
                       <HeroTable.Cell className="pr-0">
                         <Checkbox
-                          aria-label={ `Select row` }
+                          aria-label={ t('common:a11y.selectRow', { row: rowId }) }
                           slot="selection"
                           variant="secondary"
                           isDisabled={ isSelectionBusy }
@@ -232,7 +237,7 @@ function TableContent({
                     {
                       Object.keys(currentRow).map((cellId) => {
                         const $rowContent = isNil(currentRow[cellId].render) ? currentRow[cellId] : currentRow[cellId].render;
-                        
+
                         return (
                           <HeroTable.Cell key={ cellId }>
                             { $rowContent }
@@ -251,10 +256,10 @@ function TableContent({
         <HeroTable.Footer className="bottom-0 flex items-center justify-between">
           <Pagination size="sm">
             <Pagination.Summary>
-              { tableLanguage.WORDS.SHOWING } { pagination.start } { tableLanguage.WORDS.TO } { pagination.end } { tableLanguage.WORDS.OF } { pagination.totalContent } { tableLanguage.WORDS.RESULTS }
+              { t('common:pagination.range', { start: pagination.start, end: pagination.end, total: pagination.totalContent }) }
             </Pagination.Summary>
             <Pagination.Summary>
-              { tableLanguage.WORDS.PAGE } { pagination.page } { tableLanguage.WORDS.OF } { pagination.totalPages }
+              { t('common:pagination.page', { page: pagination.page, total: pagination.totalPages }) }
             </Pagination.Summary>
             { isNotNil(pagination.setPage) &&
               <Pagination.Content className="flex gap-3">
@@ -264,7 +269,7 @@ function TableContent({
                     onPress={ () => pagination.setPage(pagination.page - 1) }
                   >
                     <Pagination.PreviousIcon />
-                    { tableLanguage.BUTTONS.PREVIOUS }
+                    { t('common:actions.previous') }
                   </Pagination.Previous>
                 </Pagination.Item>
                 <Pagination.Item>
@@ -272,7 +277,7 @@ function TableContent({
                     isDisabled={ pagination.page === pagination.totalPages || states.isFechingData || isSelectionModeActive }
                     onPress={ () => pagination.setPage(pagination.page + 1) }
                   >
-                    { tableLanguage.BUTTONS.NEXT }
+                    { t('common:actions.next') }
                     <Pagination.NextIcon />
                   </Pagination.Next>
                 </Pagination.Item>
@@ -297,10 +302,9 @@ function Table({
   children = null,
   extraActions = [],
 }) {
+  const { t } = useTranslation();
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [isSelectionModeActive, setIsSelectionMode] = useState(false);
-
-  const { language } = useLanguage();
 
   const exitSelectionMode = () => {
     setIsSelectionMode(false);
@@ -323,8 +327,6 @@ function Table({
   const normalizedSelectionActions = normalizeActionButtons(selectionActions);
 
   const enableSearch = isFunction(search.onChange);
-
-  const SYSTEM_LANG = SYSTEM[language];
 
   const handleSelectionChange = (keys) => {
     if (selection.isBusy) return;
@@ -360,7 +362,7 @@ function Table({
             animationId={ isSelectionModeActive ? 'selection-mode' : 'table-options' }
             className="col-span-1 h-full flex items-center gap-2"
           >
-            { 
+            {
               isSelectionModeActive ?
                 <>
                   <Chip
@@ -369,7 +371,7 @@ function Table({
                     variant="soft"
                     className="py-1.5"
                   >
-                    { `${visibleSelectedRows.size} ${ visibleSelectedRows.size === 1 ? SYSTEM_LANG.WORDS.SELECTED_SINGULAR : SYSTEM_LANG.WORDS.SELECTED_PLURAL }` }
+                    { t('common:selection.count', { count: visibleSelectedRows.size }) }
                   </Chip>
                   { normalizedSelectionActions.length > 0 && <Separator variant="secondary" orientation="vertical" /> }
                   {
@@ -413,7 +415,6 @@ function Table({
                   <div data-table-options className="h-full flex items-center gap-1">
                     { normalizedFilterSettings.enableFilters &&
                       <FiltersList
-                        tableName={ name }
                         filters={ normalizedFilterSettings.filters }
                         hasActiveFilters={ normalizedFilterSettings.hasActiveFilters }
 
@@ -473,19 +474,17 @@ function Table({
               isDisabled={ selection.isBusy }
             >
               <Icon name={ isSelectionModeActive ? 'close' : 'checklist' } />
-              { isSelectionModeActive ? SYSTEM_LANG.BUTTONS.CANCEL : SYSTEM_LANG.BUTTONS.SELECT }
+              { isSelectionModeActive ? t('common:actions.cancel') : t('common:actions.select') }
             </Button>
           }
         </div>
       </NavBar>
       <div className="min-h-0 flex-1 overflow-auto p-2">
         <TableContent
-          name={ name }
           rows={ normalizedRows }
           columns={ normalizedColumns }
           states={ normalizedStates }
           pagination={ normalizedPagination }
-          tableLanguage={ SYSTEM_LANG }
           isSelectionModeActive={ isSelectionModeActive }
           isSelectionBusy={ selection.isBusy }
           selectedRows={ visibleSelectedRows }

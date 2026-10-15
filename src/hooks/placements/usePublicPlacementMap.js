@@ -71,7 +71,7 @@ export const usePublicPlacementMap = ({
       if (requestId !== requestIdRef.current) return;
 
       setPlacements([]);
-      setError(err.message);
+      setError(err);
     } finally {
       if (requestId === requestIdRef.current) {
         setIsLoading(false);

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -52,9 +53,10 @@ const buildStepObjects = (actualPlacement) => {
   return { defaultValues: actualFields, faces: actualFaces };
 };
 
-function FacesDataStep({ placement, formLabels, systemLabels, previousStep, nextStep }) {
+function FacesDataStep({ placement, previousStep, nextStep }) {
+  const { t } = useTranslation();
   const [tabSelected, setTabSelected] = useState('face_1');
-  
+
   const { defaultValues, faces } = buildStepObjects(placement);
   const { handleSubmit, control } = useForm({ defaultValues });
 
@@ -73,7 +75,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
   return (
     <Form
       id="sizes-form"
-      aria-label="sizes-form"
+      aria-label={ t('placements:a11y.faces') }
       className="w-full"
       onSubmit={ handleSubmit(normalizeBeforeNextStep, showFirstInvalidFace) }
     >
@@ -87,19 +89,19 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
           >
             <Tabs.ListContainer>
               <Tabs.List
-                aria-label="vertical tabs faces"
+                aria-label={ t('placements:a11y.faceTabs') }
                 className=" sticky top-1 bg-surface-secondary"
               >
                 {
                   faces.map((_, face_index) => {
-                    
+
                     return (
                       <Tabs.Tab
                         className="text-xs"
                         key={ `face_${face_index + 1}` }
                         id={ `face_${face_index + 1}` }
                       >
-                        { formLabels.TABS[`FACE_${face_index + 1}`] }
+                        { t(`placements:form.tabs.face${face_index + 1}`) }
                         <Tabs.Indicator />
                       </Tabs.Tab>
                     );
@@ -120,14 +122,14 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                     <div className="w-full py-2 flex flex-col gap-2">
                       <div className="px-1">
                         <Typography.Heading level={ 6 }>
-                          { formLabels.IMAGES }
+                          { t('placements:form.images') }
                         </Typography.Heading>
                         <Typography.Paragraph
                           color="muted"
                           size="xs"
                           className="leading-3"
                         >
-                          { formLabels.IMAGES_DESCRIPTION }
+                          { t('placements:form.imagesDescription') }
                         </Typography.Paragraph>
                       </div>
                       <FlatCard
@@ -140,9 +142,9 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                           minImages={ 1 }
                           maxImages={ 3 }
                           errors={{
-                            'required': systemLabels.ERRORS.EMPTY_FIELD,
-                            'min': systemLabels.ERRORS.EMPTY_FIELD,
-                            'max': systemLabels.ERRORS.MAX_ALLOWED_ITEMS,
+                            'required': t('validation:EMPTY_FIELD'),
+                            'min': t('validation:EMPTY_FIELD'),
+                            'max': t('validation:MAX_ALLOWED_ITEMS'),
                           }}
                         />
                       </FlatCard>
@@ -150,7 +152,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                     <div className="w-full py-2 flex flex-col gap-2">
                       <div className="px-1">
                         <Typography.Heading level={ 6 }>
-                          { formLabels.DISPLAY_SIZES }
+                          { t('placements:form.displaySizes') }
                         </Typography.Heading>
                       </div>
                       <FlatCard
@@ -159,29 +161,29 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                       >
                         <div className="col-span-2">
                           <MetersField
-                            label={ formLabels.DISPLAY_WIDTH }
+                            label={ t('placements:form.displayWidth') }
                             name={ `display_width_face_${face_index + 1}` }
                             control={ control }
                             isRequired
                             errors={{
-                              'required': systemLabels.ERRORS.EMPTY_FIELD,
-                              'validate': systemLabels.ERRORS.INVALID_VALUE
+                              'required': t('validation:EMPTY_FIELD'),
+                              'validate': t('validation:INVALID_VALUE')
                             }}
-                            placeholder={ formLabels.INPUT_METERS_PLACEHOLDER }
+                            placeholder={ t('placements:form.inputMetersPlaceholder') }
                             validate={ isValidHeight }
                           />
                         </div>
                         <div className="col-span-2">
                           <MetersField
-                            label={ formLabels.DISPLAY_HEIGHT }
+                            label={ t('placements:form.displayHeight') }
                             name={ `display_height_face_${face_index + 1}` }
                             control={ control }
                             isRequired
                             errors={{
-                              'required': systemLabels.ERRORS.EMPTY_FIELD,
-                              'validate': systemLabels.ERRORS.INVALID_VALUE
+                              'required': t('validation:EMPTY_FIELD'),
+                              'validate': t('validation:INVALID_VALUE')
                             }}
-                            placeholder={ formLabels.INPUT_METERS_PLACEHOLDER }
+                            placeholder={ t('placements:form.inputMetersPlaceholder') }
                             validate={ isValidHeight }
                           />
                         </div>
@@ -190,13 +192,13 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                     <div className="w-full py-2 flex flex-col gap-2">
                       <div className="px-1">
                         <Typography.Heading level={ 6 }>
-                          { formLabels.RENTAL_PERIOD }
+                          { t('placements:form.rentalPeriod') }
                         </Typography.Heading>
                       </div>
                       <FlatCard className="w-full grid grid-cols-4 gap-2">
                         <div className="col-span-4">
                           <RangeField
-                            label={ formLabels.RANGE_DAYS }
+                            label={ t('placements:form.rangeDays') }
                             name={ `day_range_face_${face_index + 1}` }
                             maxValue={ MAX_RENT_DAYS }
                             minValue={ MIN_RENT_DAYS }
@@ -212,15 +214,15 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
                         </div>
                         <div className="col-span-4">
                           <NumberField
-                            label={ formLabels.PERIOD_PRICE }
+                            label={ t('placements:form.periodPrice') }
                             name={ `period_price_face_${face_index + 1}` }
                             control={ control }
                             isRequired
                             errors={{
-                              'required': systemLabels.ERRORS.EMPTY_FIELD,
-                              'validate': systemLabels.ERRORS.INVALID_VALUE
+                              'required': t('validation:EMPTY_FIELD'),
+                              'validate': t('validation:INVALID_VALUE')
                             }}
-                            placeholder={ formLabels.PERIOD_PRICE_PLACEHOLDER }
+                            placeholder={ t('placements:form.periodPricePlaceholder') }
                             validate={ isPositiveNumber }
                             min={ 0 }
                             formatOptions={{
@@ -246,7 +248,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
             onPress={ previousStep }
             size="lg"
           >
-            { systemLabels.BUTTONS.PREVIOUS_STEP }
+            { t('common:actions.previousStep') }
           </Button>
           <Button
             fullWidth
@@ -255,7 +257,7 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
             type="submit"
             size="lg"
           >
-            { systemLabels.BUTTONS.NEXT_STEP }
+            { t('common:actions.nextStep') }
           </Button>
         </Fieldset.Actions>
       </Fieldset>

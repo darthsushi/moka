@@ -25,7 +25,6 @@ const SUPABASE = {
 };
 
 const STORAGE = {
-  LANGUAGE: `${APP_NAME}_language`,
   SIDEBAR: `${APP_NAME}-sidebar-expanded`,
   THEME: `${APP_NAME}-theme`,
   DASH_MAP: `${APP_NAME}-dash-map`
