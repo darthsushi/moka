@@ -62,12 +62,20 @@ function FacesDataStep({ placement, formLabels, systemLabels, previousStep, next
     nextStep({ faces:  normalizeFaces(faces, actualValues) });
   };
 
+  const showFirstInvalidFace = (formErrors) => {
+    const firstInvalidFace = faces.findIndex((_, index) =>
+      Object.keys(formErrors).some((fieldName) => fieldName.endsWith(`_face_${index + 1}`))
+    );
+
+    if (firstInvalidFace >= 0) setTabSelected(`face_${firstInvalidFace + 1}`);
+  };
+
   return (
     <Form
       id="sizes-form"
       aria-label="sizes-form"
       className="w-full"
-      onSubmit={ handleSubmit(normalizeBeforeNextStep) }
+      onSubmit={ handleSubmit(normalizeBeforeNextStep, showFirstInvalidFace) }
     >
       <Fieldset className="w-full">
         <FieldGroup className="w-full px-2">
