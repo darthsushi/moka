@@ -1,0 +1,131 @@
+{
+  "sidebar": {
+    "home": "Home",
+    "inventory": "Inventory",
+    "reviewHub": "Review Hub",
+    "settings": "Settings"
+  },
+  "pages": {
+    "inventory": "Inventory",
+    "reviewHub": "Review Hub",
+    "settings": "Settings"
+  },
+  "tooltips": {
+    "expandSidebar": "Expand menu",
+    "collapseSidebar": "Collapse menu",
+    "remove": "Remove",
+    "markFavorite": "Mark as favorite",
+    "edit": "Edit",
+    "resetFilters": "Reset filters",
+    "adjustFilters": "Adjust filters",
+    "refresh": "Refresh"
+  },
+  "texts": {
+    "clickBelowUpload": "Click the button below to upload",
+    "becomeOwner": "List your placements with us and earn extra money",
+    "findByPlacement": "Search by ID, location...",
+    "addSuccessMessage": "The item has been added successfully",
+    "nothingToShow": "Nothing to show here"
+  },
+  "defaults": {
+    "selectOne": "Select one",
+    "find": "Search..."
+  },
+  "words": {
+    "days": "days",
+    "from": "from",
+    "upTo": "up to",
+    "meters": "Meters",
+    "hi": "Hello",
+    "filters": "Filters",
+    "all": "All"
+  },
+  "actions": {
+    "saveDraft": "Save draft",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "remove": "Remove",
+    "complete": "Complete",
+    "browseImages": "Browse Images",
+    "nextStep": "Next step",
+    "next": "Next",
+    "previous": "Prev",
+    "previousStep": "Previous step",
+    "continue": "Continue",
+    "saveContinue": "Save and continue",
+    "applyFilters": "Apply filters",
+    "select": "Select",
+    "delete": "Delete",
+    "save": "Save",
+    "close": "Close",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "exploreSpace": "Explore Space",
+    "showOnMap": "Show on map",
+    "viewDetails": "View details",
+    "browse": "Browse",
+    "login": "Login",
+    "logOut": "Log out",
+    "becomeOwner": "List your placements",
+    "newPlacement": "New placement",
+    "findLocation": "Find location"
+  },
+  "language": {
+    "choose": "Choose your language"
+  },
+  "loading": "Loading…",
+  "errors": {
+    "unexpected": "The request could not be completed. Please try again.",
+    "AUTH_REQUIRED": "Sign in to perform this action.",
+    "ACTION_NOT_ALLOWED": "You do not have permission to perform this action.",
+    "NAME_TOO_SHORT": "The name must contain at least 5 characters.",
+    "INVALID_AVATAR": "Choose a JPEG, PNG or WebP image for your avatar.",
+    "AVATAR_TOO_LARGE": "The avatar must not exceed 10 MB.",
+    "NO_PROFILE_CHANGES": "There are no profile changes to save.",
+    "invalid_credentials": "The email or password is incorrect.",
+    "email_not_confirmed": "Confirm your email before signing in.",
+    "over_request_rate_limit": "Too many attempts. Wait a moment and try again.",
+    "BULK_UPDATE_FAILED": "Updated {{updated}} placements; {{failed}} could not be updated."
+  },
+  "pagination": {
+    "range": "Showing {{start}} to {{end}} of {{total}} results",
+    "page": "Page {{page}} of {{total}}"
+  },
+  "selection": {
+    "count_one": "{{count}} selected",
+    "count_other": "{{count}} selected"
+  },
+  "a11y": {
+    "navigation": "Main navigation",
+    "toggleSidebar": "Toggle sidebar",
+    "breadcrumb": "Breadcrumb",
+    "placementOptions": "Placement options",
+    "selectAll": "Select all rows",
+    "selectRow": "Select row {{row}}",
+    "formContent": "Form content",
+    "images": "Images",
+    "uploadActions": "Image actions",
+    "fileInput": "Choose file",
+    "rangeInput": "Selected range",
+    "imagePreview": "Image preview",
+    "table": "Results table"
+  },
+  "account": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "createTeam": "Create team"
+  },
+  "alerts": {
+    "forbidden": "You do not have permission to access this page.",
+    "notFound": "This page could not be found."
+  },
+  "map": {
+    "title": "Location on map"
+  },
+  "greetings": {
+    "goodMorning": "Good morning, {{name}}",
+    "goodAfternoon": "Good afternoon, {{name}}",
+    "goodNight": "Good evening, {{name}}"
+  }
+}

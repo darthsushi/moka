@@ -1,12 +1,12 @@
+import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo, useState } from 'react';
 import { Skeleton, ToggleButton, Typography } from '@heroui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { isNotNil } from '@/helpers/ramda.helpers';
 import { getGreeting, getPlacementDetailsPath } from '@/helpers/utilities.helpers';
-import { useAuth, useLanguage, useUI } from '@/hooks/contexts';
+import { useAuth, useUI } from '@/hooks/contexts';
 import { usePublicPlacementFilterOptions, usePublicPlacements } from '@/hooks/placements';
-import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
 import { Header, NavBar, SearchInput, FiltersList, Icon } from '@/components/ui';
 import Map from './elements/Map';
@@ -15,13 +15,13 @@ import PlacementsList from './elements/PlacementList';
 const PUBLIC_FILTER_NAMES = ['country', 'state', 'city', 'type'];
 
 function Home() {
+  const { t } = useTranslation();
   const [selectedPlacement, setSelectedPlacement] = useState(null);
   const [mapViewport, setMapViewport] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   const { isAuthenticated, loading, profile } = useAuth();
-  const { language } = useLanguage();
   const { isMapOpen, setIsMapOpen } = useUI();
   const { options, isLoading: areOptionsLoading, error: optionsError } = usePublicPlacementFilterOptions();
   const {
@@ -34,38 +34,38 @@ function Home() {
     searchDebounceMs: 700,
     viewport: isMapOpen ? mapViewport : null
   });
-  const SYSTEM_LANG = SYSTEM_LANGS[language];
+
   const publicFilters = useMemo(() => [
     {
-      name: 'country', translationKey: 'COUNTRY', defaultExpended: true,
+      name: 'country', translationKey: 'placements:fields.country', defaultExpended: true,
       initialValues: options.countries.map(({ key }) => key),
       options: options.countries.map(({ key, label }) => ({ id: key, label }))
     },
     {
-      name: 'state', translationKey: 'STATE',
+      name: 'state', translationKey: 'placements:fields.state',
       initialValues: options.states.map(({ key }) => key),
       options: options.states.map(({ key, label, country }) => ({
         id: key, label: [label, country].filter(Boolean).join(', ')
       }))
     },
     {
-      name: 'city', translationKey: 'CITY',
+      name: 'city', translationKey: 'placements:fields.city',
       initialValues: options.cities.map(({ key }) => key),
       options: options.cities.map(({ key, label, state, country }) => ({
         id: key, label: [label, state, country].filter(Boolean).join(', ')
       }))
     },
     {
-      name: 'type', translationKey: 'TYPE',
+      name: 'type', translationKey: 'placements:fields.type',
       initialValues: options.types.map(({ value }) => value),
-      options: options.types.map(({ value }) => ({ id: value, translationKey: value }))
+      options: options.types.map(({ value }) => ({ id: value, translationKey: `placements:types.${value}` }))
     }
   ].filter(({ options: filterOptions }) => filterOptions.length > 0), [options]);
   const activeFiltersCount = PUBLIC_FILTER_NAMES.filter(name => filters[name]?.length > 0).length;
-  
+
   const translationKeyGreeting = getGreeting();
   const [firstName] = isNotNil(profile) ? profile.name.split(' ') : [null];
-  const displayGreeting = isNotNil(firstName) && `${SYSTEM_LANG.TEXTS[translationKeyGreeting]}, ${firstName}`;
+  const displayGreeting = isNotNil(firstName) && t(`common:greetings.${translationKeyGreeting}`, { name: firstName });
 
   const handleSearchChange = (value) => {
     updateFilters({ search: value });
@@ -140,13 +140,13 @@ function Home() {
   }, []);
 
   return (
-    <section className="w-full h-dvh flex flex-wrap overflow-y-auto"> 
+    <section className="w-full h-dvh flex flex-wrap overflow-y-auto">
       <Header>
         <div className="w-full h-full flex items-center gap-2">
-          { 
+          {
             loading ?
               <Skeleton className="w-[90%] h-[70%]" />
-            : 
+            :
               (
                 isAuthenticated &&
                 <Typography type="h5" className="truncate">
@@ -170,12 +170,11 @@ function Home() {
             isDisabled={ isLoading }
             name={ 'placements' }
             onChange={ handleSearchChange }
-            placeholder={ SYSTEM_LANG.TEXTS.FIND_BY_PLACEMENT }
+            placeholder={ t('common:texts.findByPlacement') }
             defaultValue={ filters.search }
           />
           { !areOptionsLoading && !optionsError &&
             <FiltersList
-              tableName="placements"
               filters={ publicFilters }
               hasActiveFilters={ activeFiltersCount > 0 }
               activeFiltersCount={ activeFiltersCount }
@@ -191,7 +190,7 @@ function Home() {
             <Icon name="map-search" />
           </ToggleButton>
         </NavBar>
-        { optionsError && <p role="alert" className="px-4 text-danger">{ SYSTEM_LANG.ERRORS.UNEXPECTED_ERROR }</p> }
+        { optionsError && <p role="alert" className="px-4 text-danger">{ t('validation:UNEXPECTED_ERROR') }</p> }
         <PlacementsList
           placements={placements}
           isFetchingData={isLoading}

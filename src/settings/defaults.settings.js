@@ -1,4 +1,3 @@
-const LANG = 'es';
 const THEME = 'light';
 
 const MIN_RENT_DAYS = 15;
@@ -11,7 +10,6 @@ const ROUNDED_CORNERS = {
 };
 
 export {
-  LANG,
   THEME,
   MAX_RENT_DAYS,
   MIN_RENT_DAYS,

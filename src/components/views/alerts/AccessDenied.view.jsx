@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 function AccessDenied() {
+  const { t } = useTranslation();
   return(
     <>
-      Sin Acceso test
+      { t('common:alerts.forbidden') }
     </>
   )
 };

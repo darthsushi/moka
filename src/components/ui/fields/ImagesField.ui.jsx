@@ -1,3 +1,5 @@
+import { fieldError } from '@/i18n/errors';
+import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useRef } from 'react';
 import { useController } from 'react-hook-form';
 import {
@@ -11,17 +13,16 @@ import {
 } from '@heroui/react';
 
 import { isEmpty, isNotNil, noop, not } from '@/helpers/ramda.helpers';
-import { useLanguage } from '@/hooks/contexts';
-import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
 
 import Icon from '../icons/Icon.ui';
 import FlatCard from '../containers/FlatCard.ui';
 
-function ImagesVisualizer({ images = [], removeImage, systemLabels }) {
+function ImagesVisualizer({ images = [], removeImage }) {
+  const { t } = useTranslation();
 
   return (
     <section
-      aria-label='visualizer images'
+      aria-label={ t('common:a11y.imagePreview') }
       className="w-full grid grid-cols-3 gap-1 py-2"
     >
       {
@@ -29,7 +30,7 @@ function ImagesVisualizer({ images = [], removeImage, systemLabels }) {
           const isURL = typeof image === 'string';
 
           if (isURL) {
-            return 'image aun no disponible';
+            return <p key={ index }>{ t('placements:imageUnavailable') }</p>;
           }
 
           const actualImageURL = URL.createObjectURL(image);
@@ -57,7 +58,7 @@ function ImagesVisualizer({ images = [], removeImage, systemLabels }) {
                   </Button>
                   <Tooltip.Content>
                     <p>
-                      { systemLabels.TOOLTIPS.REMOVE }
+                      { t('common:tooltips.remove') }
                     </p>
                   </Tooltip.Content>
                 </Tooltip>
@@ -111,8 +112,8 @@ function ImagesField({
   onChange = noop,
   registerError = noop,
 }) {
-  const { language } = useLanguage();
-  const fileInputRef = useRef(null); 
+  const { t } = useTranslation();
+  const fileInputRef = useRef(null);
   const {
     field,
     fieldState: { invalid, error },
@@ -130,12 +131,10 @@ function ImagesField({
     },
   });
 
-  const SYSTEM_LABELS = SYSTEM_LANGS[language];
-
   const handleRemoveImage = (indexToRemove) => {
     const remainingImages = field.value
       .filter((_, index) => index !== indexToRemove);
-    
+
     field.onChange(remainingImages);
     onChange(remainingImages);
   };
@@ -165,7 +164,7 @@ function ImagesField({
   );
   return (
     <section
-      aria-label="images field"
+      aria-label={ t('common:a11y.images') }
       className="w-full gap-1 flex flex-col"
     >
       <Label
@@ -179,11 +178,11 @@ function ImagesField({
           <ImagesVisualizer
             removeImage = { handleRemoveImage }
             images={ field.value }
-            systemLabels={ SYSTEM_LABELS }
+
           />
         }
         <section
-          aria-label='field actions'
+          aria-label={ t('common:a11y.uploadActions') }
           id={ `field-actions-${name}` }
           className="grid grid-cols-6 gap-1"
         >
@@ -195,20 +194,21 @@ function ImagesField({
             onPress={ () => fileInputRef.current?.click() }
           >
              <Icon name="find-image" />
-              { SYSTEM_LABELS.BUTTONS['BROWSE_IMAGES'] }
+              { t('common:actions.browseImages') }
           </Button>
         </section>
       </FlatCard>
       { isNotNil(error) &&
           <p role="alert" className="text-xs text-danger">
-            { errors[error.message] || error.message || errors[error.type] || error.type }
+            { fieldError(t, error, errors) }
           </p>
         }
       <div
         className="hidden"
-        aria-label="input file hidden"
+        aria-label={ t('common:a11y.fileInput') }
       >
         <Input
+          aria-label={ t('common:actions.browseImages') }
           multiple
           onChange={ handleOnChange }
           onBlur={ field.onBlur }

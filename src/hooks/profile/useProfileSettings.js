@@ -10,7 +10,7 @@ export const useProfileSettings = () => {
     const normalizedName = name?.trim();
 
     if (!normalizedName || normalizedName.length < 5) {
-      throw new Error('El nombre debe contener al menos 5 caracteres.');
+      throw new Error('NAME_TOO_SHORT');
     }
 
     return updateProfile({ name: normalizedName });
@@ -18,7 +18,7 @@ export const useProfileSettings = () => {
 
   const updateAvatar = async (avatar) => {
     if (!user?.id) {
-      throw new Error('Debes iniciar sesión para actualizar tu avatar.');
+      throw new Error('AUTH_REQUIRED');
     }
 
     const previousAvatarPath = storageService.getProfileAvatarPath(
@@ -37,11 +37,11 @@ export const useProfileSettings = () => {
     }
 
     if (!(avatar instanceof File)) {
-      throw new Error('Selecciona una imagen válida para el avatar.');
+      throw new Error('INVALID_AVATAR');
     }
 
     if (avatar.size > MAX_AVATAR_SIZE) {
-      throw new Error('El avatar no puede pesar más de 10 MB.');
+      throw new Error('AVATAR_TOO_LARGE');
     }
 
     const { filePath, publicUrl } = await storageService.uploadProfileAvatar(

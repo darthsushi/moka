@@ -1,10 +1,10 @@
+import { fieldError } from '@/i18n/errors';
+import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { FieldError, InputGroup, Label, TextField } from '@heroui/react';
 
-import { isEmpty, isNotNil, noop } from '@/helpers/ramda.helpers';
-import { useLanguage } from '@/hooks/contexts';
-import { SYSTEM as SYSTEM_LANGS } from '@/settings/langs.settings';
+import { isNotNil, noop } from '@/helpers/ramda.helpers';
 
 function MetersField({
   label,
@@ -23,7 +23,7 @@ function MetersField({
   registerError = noop,
   validate = () => true,
 }) {
-  const { language } = useLanguage();
+  const { t } = useTranslation();
   const {
     field,
     fieldState: { invalid, error },
@@ -40,8 +40,6 @@ function MetersField({
     },
   });
 
-  const SYSTEM_LABELS = SYSTEM_LANGS[language];
-
   const handleOnChange = (actualValue) => {
     field.onChange(actualValue);
     onChange(actualValue, field.name);
@@ -57,7 +55,7 @@ function MetersField({
       fullWidth
       onChange={ handleOnChange }
       onBlur={ field.onBlur }
-      value={ field.value }
+      value={ field.value ?? '' }
       name={ field.name }
       inputRef={ field.ref }
       isInvalid={ invalid }
@@ -70,22 +68,20 @@ function MetersField({
         { label }
       </Label>
       <InputGroup>
-        <InputGroup.Input 
+        <InputGroup.Input
           type="number"
           className="w-[50%]"
           max={ max }
           min={ min }
         />
         <InputGroup.Suffix>
-          { SYSTEM_LABELS.WORDS.METERS }
+          { t('common:words.meters') }
         </InputGroup.Suffix>
       </InputGroup>
       { isNotNil(error) &&
         <FieldError>
-          { 
-            isEmpty(error.message)
-              ? (errors[error.type] || error.type)
-              : errors[error.message]
+          {
+            fieldError(t, error, errors, { min, max })
           }
         </FieldError>
       }

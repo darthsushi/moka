@@ -84,7 +84,7 @@ export const usePublicPlacements = ({
       setPlacements([]);
       setNextCursor(null);
       setHasMore(false);
-      setError(err.message);
+      setError(err);
     } finally {
       if (requestId === requestIdRef.current) {
         setIsLoading(false);
@@ -130,7 +130,7 @@ export const usePublicPlacements = ({
     } catch (err) {
       if (requestId !== requestIdRef.current) return;
 
-      setError(err.message);
+      setError(err);
     } finally {
       if (requestId === requestIdRef.current) {
         setIsLoadingMore(false);

@@ -23,7 +23,7 @@ export const profileService = {
     );
 
     if (Object.keys(editableChanges).length === 0) {
-      throw new Error('No hay cambios de perfil permitidos para guardar.');
+      throw new Error('NO_PROFILE_CHANGES');
     }
 
     const { error } = await supabase

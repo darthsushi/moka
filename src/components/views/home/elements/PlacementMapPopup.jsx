@@ -1,9 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { Typography } from '@heroui/react';
 
 import { Popup } from 'react-map-gl/mapbox';
 
-import { useLanguage } from '@/hooks/contexts';
-import { SYSTEM } from '@/settings/langs.settings';
 import { Card } from '@heroui/react';
 import { Animations } from '@/components/animations';
 
@@ -49,9 +48,7 @@ function PopupContent({
   /* onClose, */
   onViewDetails
 }) {
-  const { language } = useLanguage();
-
-  const SYSTEM_LANG = SYSTEM[language];
+  const { t } = useTranslation();
 
   return (
     <Animations.HoverCard disableHoverAnimation tabAnimation>
@@ -74,7 +71,7 @@ function PopupContent({
               type="body-xs"
               className="truncate text-default-500"
             >
-              { SYSTEM_LANG.PLACEMENT.TYPES[placement.type] }
+              { t(`placements:types.${placement.type}`) }
             </Typography>
           </div>
         </Card.Content>

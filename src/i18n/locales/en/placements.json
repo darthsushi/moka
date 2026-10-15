@@ -1,0 +1,133 @@
+{
+  "types": {
+    "UNIPOLE_BILLBOARD": "Unipole billboard",
+    "HAND_PAINTED_MURAL": "Hand painted mural",
+    "BARRICADE": "Barricade",
+    "BUILDING_WRAP": "Building wrap"
+  },
+  "ownerStatuses": {
+    "active": "Active",
+    "paused": "Paused",
+    "withdrawn": "Withdrawn"
+  },
+  "reviewStatuses": {
+    "pending": "Pending",
+    "in_review": "In review",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "suspended": "Suspended"
+  },
+  "visibility": {
+    "public": "Public",
+    "private": "Private",
+    "unlisted": "Unlisted"
+  },
+  "fields": {
+    "type": "Type",
+    "country": "Country",
+    "state": "State",
+    "city": "City",
+    "location": "Location",
+    "visibility": "Visibility",
+    "ownerStatus": "Availability",
+    "reviewStatus": "Review"
+  },
+  "form": {
+    "faces": "Number of faces",
+    "type": "Type of placement",
+    "structureHeight": "Structure height",
+    "structureDetails": "Structure Details",
+    "structureDetailsDescription": "Configure the technical information of your space",
+    "latitudeLongitude": "Latitude and Longitude",
+    "latitudeLongitudeDescription": "Set your ad space location using coordinates. Click Search Location to verify they are correct",
+    "latitudeLongitudePlaceholder": "e.g., 20.967834, -89.648758",
+    "location": "Location",
+    "locationDescription": "If the displayed location is correct, click Save and continue to proceed",
+    "images": "Face Photos",
+    "imagesDescription": "Upload 1 to 3 images of the advertising face",
+    "displaySizes": "Face width and height",
+    "displayWidth": "Width",
+    "displayHeight": "Height",
+    "rentalPeriod": "Rental Period",
+    "periodPrice": "Price per period (15 days)",
+    "rangeDays": "Rental day range",
+    "description": "Description",
+    "descriptionPlaceholder": "Placement Description",
+    "visibility": "Space Visibility",
+    "options": {
+      "UNIPOLE_BILLBOARD_DESCRIPTION": "Single-pole structure for high visual impact. Supports up to 4 faces to capture attention from any direction",
+      "HAND_PAINTED_MURAL_DESCRIPTION": "Advertising painted directly onto walls. Ideal for street-level campaigns with an urban touch",
+      "BARRICADE_DESCRIPTION": "Large-format ground-level billboard. High visibility for vehicular and pedestrian traffic",
+      "BUILDING_WRAP_DESCRIPTION": "Large-format banner installed on a building facade. Excellent long-distance visibility",
+      "PUBLIC_DESCRIPTION": "Visible to all users on the platform",
+      "PRIVATE_DESCRIPTION": "Only visible to you. Closed for bookings",
+      "UNLISTED_DESCRIPTION": "Accessible only via direct link. Excluded from search results"
+    },
+    "errors": {
+      "locationNotFoundTitle": "Location Not Found",
+      "locationNotFound": "We couldn't find any location using the provided coordinates. Please verify that the details are correct or try again later"
+    },
+    "tabs": {
+      "face1": "Face A",
+      "face2": "Face B",
+      "face3": "Face C",
+      "face4": "Face D"
+    },
+    "inputMetersPlaceholder": "e.g., 15 (meters)",
+    "periodPricePlaceholder": "Ex. $500",
+    "descriptionDescription": "Describe the main features, visibility, or advantages of this space.",
+    "pricePeriodDescription": "Enter the rate and availability in 15-day periods.",
+    "placementNoCreated": "Error creating placement, try later.",
+    "placementCreated": "All okay",
+    "optionsLabel": "{{name}} options"
+  },
+  "details": {
+    "home": "Explore",
+    "missing": "This placement is unavailable.",
+    "error": "Could not load the details. Please try again.",
+    "faces": "Placement faces",
+    "face": "Face",
+    "description": "About this placement",
+    "noDescription": "The owner has not added a description yet.",
+    "location": "Location",
+    "height": "Structure height",
+    "dimensions": "Display dimensions",
+    "days": "Rental period",
+    "from": "From",
+    "noPrice": "Price unavailable",
+    "noImages": "No image available",
+    "view": "View",
+    "share": "Copy link",
+    "copied": "Link copied",
+    "copyError": "Could not copy the link",
+    "ownerOnly": "Only you can see this placement.",
+    "unlistedOwner": "Copy the unlisted link from inventory once the placement is approved and active.",
+    "noAvailability": "Availability is not shown on this page yet.",
+    "map": "View location",
+    "meters": "m",
+    "dayUnit": "days",
+    "faceLabel": "Face {{number}}",
+    "viewLabel": "View {{number}}",
+    "fromPrice": "From {{price}}"
+  },
+  "availableFaces_one": "{{count}} face available",
+  "availableFaces_other": "{{count}} faces available",
+  "faceCount_one": "{{count}} face",
+  "faceCount_other": "{{count}} faces",
+  "nameInCity": "{{type}} in {{city}}",
+  "priceRange": "From {{min}} up to {{max}}",
+  "a11y": {
+    "form": "Placement data",
+    "structure": "Structure data",
+    "coordinates": "Placement coordinates",
+    "description": "Placement description",
+    "faces": "Face data",
+    "faceTabs": "Placement faces"
+  },
+  "exploreCode": "Explore {{code}}",
+  "viewDetailsCode": "View details for {{code}}",
+  "imageUnavailable": "Image unavailable",
+  "days_one": "{{count}} day",
+  "days_other": "{{count}} days",
+  "daysRange": "{{min}}–{{max}} days"
+}
