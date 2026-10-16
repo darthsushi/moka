@@ -28,6 +28,14 @@ const MODULES = {
     path: '/settings',
     label: 'SETTINGS',
     icon: 'settings',
+  },
+  TEST_LAB: {
+    id: 'test-lab',
+    path: '/test-lab',
+    label: 'TEST_LAB',
+    icon: 'science',
+    requiresAuth: true,
+    roles: [PROFILES.ROLES.DEVELOPER, PROFILES.ROLES.ADMIN]
   }
 };
 

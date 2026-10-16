@@ -58,6 +58,7 @@ import EditDocument from './svg-icons/EditDocument.svg.jsx';
 import PauseCircle from './svg-icons/PauseCircle.svg.jsx';
 import PlayCircle from './svg-icons/PlayCircle.svg.jsx';
 import FactCheck from './svg-icons/FactCheck.svg.jsx';
+import Science from './svg-icons/Science.svg.jsx';
 
 function Icon({ name, filled }) {
   const SGVS = {
@@ -110,6 +111,7 @@ function Icon({ name, filled }) {
     'refresh': Refresh,
     'remove': Remove,
     'schedule': Schedule,
+    'science': Science,
     'search': Search,
     'settings': Settings,
     'shield-lock': ShieldLock,

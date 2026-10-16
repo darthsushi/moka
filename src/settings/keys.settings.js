@@ -13,7 +13,8 @@ const PROFILES = {
     ADMIN: 'admin',
     MODERATOR: 'moderator',
     ADVERTISER: 'advertiser',
-    PRODUCER: 'producer'
+    PRODUCER: 'producer',
+    DEVELOPER: 'developer'
   }
 };
 
