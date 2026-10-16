@@ -3,12 +3,14 @@
     "home": "Inicio",
     "inventory": "Inventario",
     "reviewHub": "Centro de revisión",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "test-lab": "Laboratorio de pruebas"
   },
   "pages": {
     "inventory": "Inventario",
     "reviewHub": "Centro de revisión",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "test-lab": "Laboratorio de pruebas"
   },
   "tooltips": {
     "expandSidebar": "Expandir menú",

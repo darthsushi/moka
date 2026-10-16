@@ -3,12 +3,14 @@
     "home": "Home",
     "inventory": "Inventory",
     "reviewHub": "Review Hub",
-    "settings": "Settings"
+    "settings": "Settings",
+    "test-lab": "Test Lab"
   },
   "pages": {
     "inventory": "Inventory",
     "reviewHub": "Review Hub",
-    "settings": "Settings"
+    "settings": "Settings",
+    "test-lab": "Test Lab"
   },
   "tooltips": {
     "expandSidebar": "Expand menu",
