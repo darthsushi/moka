@@ -134,5 +134,29 @@
     "goodMorning": "Buenos días, {{name}}",
     "goodAfternoon": "Buenas tardes, {{name}}",
     "goodNight": "Buenas noches, {{name}}"
+  },
+  "dashboard": {
+    "catalog": "Ver catálogo",
+    "back": "Volver al panel",
+    "view": "Ver",
+    "next": "Por atender",
+    "empty": "No hay espacios que requieran atención.",
+    "error": "No se pudo cargar el panel. Inténtalo de nuevo.",
+    "selectRole": "Elegir panel",
+    "roles": {
+      "owner": "Propietario",
+      "moderator": "Moderador",
+      "admin": "Administrador"
+    },
+    "stats": {
+      "approved": "Aprobados",
+      "reviewing": "En revisión",
+      "attention": "Observados",
+      "paused": "Pausados",
+      "unassigned": "Sin asignar",
+      "minePending": "Mis pendientes",
+      "mineReviewing": "Mis revisiones",
+      "reassign": "Por reasignar"
+    }
   }
 }
