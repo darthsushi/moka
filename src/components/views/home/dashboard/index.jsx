@@ -66,7 +66,7 @@ function DashboardContent({ role }) {
       ];
 
   return (
-    <div className="w-full space-y-6 p-4">
+    <div className="w-full h-full space-y-6 p-4">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         { cards.map(([key, value, href]) =>
           <StatCard
@@ -117,7 +117,7 @@ function Dashboard({ roles }) {
     <Tabs
       selectedKey={ role }
       onSelectionChange={ setSelectedRole }
-      className="flex w-full min-h-0 flex-col"
+      className="flex w-full h-full min-h-0 flex-col"
     >
       <Tabs.ListContainer className="mx-4 w-fit">
         <Tabs.List aria-label={ t('common:dashboard.selectRole') }>
