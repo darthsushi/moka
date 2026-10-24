@@ -26,5 +26,10 @@
     "load": "Could not load inventory. Please try again.",
     "filters": "Could not load filters. Please try again.",
     "update": "Could not update the placement. Please try again."
+  },
+  "tabs": {
+    "approved": "Approved",
+    "reviewing": "In review",
+    "attention": "Flagged"
   }
 }
