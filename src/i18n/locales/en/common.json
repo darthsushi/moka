@@ -133,5 +133,29 @@
     "goodMorning": "Good morning, {{name}}",
     "goodAfternoon": "Good afternoon, {{name}}",
     "goodNight": "Good evening, {{name}}"
+  },
+  "dashboard": {
+    "catalog": "View catalog",
+    "back": "Back to dashboard",
+    "view": "View",
+    "next": "Needs attention",
+    "empty": "No placements need attention.",
+    "error": "Could not load the dashboard. Please try again.",
+    "selectRole": "Choose dashboard",
+    "roles": {
+      "owner": "Owner",
+      "moderator": "Moderator",
+      "admin": "Administrator"
+    },
+    "stats": {
+      "approved": "Approved",
+      "reviewing": "In review",
+      "attention": "Flagged",
+      "paused": "Paused",
+      "unassigned": "Unassigned",
+      "minePending": "My pending",
+      "mineReviewing": "My reviews",
+      "reassign": "To reassign"
+    }
   }
 }
