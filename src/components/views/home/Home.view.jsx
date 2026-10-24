@@ -6,7 +6,7 @@ import { isNotNil } from '@/helpers/ramda.helpers';
 import { getGreeting } from '@/helpers/utilities.helpers';
 import { useAuth } from '@/hooks/contexts';
 
-import { Header, HeaderTitle } from '@/components/ui';
+import { Header, HeaderTitle, Icon } from '@/components/ui';
 import Catalog from './catalog';
 import Dashboard from './dashboard';
 
@@ -23,16 +23,24 @@ function Home() {
 
   return (
     <section className="w-full h-dvh flex flex-wrap overflow-y-auto">
-      <Header>
+      <Header actions={ !loading && hasDashboard &&
+        <Button
+          size="sm"
+          variant="tertiary"
+          className="shrink-0 whitespace-nowrap"
+          aria-label={ t(showCatalog ? 'common:dashboard.back' : 'common:dashboard.catalog') }
+          onPress={ () => setShowCatalog(value => !value) }
+        >
+          <Icon name={ showCatalog ? 'bar-chart' : 'public' } />
+          <span className="hidden sm:inline">
+            { t(showCatalog ? 'common:dashboard.back' : 'common:dashboard.catalog') }
+          </span>
+        </Button>
+      }>
         <HeaderTitle
           title={ displayGreeting }
           isLoading={ loading }
         />
-        { !loading && hasDashboard &&
-          <Button size="sm" variant="tertiary" onPress={ () => setShowCatalog(value => !value) }>
-            { t(showCatalog ? 'common:dashboard.back' : 'common:dashboard.catalog') }
-          </Button>
-        }
       </Header>
       { !loading && (hasDashboard && !showCatalog
         ? <Dashboard roles={ dashboardRoles } />
