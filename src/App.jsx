@@ -7,8 +7,20 @@ import { MODULES, PRIMARY_MODULES } from '@/settings/navigation.settings';
 import { ProtectedRoute, PublicOnlyRoute, RoleRoute } from '@/router';
 
 import { AppLayout } from '@/components/layouts';
-import { AccessDenied, Auth, HomePage, Inventory, NotFound, PlacementManager, PlacementPage, ReviewHub, Settings, TestLab } from '@/components/views';
-import PlacementDetailsDialog from '@/components/views/home/elements/PlacementDetailsDialog';
+import {
+  AccessDenied,
+  Auth,
+  HomePage,
+  Inventory,
+  NotFound,
+  PlacementManager,
+  PlacementPage,
+  ReviewHub,
+  Settings,
+  TestLab
+} from '@/components/views';
+// TODO: Deberiamos cambiar de lugar?
+import PlacementDetailsDialog from '@/components/views/home/catalog/PlacementDetailsDialog';
 
 import './App.css';
 

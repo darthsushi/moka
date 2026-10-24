@@ -4,8 +4,8 @@ import MapboxMap, { NavigationControl } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { Dialog } from '@/components/ui';
-import PlacementMapMarker from '@/components/views/home/elements/PlacementMapMarker';
-import PlacementMapPopup from '@/components/views/home/elements/PlacementMapPopup';
+import PlacementMapMarker from '@/components/views/home/catalog/PlacementMapMarker';
+import PlacementMapPopup from '@/components/views/home/catalog/PlacementMapPopup';
 import { placementsService } from '@/services/placements.service';
 
 const DEFAULT_VIEW = { longitude: -89.6237, latitude: 20.9674, zoom: 12 };
