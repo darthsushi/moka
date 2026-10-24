@@ -8,7 +8,7 @@ import LanguageButton from './elements/LanguageButton';
 import AvatarAccount from './elements/AvatarAccount';
 import OwnerButton from './elements/OwnerButton';
 
-function Header({ children }) {
+function Header({ children, actions }) {
   const { t } = useTranslation();
   const { isSidebarOpen, toggleSidebar } = useUI();
 
@@ -35,6 +35,7 @@ function Header({ children }) {
         </div>
       </div>
       <div data-header-right-controls className="h-full flex items-center gap-1">
+        { actions }
         <LanguageButton />
         <OwnerButton />
         <AvatarAccount />
