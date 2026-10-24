@@ -56,8 +56,7 @@ function DashboardContent({ role }) {
     ? [
         ['approved', data?.approved, '/inventory#approved'],
         ['reviewing', data?.reviewing, '/inventory#reviewing'],
-        ['attention', data?.attention, '/inventory#attention'],
-        ['paused', data?.paused, '/inventory#approved']
+        ['attention', data?.attention, '/inventory#attention']
       ]
     : [
         ['unassigned', data?.unassigned, QUEUE_LINKS.unassigned],
@@ -94,7 +93,7 @@ function DashboardContent({ role }) {
               </p>
             </div>
             <Button size="sm" variant="secondary" onPress={ () => navigate(
-              role === 'owner' ? '/inventory#attention' : QUEUE_LINKS[item.queue]
+              role === 'owner' ? `/p/${encodeURIComponent(item.code)}` : QUEUE_LINKS[item.queue]
             ) }>
               { t('common:dashboard.view') }
             </Button>
