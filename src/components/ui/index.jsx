@@ -3,6 +3,8 @@ export { default as Header } from './header/Header.ui';
 export { default as NavBar } from './navbar/NavBar.ui';
 
 export { default as FlatCard } from './containers/FlatCard.ui';
+export { default as HeaderTitle } from './containers/HeaderTitle.ui';
+export { default as TooltipHelper } from './containers/TooltipHelper.ui';
 
 export { default as Icon } from './icons/Icon.ui'
 export { default as Dialog } from './dialog/Dialog.ui';

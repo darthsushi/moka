@@ -8,7 +8,7 @@ function SearchInput({
   onChange = noop,
   autoFocus = false,
   isDisabled = false,
-  defaultValue = '',
+  value = '',
   placeholder = null,
 }) {
   const { t } = useTranslation();
@@ -22,9 +22,9 @@ function SearchInput({
         aria-label={ `Search Field ${name}` }
         onChange={ onChange }
         isDisabled={ isDisabled }
-        defaultValue={ defaultValue }
+        value={ value }
       >
-        <SearchField.Group aria-label={ `Search Field ${name} group` }>
+        <SearchField.Group className="w-full" aria-label={ `Search Field ${name} group` }>
           <SearchField.SearchIcon />
           <SearchField.Input
             aria-label={ `Search Input ${name}` }

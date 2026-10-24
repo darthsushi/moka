@@ -1,9 +1,11 @@
 import { translateError } from '@/i18n/errors';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { Button, SearchField } from '@heroui/react';
-import { Table } from '@/components/ui';
+import { Button, Label, Switch } from '@heroui/react';
+
+import { NavBar, SearchInput, Table, TooltipHelper } from '@/components/ui';
 import { useReviewHub } from '@/hooks/review-hub/useReviewHub';
+
 import ReviewStatus from './ReviewStatus';
 import ReviewSelect from './ReviewSelect';
 import ReviewAssignmentDialog from './ReviewAssignmentDialog';
@@ -17,9 +19,12 @@ export default function ReviewQueue({ tab, refresh, isAdmin, onCounts }) {
   const [onlyOrphaned, setOnlyOrphaned] = useState(true);
   const [assignment, setAssignment] = useState(null);
   const [reviewId, setReviewId] = useState(null);
+
   const query = useReviewHub({ tab, search, status, page, onlyOrphaned, refreshKey: refresh });
   const { refetch, counts } = query;
+
   useEffect(() => { onCounts(counts); }, [counts, onCounts]);
+
   const totalPages = Math.max(1, Math.ceil(query.total / query.pageSize));
   const cols = [
     { id: 'id', displayText: t('reviewHub:placement'), isRowHeader: true },
@@ -44,20 +49,44 @@ export default function ReviewQueue({ tab, refresh, isAdmin, onCounts }) {
   }));
 
   return <>
-    <div className="flex flex-wrap items-end gap-4 px-4 py-3">
-      <SearchField aria-label={ t('reviewHub:search') } value={ search } onChange={ value => { setSearch(value); setPage(1); } } className="w-full sm:max-w-md">
-        <SearchField.Group><SearchField.SearchIcon /><SearchField.Input placeholder={ t('reviewHub:search') } /><SearchField.ClearButton /></SearchField.Group>
-      </SearchField>
+    <NavBar contentClassName="flex flex-row items-center gap-2">
+      <SearchInput
+        name={ t('reviewHub:search') }
+        onChange={ value => { setSearch(value); setPage(1); } }
+        placeholder={ t('reviewHub:search') }
+        value={ search }
+      />
       { tab !== 'unassigned' &&
-      <ReviewSelect label={ t('reviewHub:status') } value={ status || 'all' } onChange={ value => { setStatus(value === 'all' ? '' : value); setPage(1); } }
-        options={ [{ id: 'all', label: t('reviewHub:allStatuses') }, ...['pending', 'in_review', 'approved', 'rejected', 'suspended'].map(id => ({ id, label: t(`placements:reviewStatuses.${id}`) }))] } /> }
-      { tab === 'reassign' && <div className="max-w-xl text-sm">
-        <label className="flex cursor-pointer items-center gap-2"><input type="checkbox" checked={ onlyOrphaned } onChange={ event => { setOnlyOrphaned(event.target.checked); setPage(1); } } />{ t('reviewHub:onlyOrphaned') }</label>
-        <p className="mt-1 text-xs text-muted">{ t('reviewHub:adminHint') }</p>
-      </div> }
-    </div>
+        <ReviewSelect
+          label={ t('reviewHub:status') }
+          value={ status || 'all' }
+          onChange={ value => { setStatus(value === 'all' ? '' : value); setPage(1); } }
+          options={ [{ id: 'all', label: t('reviewHub:allStatuses') }, ...['pending', 'in_review', 'approved', 'rejected', 'suspended'].map(id => ({ id, label: t(`placements:reviewStatuses.${id}`) }))] }
+        />
+      }
+      { tab === 'reassign' && 
+        <div className="flex gap-1">
+          <Switch
+            isSelected={ onlyOrphaned }
+            onChange={ value => { setOnlyOrphaned(value); setPage(1); } }
+          >
+            <Switch.Content className="flex justify-center items-center">
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+              <div>
+                <Label>
+                  { t('reviewHub:onlyOrphaned') }
+                </Label>
+              </div>
+            </Switch.Content>
+          </Switch>
+          <TooltipHelper helpText={ t('reviewHub:adminHint') } />
+        </div>
+      }
+    </NavBar>
     { query.error ? <div role="alert" className="p-6"><p>{ translateError(t, query.error) }</p><Button className="mt-3" onPress={ refetch }>{ t('common:actions.retry') }</Button></div> :
-      <div className="flex min-h-0 flex-1 flex-col [&>[data-table-actions]]:hidden">
+      <div className="flex min-h-0 flex-1 flex-col *:data-table-actions:hidden">
       <Table name="review-hub" cols={ cols } rows={ rows }
         states={ { isFechingData: query.isLoading, isEmpty: query.total === 0 } }
         pagination={ { page, pageSize: query.pageSize, totalPages, totalContent: query.total, setPage } }

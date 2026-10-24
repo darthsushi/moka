@@ -4,13 +4,16 @@
     "inventory": "Inventario",
     "reviewHub": "Centro de revisión",
     "settings": "Configuración",
-    "test-lab": "Laboratorio de pruebas"
+    "test-lab": "Laboratorio de pruebas",
+    "placement-manager": "Nuevo espacio"
   },
   "pages": {
     "inventory": "Inventario",
     "reviewHub": "Centro de revisión",
     "settings": "Configuración",
-    "test-lab": "Laboratorio de pruebas"
+    "test-lab": "Laboratorio de pruebas",
+    "placement-manager-new": "Nuevo espacio",
+    "placement-manager-edit": "Modificar espacio"
   },
   "tooltips": {
     "expandSidebar": "Expandir menú",
@@ -99,7 +102,8 @@
     "count_many": "{{count}} seleccionados"
   },
   "a11y": {
-    "navigation": "Navegación principal",
+    "navigation": "Navegación",
+    "mainNavigation": "Navegación principal",
     "toggleSidebar": "Mostrar u ocultar el menú",
     "breadcrumb": "Ruta de navegación",
     "placementOptions": "Opciones del espacio",

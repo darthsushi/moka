@@ -14,6 +14,7 @@ function GoogleMapsView({
   return (
     <Card
       className="w-full"
+      variant="tertiary"
     >
       <Card.Header className={ `w-full ${className}` }>
         { children }

@@ -1,29 +1,29 @@
-import { useTranslation } from 'react-i18next';
+
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Label,
-  ListBox,
-  Tooltip
-} from '@heroui/react';
+import { useTranslation } from 'react-i18next';
+import { ListBox, Tooltip } from '@heroui/react';
 
 import { not } from '@/helpers/ramda.helpers';
 import { canAccessModule, classNameParser } from '@/helpers/utilities.helpers';
 import { useAuth, useUI } from '@/hooks/contexts';
-import { NAVIGATION_ITEMS } from '@/settings/navigation.settings';
+import { NAVIGATION_ITEMS, PRIMARY_NAVEGATION_ITEMS } from '@/settings/navigation.settings';
 
+import FlatCard from '../containers/FlatCard.ui';
 import Icon from '../icons/Icon.ui';
 import Logo from '../brand/Logo.ui';
-import FlatCard from '../containers/FlatCard.ui';
+import { isPositiveNumber } from '@/helpers/validators.helper';
 
 function SideBar() {
-  const { t } = useTranslation();
   const { isAuthenticated, roles } = useAuth();
-  const {
-    isSidebarOpen,
-  } = useUI();
+  const { isSidebarOpen } = useUI();
 
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const primaryNavigationItems = PRIMARY_NAVEGATION_ITEMS.filter(
+    item => canAccessModule(item, isAuthenticated, roles)
+  );
 
   const navigationItems = NAVIGATION_ITEMS.filter(
     item => canAccessModule(item, isAuthenticated, roles)
@@ -35,16 +35,19 @@ function SideBar() {
     'transition-all duration-100',
     'hidden  sm:flex'
   ];
+
   const LIST_ITEM_CLASS = [
     not(isSidebarOpen) && 'justify-center',
     'flex items-center'
   ];
+
   const ICON_CLASS = [
     isSidebarOpen ? 'text-xl' : 'w-full items-center text-2xl',
     'transition-all duration-200',
     'flex h-8 items-center justify-center',
     'text-black dark:text-white'
   ];
+
   const LABEL_CLASS = [
     isSidebarOpen ? 'opacity-100' : 'opacity-0',
     'flex flex-col',
@@ -55,14 +58,77 @@ function SideBar() {
     <nav className={ classNameParser(SIDE_BAR_CLASS) } >
       <div className="w-full h-auto flex flex-col items-center">
         <Logo small={ not(isSidebarOpen) } />
-        <div className="w-full min-h-2 pt-2">
+        <div className="w-full flex flex-col min-h-2 pt-2 px-3 gap-2">
+          { isPositiveNumber(primaryNavigationItems.length) &&
+            <FlatCard
+              id="principal-menu"
+              className="w-full p-1"
+            >
+              <ListBox
+                aria-label={ t('common:a11y.mainNavigation') }
+                className="w-full"
+                selectionMode="none"
+                onAction={ (key) => navigate(String(key)) }
+              >
+                <ListBox.Section className="flex flex-col gap-1">
+                  {
+                  primaryNavigationItems.map(item => {
+                      const label = t(`common:sidebar.${item.id === 'review-hub' ? 'reviewHub' : item.id}`);
+                      const isActive = location.pathname === item.path;
+
+                      return (
+                        <ListBox.Item
+                          key={ item.id }
+                          id={ item.path }
+                          textValue={ label }
+                          className={
+                            classNameParser([
+                              ...LIST_ITEM_CLASS,
+                              'flex justify-center',
+                              isActive ? 'bg-accent' : 'bg-accent-soft'
+                            ])
+                          }
+                        >
+                          <Tooltip isDisabled={ isSidebarOpen }>
+                            <Tooltip.Trigger>
+                              <div
+                                className={ classNameParser([...ICON_CLASS, isActive && 'text-white']) }
+                              >
+                                <Icon
+                                  filled
+                                  name={ item.icon }
+                                />
+                              </div>
+                            </Tooltip.Trigger>
+                            <Tooltip.Content
+                              placement="left"
+                            >
+                              { label }
+                            </Tooltip.Content>
+                          </Tooltip>
+                          { isSidebarOpen &&
+                            <div className={ classNameParser([...LABEL_CLASS]) }>
+                              <p className={ `text-base ${isActive && 'text-white'}` }>
+                                { label }
+                              </p>
+                            </div>
+                          }
+                        </ListBox.Item>
+                      );
+                    })
+                  }
+                </ListBox.Section>
+              </ListBox>
+            </FlatCard>
+          }
           <FlatCard
-            className="w-full"
+            id="general-menu"
+            className="w-full p-1"
             variant="transparent"
           >
             <ListBox
               aria-label={ t('common:a11y.navigation') }
-              className="w-full p-2 text-gray-600"
+              className="w-full"
               selectionMode="none"
               onAction={ (key) => navigate(String(key)) }
             >
@@ -103,9 +169,9 @@ function SideBar() {
                         </Tooltip>
                         { isSidebarOpen &&
                           <div className={ classNameParser(LABEL_CLASS) }>
-                            <Label className="text-base">
+                            <p className="text-base">
                               { label }
-                            </Label>
+                            </p>
                           </div>
                         }
                       </ListBox.Item>

@@ -2,12 +2,12 @@ import { Toast } from '@heroui/react';
 import { useState } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
-import { MODULES } from '@/settings/navigation.settings';
+import { MODULES, PRIMARY_MODULES } from '@/settings/navigation.settings';
 
 import { ProtectedRoute, PublicOnlyRoute, RoleRoute } from '@/router';
 
 import { AppLayout } from '@/components/layouts';
-import { AccessDenied, Auth, HomePage, Inventory, NotFound, PlacementPage, ReviewHub, Settings, TestLab } from '@/components/views';
+import { AccessDenied, Auth, HomePage, Inventory, NotFound, PlacementManager, PlacementPage, ReviewHub, Settings, TestLab } from '@/components/views';
 import PlacementDetailsDialog from '@/components/views/home/elements/PlacementDetailsDialog';
 
 import './App.css';
@@ -31,6 +31,17 @@ function App() {
           <Route path="p/:id/:shareToken" element={ <PlacementPage /> } />
           <Route path={ MODULES.SETTINGS.id } element={ <Settings /> } />
           <Route path="forbidden" element={ <AccessDenied /> } />
+
+          <Route element={ <ProtectedRoute /> }>
+            <Route element={
+              <RoleRoute allowedRoles={ PRIMARY_MODULES.PLACEMENT_MANAGER.roles } />
+            }>
+              <Route
+                path={ PRIMARY_MODULES.PLACEMENT_MANAGER.id }
+                element={ <PlacementManager /> }
+              />
+            </Route>
+          </Route>
 
           <Route element={ <ProtectedRoute /> }>
             <Route element={

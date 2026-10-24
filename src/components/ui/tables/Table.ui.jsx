@@ -408,7 +408,7 @@ function Table({
                       onChange={ search.onChange }
                       autoFocus={ true }
                       isDisabled={ normalizedStates.isFechingData || isSelectionModeActive || normalizedStates.isEmpty }
-                      defaultValue={ search.defaultValue }
+                      value={ search.defaultValue }
                       placeholder={ search.placeholder }
                     />
                   }

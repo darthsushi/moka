@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Card, Typography } from '@heroui/react';
+import { Card } from '@heroui/react';
 
-import { Header } from '@/components/ui';
+import { Header, HeaderTitle } from '@/components/ui';
 
 import Account from './elements/AccountSettings';
 import SystemSettings from './elements/SystemSettings';
@@ -12,16 +12,10 @@ function Settings() {
   return (
     <div className="flex flex-col">
       <Header>
-        <div className="w-full h-full flex items-center">
-          <Typography type="h4" className="truncate">
-            <p className="truncate">
-              { t('common:pages.settings') }
-            </p>
-          </Typography>
-        </div>
+        <HeaderTitle title={ t('common:pages.settings') } />
       </Header>
       <div className="w-full h-auto pt-4 p-2">
-        <div className="w-full max-w-300 m-auto grid grid-cols-6 gap-2">
+        <div className="grid grid-cols-6 gap-2 mx-auto w-full max-w-300 p-4 sm:p-6 lg:p-8">
           <div aria-label={ t('common:pages.settings') } className="col-span-2 p-1 grid grid-cols-1 h-fit">
             <Card>
               <Account />
