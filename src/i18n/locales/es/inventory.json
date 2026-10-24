@@ -27,5 +27,10 @@
     "filters": "No se pudieron cargar los filtros. Inténtalo de nuevo.",
     "update": "No se pudo actualizar el espacio. Inténtalo de nuevo."
   },
-  "mapResults_many": "{{count}} espacios en el mapa"
+  "mapResults_many": "{{count}} espacios en el mapa",
+  "tabs": {
+    "approved": "Aprobadas",
+    "reviewing": "En revisión",
+    "attention": "Observadas"
+  }
 }
