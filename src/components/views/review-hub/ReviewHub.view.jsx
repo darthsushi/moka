@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Chip, Tabs } from '@heroui/react';
 
 import { Header, HeaderTitle, Icon } from '@/components/ui';
@@ -9,14 +10,22 @@ import ReviewQueue from './elements/ReviewQueue';
 
 function ReviewHubView() {
   const { t } = useTranslation();
-  const { hasRole, user } = useAuth();
-  const [tab, setTab] = useState('unassigned');
+  const { hasRole, user, loading: isAuthLoading } = useAuth();
+  const { hash } = useLocation();
+  const navigate = useNavigate();
   const [counts, setCounts] = useState({});
   const [refresh, setRefresh] = useState(0);
 
   const isAdmin = hasRole('admin');
-  const selectedTab = tab === 'reassign' && !isAdmin ? 'unassigned' : tab;
   const tabs = ['unassigned', 'mine', ...(isAdmin ? ['reassign'] : [])];
+  const hashTab = hash.slice(1);
+  const selectedTab = tabs.includes(hashTab) ? hashTab : 'unassigned';
+
+  useEffect(() => {
+    if (!isAuthLoading && hashTab !== selectedTab) {
+      navigate({ hash: `#${selectedTab}` }, { replace: true });
+    }
+  }, [hashTab, isAuthLoading, navigate, selectedTab]);
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
@@ -29,7 +38,7 @@ function ReviewHubView() {
 
       <Tabs
         selectedKey={ selectedTab }
-        onSelectionChange={ setTab }
+        onSelectionChange={ key => navigate({ hash: `#${key}` }) }
         className="flex min-h-0 flex-1 flex-col"
       >
         <div className="flex">
