@@ -1,143 +1,19 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useMemo, useState } from 'react';
-import { ToggleButton } from '@heroui/react';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 import { isNotNil } from '@/helpers/ramda.helpers';
-import { getGreeting, getPlacementDetailsPath } from '@/helpers/utilities.helpers';
-import { useAuth, useUI } from '@/hooks/contexts';
-import { usePublicPlacementFilterOptions, usePublicPlacements } from '@/hooks/placements';
+import { getGreeting } from '@/helpers/utilities.helpers';
+import { useAuth } from '@/hooks/contexts';
 
-import { Header, NavBar, SearchInput, FiltersList, Icon, HeaderTitle } from '@/components/ui';
-import Map from './elements/Map';
-import PlacementsList from './elements/PlacementList';
-
-const PUBLIC_FILTER_NAMES = ['country', 'state', 'city', 'type'];
+import { Header, HeaderTitle } from '@/components/ui';
+import Catalog from './catalog';
 
 function Home() {
   const { t } = useTranslation();
-  const [selectedPlacement, setSelectedPlacement] = useState(null);
-  const [mapViewport, setMapViewport] = useState(null);
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const { loading, profile } = useAuth();
-  const { isMapOpen, setIsMapOpen } = useUI();
-  const { options, isLoading: areOptionsLoading, error: optionsError } = usePublicPlacementFilterOptions();
-  const {
-    placements,
-    filters,
-    isLoading,
-    requestFilters,
-    updateFilters,
-  } = usePublicPlacements({
-    searchDebounceMs: 700,
-    viewport: isMapOpen ? mapViewport : null
-  });
-
-  const publicFilters = useMemo(() => [
-    {
-      name: 'country', translationKey: 'placements:fields.country', defaultExpended: true,
-      initialValues: options.countries.map(({ key }) => key),
-      options: options.countries.map(({ key, label }) => ({ id: key, label }))
-    },
-    {
-      name: 'state', translationKey: 'placements:fields.state',
-      initialValues: options.states.map(({ key }) => key),
-      options: options.states.map(({ key, label, country }) => ({
-        id: key, label: [label, country].filter(Boolean).join(', ')
-      }))
-    },
-    {
-      name: 'city', translationKey: 'placements:fields.city',
-      initialValues: options.cities.map(({ key }) => key),
-      options: options.cities.map(({ key, label, state, country }) => ({
-        id: key, label: [label, state, country].filter(Boolean).join(', ')
-      }))
-    },
-    {
-      name: 'type', translationKey: 'placements:fields.type',
-      initialValues: options.types.map(({ value }) => value),
-      options: options.types.map(({ value }) => ({ id: value, translationKey: `placements:types.${value}` }))
-    }
-  ].filter(({ options: filterOptions }) => filterOptions.length > 0), [options]);
-  const activeFiltersCount = PUBLIC_FILTER_NAMES.filter(name => filters[name]?.length > 0).length;
 
   const translationKeyGreeting = getGreeting();
   const [firstName] = isNotNil(profile) ? profile.name.split(' ') : [null];
   const displayGreeting = isNotNil(firstName) && t(`common:greetings.${translationKeyGreeting}`, { name: firstName });
-
-  const handleSearchChange = (value) => {
-    updateFilters({ search: value });
-  }
-
-  const handleApplyFilters = (selected) => {
-    if (!selected) {
-      updateFilters({ country: null, state: null, city: null, type: null });
-      return;
-    }
-
-    const selection = (name, available, mapOption) => {
-      const chosen = selected[name] ?? [];
-      return chosen.length === available.length
-        ? null
-        : available.filter(option => chosen.includes(option.key ?? option.value)).map(mapOption);
-    };
-
-    updateFilters({
-      country: selection('country', options.countries, option => option.country_code),
-      state: selection('state', options.states, option => ({
-        country_code: option.country_code,
-        subdivision_code: option.subdivision_code,
-        value: option.value
-      })),
-      city: selection('city', options.cities, option => ({
-        country_code: option.country_code,
-        subdivision_code: option.subdivision_code,
-        state: option.state,
-        value: option.value
-      })),
-      type: selection('type', options.types, option => option.value)
-    });
-  };
-
-  const handleExplorePlacement = (placement) => {
-    // Creamos una referencia nueva para que "Explorar" vuelva a ejecutar
-    // el flyTo incluso si es el mismo placement seleccionado anteriormente.
-    setSelectedPlacement({
-      ...placement
-    });
-
-    if (!isMapOpen) {
-      setIsMapOpen(true);
-    }
-  };
-
-  const handleViewPlacementDetails = (placement) => {
-    navigate(getPlacementDetailsPath(placement), {
-      state: { backgroundLocation: location }
-    });
-  };
-
-  const handleMapViewportChange = useCallback((nextViewport) => {
-    setMapViewport(currentViewport => {
-      if (
-        currentViewport &&
-        currentViewport.south ===
-          nextViewport.south &&
-        currentViewport.west ===
-          nextViewport.west &&
-        currentViewport.north ===
-          nextViewport.north &&
-        currentViewport.east ===
-          nextViewport.east
-      ) {
-        return currentViewport;
-      }
-
-      return nextViewport;
-    });
-  }, []);
 
   return (
     <section className="w-full h-dvh flex flex-wrap overflow-y-auto">
@@ -147,54 +23,7 @@ function Home() {
           isLoading={ loading }
         />
       </Header>
-      <div
-        className={ `transition-all ${ isMapOpen ? 'w-[50%]' : 'w-full'}` }
-        style={ { minHeight: 'calc(100% - 80px)' } }
-      >
-        <NavBar
-          className="sticky top-21 z-10"
-          contentClassName="flex flex-row gap-2 items-center"
-        >
-          <SearchInput
-            isDisabled={ isLoading }
-            name={ 'placements' }
-            onChange={ handleSearchChange }
-            placeholder={ t('common:texts.findByPlacement') }
-            value={ filters.search }
-          />
-          { !areOptionsLoading && !optionsError &&
-            <FiltersList
-              filters={ publicFilters }
-              hasActiveFilters={ activeFiltersCount > 0 }
-              activeFiltersCount={ activeFiltersCount }
-              onApplyingFilters={ handleApplyFilters }
-            />
-          }
-          <ToggleButton
-            isSelected={ isMapOpen }
-            variant="tertiary"
-            className="text-lg"
-            onChange={ setIsMapOpen }
-          >
-            <Icon name="map-search" />
-          </ToggleButton>
-        </NavBar>
-        { optionsError && <p role="alert" className="px-4 text-danger">{ t('validation:UNEXPECTED_ERROR') }</p> }
-        <PlacementsList
-          placements={placements}
-          isFetchingData={isLoading}
-          onExplorePlacement={handleExplorePlacement}
-          onViewDetails={handleViewPlacementDetails}
-          selectedPlacement={selectedPlacement}
-        />
-      </div>
-      <Map
-        filters={ requestFilters }
-        selectedPlacement={ selectedPlacement }
-        onViewportChange={ handleMapViewportChange }
-        onSelectPlacement={ setSelectedPlacement }
-        onViewDetails={handleViewPlacementDetails}
-      />
+      <Catalog />
     </section>
   );
 }

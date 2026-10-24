@@ -15,7 +15,6 @@ import { usePublicPlacementMap } from '@/hooks/placements';
 import PlacementMapMarker from './PlacementMapMarker';
 import PlacementMapPopup from './PlacementMapPopup';
 
-
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 const INITIAL_VIEW_STATE = {
