@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo, useState } from 'react';
-import { Skeleton, ToggleButton, Typography } from '@heroui/react';
+import { ToggleButton } from '@heroui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { isNotNil } from '@/helpers/ramda.helpers';
@@ -8,7 +8,7 @@ import { getGreeting, getPlacementDetailsPath } from '@/helpers/utilities.helper
 import { useAuth, useUI } from '@/hooks/contexts';
 import { usePublicPlacementFilterOptions, usePublicPlacements } from '@/hooks/placements';
 
-import { Header, NavBar, SearchInput, FiltersList, Icon } from '@/components/ui';
+import { Header, NavBar, SearchInput, FiltersList, Icon, HeaderTitle } from '@/components/ui';
 import Map from './elements/Map';
 import PlacementsList from './elements/PlacementList';
 
@@ -21,7 +21,7 @@ function Home() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { isAuthenticated, loading, profile } = useAuth();
+  const { loading, profile } = useAuth();
   const { isMapOpen, setIsMapOpen } = useUI();
   const { options, isLoading: areOptionsLoading, error: optionsError } = usePublicPlacementFilterOptions();
   const {
@@ -142,21 +142,10 @@ function Home() {
   return (
     <section className="w-full h-dvh flex flex-wrap overflow-y-auto">
       <Header>
-        <div className="w-full h-full flex items-center gap-2">
-          {
-            loading ?
-              <Skeleton className="w-[90%] h-[70%]" />
-            :
-              (
-                isAuthenticated &&
-                <Typography type="h5" className="truncate">
-                  <p className="truncate">
-                    { displayGreeting }
-                  </p>
-                </Typography>
-              )
-          }
-        </div>
+        <HeaderTitle
+          title={ displayGreeting }
+          isLoading={ loading }
+        />
       </Header>
       <div
         className={ `transition-all ${ isMapOpen ? 'w-[50%]' : 'w-full'}` }
@@ -171,7 +160,7 @@ function Home() {
             name={ 'placements' }
             onChange={ handleSearchChange }
             placeholder={ t('common:texts.findByPlacement') }
-            defaultValue={ filters.search }
+            value={ filters.search }
           />
           { !areOptionsLoading && !optionsError &&
             <FiltersList

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { Button, Chip, Typography } from '@heroui/react';
+import { Button, Chip } from '@heroui/react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { formatCurrency } from '@/i18n/formatters';
@@ -8,7 +8,7 @@ import { not } from '@/helpers/ramda.helpers';
 import { useAuth } from '@/hooks/contexts';
 import { MIN_RENT_DAYS } from '@/settings/defaults.settings';
 import { placementsService } from '@/services/placements.service';
-import { FlatCard, Icon, GoogleMapsView, Header } from '@/components/ui';
+import { FlatCard, Icon, GoogleMapsView, Header, HeaderTitle } from '@/components/ui';
 
 const facePrice = (face, language) => {
   const range = face?.day_range;
@@ -96,16 +96,10 @@ function PlacementDetails({ isDialog = false }) {
     <>
       { not(isDialog) &&
         <Header>
-          <div className="w-full h-full flex items-center">
-            <Typography type="h4" className="truncate">
-              <p className="truncate">
-                { placement.code }
-              </p>
-            </Typography>
-          </div>
+          <HeaderTitle title={ placement.code } />
         </Header>
       }
-      <article className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8">
+      <article className="mx-auto w-full max-w-300 p-4 sm:p-6 lg:p-8">
         <div className="mb-5 flex items-center justify-between gap-3 text-sm text-muted">
           <nav aria-label={ t('common:a11y.breadcrumb') }>
             <Link to="/" className="hover:underline">{ t('placements:details.home') }</Link> / { placement.code }
@@ -119,9 +113,6 @@ function PlacementDetails({ isDialog = false }) {
           <div>
             <p className="mb-1 text-sm font-semibold text-accent">{ typeLabel } · { placement.code }</p>
             <h1 className="text-2xl font-semibold sm:text-3xl">{ placement.display_name || [typeLabel, location].filter(Boolean).join(' · ') }</h1>
-            {/* { location && <p className="mt-2 flex items-center gap-2 text-sm text-muted">
-              <Icon name="pin-drop" filled /> { location }
-            </p> } */}
           </div>
           <FlatCard className="py-1.5 text-sm">
             { t('placements:faceCount', { count: faces.length }) }
@@ -236,12 +227,6 @@ function PlacementDetails({ isDialog = false }) {
                   </div>
                 </GoogleMapsView>
               }
-              { /* <a
-                href={ `https://www.google.com/maps/search/?api=1&query=${latitude}%2C${longitude}` }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-block text-sm text-accent underline"
-              >{ t('placements:details.map') }</a> */}
             </section> }
           </div>
 

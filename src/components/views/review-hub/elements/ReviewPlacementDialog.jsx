@@ -86,7 +86,7 @@ export default function ReviewPlacementDialog({ placementId, onClose, onSuccess 
             <h2 className="text-xl font-semibold">{ p.display_name }</h2>
             <p className="text-sm text-muted">{ [p.city, p.state, p.country].filter(Boolean).join(', ') }</p>
             <dl className="grid grid-cols-2 gap-3 rounded-xl bg-surface-secondary p-4 text-sm">
-              { [[t('reviewHub:owner'), data.owner_name || t('reviewHub:unavailable')], [t('reviewHub:reviewer'), data.reviewer_name || t('reviewHub:unassignedLabel')], [t('reviewHub:availability'), t(`placements:ownerStatuses.${p.owner_status}`)], [t('reviewHub:visibility'), t(`placements:visibility.${p.visibility}`)], [t('reviewHub:height'), `${p.structure_height} m`], [t('reviewHub:assignedAt'), formatDate(data.assignment?.assigned_at, i18n.resolvedLanguage)]].map(([label, value]) => <div key={ label }><dt className="text-muted">{ label }</dt><dd className="break-words font-medium">{ value }</dd></div>) }
+              { [[t('reviewHub:owner'), data.owner_name || t('reviewHub:unavailable')], [t('reviewHub:reviewer'), data.reviewer_name || t('reviewHub:unassignedLabel')], [t('reviewHub:availability'), t(`placements:ownerStatuses.${p.owner_status}`)], [t('reviewHub:visibility'), t(`placements:visibility.${p.visibility}`)], [t('reviewHub:height'), `${p.structure_height} m`], [t('reviewHub:assignedAt'), formatDate(data.assignment?.assigned_at, i18n.resolvedLanguage)]].map(([label, value]) => <div key={ label }><dt className="text-muted">{ label }</dt><dd className="wrap-break-word font-medium">{ value }</dd></div>) }
             </dl>
             <p className="text-sm">{ t('reviewHub:coordinates') }: { p.latitude }, { p.longitude } · <a className="text-accent underline" href={ `https://www.google.com/maps?q=${encodeURIComponent(`${p.latitude},${p.longitude}`)}` } target="_blank" rel="noreferrer">{ t('reviewHub:viewMap') }</a></p>
           </section>
@@ -119,7 +119,7 @@ export default function ReviewPlacementDialog({ placementId, onClose, onSuccess 
               <p className="text-xs text-muted">{ formatDate(event.created_at, i18n.resolvedLanguage) }</p>
               { event.previous_status !== event.new_status && <p className="mt-1">{ t(`placements:reviewStatuses.${event.previous_status}`) } → { t(`placements:reviewStatuses.${event.new_status}`) }</p> }
               { event.reviewer_id && <p className="mt-1 text-xs">{ event.previous_reviewer_name && `${event.previous_reviewer_name} → ` }{ event.reviewer_name || event.reviewer_id.slice(0, 8) }</p> }
-              { event.message && <p className="mt-2 whitespace-pre-wrap break-words rounded-lg bg-surface-secondary p-2">{ event.message }</p> }
+              { event.message && <p className="mt-2 whitespace-pre-wrap wrap-break-word rounded-lg bg-surface-secondary p-2">{ event.message }</p> }
             </li>) }</ol>
           </section>
         </aside>

@@ -4,13 +4,16 @@
     "inventory": "Inventory",
     "reviewHub": "Review Hub",
     "settings": "Settings",
-    "test-lab": "Test Lab"
+    "test-lab": "Test Lab",
+    "placement-manager": "New placement"
   },
   "pages": {
     "inventory": "Inventory",
     "reviewHub": "Review Hub",
     "settings": "Settings",
-    "test-lab": "Test Lab"
+    "test-lab": "Test Lab",
+    "placement-manager-new": "New placement",
+    "placement-manager-edit": "Edit placement"
   },
   "tooltips": {
     "expandSidebar": "Expand menu",
@@ -98,7 +101,8 @@
     "count_other": "{{count}} selected"
   },
   "a11y": {
-    "navigation": "Main navigation",
+    "navigation": "Navigation",
+    "mainNavigation": "Main navigation",
     "toggleSidebar": "Toggle sidebar",
     "breadcrumb": "Breadcrumb",
     "placementOptions": "Placement options",

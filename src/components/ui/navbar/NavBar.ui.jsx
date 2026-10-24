@@ -9,7 +9,7 @@ function NavBar({
   return (
     <section data-table-actions className={ `w-full h-15 px-2 ${className}` }>
       <Card
-        variant="default"
+        variant="tertiary"
         className={ `w-full h-full py-2 px-3 ${contentClassName}` }
       >
         { children }

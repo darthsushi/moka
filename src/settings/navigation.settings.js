@@ -1,5 +1,16 @@
 import { PROFILES } from './keys.settings';
 
+const PRIMARY_MODULES = {
+  PLACEMENT_MANAGER: {
+    id: 'placement-manager',
+    path: '/placement-manager',
+    label: 'PLACEMENT_MANAGER',
+    icon: 'add',
+    requiresAuth: true,
+    roles: [PROFILES.ROLES.OWNER]
+  },
+};
+
 const MODULES = {
   HOME: {
     id: 'home',
@@ -40,8 +51,11 @@ const MODULES = {
 };
 
 const NAVIGATION_ITEMS = Object.values(MODULES);
+const PRIMARY_NAVEGATION_ITEMS = Object.values(PRIMARY_MODULES);
 
 export {
   MODULES,
-  NAVIGATION_ITEMS
+  NAVIGATION_ITEMS,
+  PRIMARY_MODULES,
+  PRIMARY_NAVEGATION_ITEMS
 };

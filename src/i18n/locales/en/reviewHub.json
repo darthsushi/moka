@@ -15,7 +15,7 @@
   "review": "Review",
   "transfer": "Reassign",
   "details": "View review",
-  "onlyOrphaned": "Only reviews without an eligible reviewer",
+  "onlyOrphaned": "Only reviews without reviewer",
   "adminHint": "Uncheck to transfer work during an absence or assign an already approved placement.",
   "empty": "There are no placements in this list.",
   "emptySearch": "No results match these filters.",

@@ -61,7 +61,7 @@ function LocationViewer({
           <div className="col-span-1">
             <Tooltip>
               <Button
-                variant="outline"
+                variant="tertiary"
                 className="w-full text-lg"
                 onPress={ editLocation }
               >

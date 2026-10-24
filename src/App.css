@@ -17,7 +17,7 @@
 }
 
 .billboard-asset {
-  background-image: url("assets/billboard.png");
+  background-image: url("/assets/billboard.png");
   background-position: center;
   background-size: 105%;
 }

@@ -15,7 +15,7 @@
   "review": "Revisar",
   "transfer": "Reasignar",
   "details": "Ver revisión",
-  "onlyOrphaned": "Solo revisiones sin un responsable habilitado",
+  "onlyOrphaned": "Solo revisiones sin responsable",
   "adminHint": "Desmarca esta opción para reasignar por ausencia o asignar un espacio ya aprobado.",
   "empty": "No hay placements en esta lista.",
   "emptySearch": "No hay resultados para estos filtros.",

@@ -59,9 +59,12 @@ import PauseCircle from './svg-icons/PauseCircle.svg.jsx';
 import PlayCircle from './svg-icons/PlayCircle.svg.jsx';
 import FactCheck from './svg-icons/FactCheck.svg.jsx';
 import Science from './svg-icons/Science.svg.jsx';
+import Help from './svg-icons/Help.svg.jsx';
+import Add from './svg-icons/Add.svg.jsx';
 
 function Icon({ name, filled }) {
   const SGVS = {
+    'add': Add,
     'add-location': AddLocation,
     'arrow-drop-down': ArrowDropDown,
     'arrow-drop-up': ArrowDropUp,
@@ -90,6 +93,7 @@ function Icon({ name, filled }) {
     'find-image': FindImage,
     'home': HomeIcon,
     'height': Height,
+    'help': Help,
     'inventory': Inventory,
     'image': Image,
     'language': LanguageIcon,
