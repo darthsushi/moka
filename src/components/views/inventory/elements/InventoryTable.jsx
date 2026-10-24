@@ -1,6 +1,6 @@
 import { translateError } from '@/i18n/errors';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, Dropdown, Label } from '@heroui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,6 @@ import StatusCell from './table-elements/StatusCell';
 import InventoryMapDialog from './InventoryMapDialog';
 
 const OWNER_STATUSES = ['active', 'paused'];
-const REVIEW_STATUSES = ['pending', 'in_review', 'approved', 'suspended', 'rejected'];
 const PLACEMENT_TYPES = ['UNIPOLE_BILLBOARD', 'HAND_PAINTED_MURAL', 'BARRICADE', 'BUILDING_WRAP'];
 
 const INITIAL_FILTERS = {
@@ -27,12 +26,12 @@ const INITIAL_FILTERS = {
   city: null,
   visibility: ['public', 'private', 'unlisted'],
   owner_status: OWNER_STATUSES,
-  review_status: REVIEW_STATUSES,
   type: PLACEMENT_TYPES
 };
 
-function InventoryTable() {
+function InventoryTable({ reviewStatuses }) {
   const { t } = useTranslation();
+  const initialFilters = useMemo(() => ({ ...INITIAL_FILTERS, review_status: reviewStatuses }), [reviewStatuses]);
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -71,7 +70,7 @@ function InventoryTable() {
   } = useInventoryPlacements({
     searchDebounceMs: 700,
     initialPageSize: 12,
-    initialFilters: INITIAL_FILTERS
+    initialFilters
   });
   const refreshInventory = () => Promise.all([refetch(), refetchFilterOptions()]);
   const {
@@ -275,19 +274,6 @@ function InventoryTable() {
         options: [
           { id: 'active', translationKey: 'placements:ownerStatuses.active' },
           { id: 'paused', translationKey: 'placements:ownerStatuses.paused' }
-        ]
-      },
-      {
-        name: 'review_status',
-        translationKey: 'placements:fields.reviewStatus',
-        defaultExpended: true,
-        initialValues: REVIEW_STATUSES,
-        options: [
-          { id: 'pending', translationKey: 'placements:reviewStatuses.pending' },
-          { id: 'in_review', translationKey: 'placements:reviewStatuses.in_review' },
-          { id: 'approved', translationKey: 'placements:reviewStatuses.approved' },
-          { id: 'suspended', translationKey: 'placements:reviewStatuses.suspended' },
-          { id: 'rejected', translationKey: 'placements:reviewStatuses.rejected' }
         ]
       },
       {
