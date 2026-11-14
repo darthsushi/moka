@@ -1369,11 +1369,6 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  react-stately@3.50.0:
-    resolution: {integrity: sha512-TnckvpDQGU0672wEaLZqdzvhuSeXWjgW6vijMWxiKOxc8CosQUfPGISdcZyfHqjX3XMjEtRxj4w9HumvX4h4mw==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-
   react-transition-group@4.4.5:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
     peerDependencies:
@@ -1561,33 +1556,6 @@ packages:
 
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
-
-  html-parse-stringify@4.0.1:
-    resolution: {integrity: sha512-0zHsZJrK7S3K2aucXWL6ycoYJ/iNtIcFHC/nYQgFklPtrv5LpJctIiSCroWZWeuoXvuyFdzp6KzjJQ+OT5MfFw==}
-
-  i18next@26.4.4:
-    resolution: {integrity: sha512-O+rqmQUi54OwAgnZ4SAwO6aRrbXZt36VZXWt6zvq0FpC3vJbH46oQRs6u4Uwm1vf8ZI7UqOXQiJhQVTor7vRiQ==}
-    peerDependencies:
-      typescript: ^5 || ^6 || ^7
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  react-i18next@17.0.16:
-    resolution: {integrity: sha512-7uImVD9hG5yUOaP5KHVied1x0A004Di/KU031ULR35Ma+9e9H5GdnNZHgQEIByyAz+IAXBkRDTedNVzjPUH8ZA==}
-    peerDependencies:
-      i18next: '>= 26.2.0'
-      react: '>= 16.8.0'
-      react-dom: '*'
-      react-native: '*'
-      typescript: ^5 || ^6 || ^7
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-      typescript:
-        optional: true
 
 snapshots:
 
@@ -2772,16 +2740,6 @@ snapshots:
       react: 19.2.6
       use-sync-external-store: 1.6.0(react@19.2.6)
 
-  react-stately@3.50.0(react@19.2.6):
-    dependencies:
-      '@internationalized/date': 3.12.4
-      '@internationalized/number': 3.6.8
-      '@internationalized/string': 3.2.10
-      '@react-types/shared': 3.36.1(react@19.2.6)
-      '@swc/helpers': 0.5.23
-      react: 19.2.6
-      use-sync-external-store: 1.6.0(react@19.2.6)
-
   react-transition-group@4.4.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -2932,16 +2890,3 @@ snapshots:
       zod: 4.4.3
 
   zod@4.4.3: {}
-  html-parse-stringify@4.0.1: {}
-
-  i18next@26.4.4: {}
-
-  react-i18next@17.0.16(i18next@26.4.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
-    dependencies:
-      '@babel/runtime': 7.29.7
-      html-parse-stringify: 4.0.1
-      i18next: 26.4.4
-      react: 19.2.6
-      use-sync-external-store: 1.6.0(react@19.2.6)
-    optionalDependencies:
-      react-dom: 19.2.6(react@19.2.6)
