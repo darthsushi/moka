@@ -46,6 +46,7 @@ function PlacementManagerForm({ isEditing = false, placement = {}, onCreate, isC
         <StructureAndLocation
           placement={ currentPlacement }
           nextStep={ nextStep }
+          isEditing={ isEditing }
         />
       </Animations.VisibilityTransition>
       <Animations.VisibilityTransition visibility={ currentStep === 2 }>

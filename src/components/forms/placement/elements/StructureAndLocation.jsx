@@ -35,18 +35,11 @@ const TYPE_X_FACES = {
   BUILDING_WRAP: [1, 2]
 };
 
-/* const getSingleStringCoor = ({ latitude, longitude }) => {
-  if (isNil(latitude) || isNil(longitude)) {
-    return null;
-  }
-
-  return `${latitude},${longitude}`;
-}; */
-
 function LocationViewer({
     coordinates,
     location,
     editLocation = noop,
+    isEditing
   }) {
   const { t } = useTranslation();
 
@@ -59,7 +52,7 @@ function LocationViewer({
         coordinates={ coordinates }
       >
         <>
-          <div className="col-span-4">
+          <div className={ isEditing ? 'col-span-5' : 'col-span-4' }>
             <Typography type="body-sm" weight="normal" className="leading-3.5 mb-1 truncate">
               { location.display_name }
             </Typography>
@@ -67,22 +60,24 @@ function LocationViewer({
               { location.city }, { location.state }, { location.country }
             </Description>
           </div>
-          <div className="col-span-1">
-            <Tooltip>
-              <Button
-                variant="tertiary"
-                className="w-full text-lg"
-                onPress={ editLocation }
-              >
-                <Icon name="edit" />
-              </Button>
-              <Tooltip.Content>
-                <p>
-                  { t('common:tooltips.edit') }
-                </p>
-              </Tooltip.Content>
-            </Tooltip>
-          </div>
+          { not(isEditing) &&
+            <div className="col-span-1">
+              <Tooltip>
+                <Button
+                  variant="tertiary"
+                  className="w-full text-lg"
+                  onPress={ editLocation }
+                >
+                  <Icon name="edit" />
+                </Button>
+                <Tooltip.Content>
+                  <p>
+                    { t('common:tooltips.edit') }
+                  </p>
+                </Tooltip.Content>
+              </Tooltip>
+            </div>
+          }
         </>
       </GoogleMapsView>
     </>
@@ -92,6 +87,7 @@ function LocationViewer({
 function StructureAndLocation({
   placement = {},
   nextStep = noop,
+  isEditing = false
 }) {
   // TODO: Remove "placement.face_count"
   const defaultValues = {
@@ -323,6 +319,7 @@ function StructureAndLocation({
                       coordinates={ actualCoordinates }
                       location={ location }
                       editLocation={ onResetLocation }
+                      isEditing={ isEditing }
                     />
                   </>
                 :
