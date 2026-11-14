@@ -7,6 +7,7 @@ import { Dialog } from '@/components/ui';
 import PlacementMapMarker from '@/components/views/home/catalog/PlacementMapMarker';
 import PlacementMapPopup from '@/components/views/home/catalog/PlacementMapPopup';
 import { placementsService } from '@/services/placements.service';
+import { getPlacementCoordinates } from '@/helpers/placement.helpers';
 
 const DEFAULT_VIEW = { longitude: -89.6237, latitude: 20.9674, zoom: 12 };
 
@@ -24,8 +25,7 @@ function InventoryMapDialog({ userId, filters, initialPlacement, onClose, onView
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const latitude = Number(initialPlacement?.latitude);
-  const longitude = Number(initialPlacement?.longitude);
+  const { latitude, longitude } = getPlacementCoordinates(initialPlacement) ?? {};
   const initialViewState = initialPlacement && Number.isFinite(latitude) && Number.isFinite(longitude)
     ? { latitude, longitude, zoom: 12 }
     : DEFAULT_VIEW;
@@ -93,8 +93,9 @@ function InventoryMapDialog({ userId, filters, initialPlacement, onClose, onView
   const selectPlacement = (placement) => {
     setSelected(placement);
     if (placement) {
+      const { latitude: lat, longitude: lon } = getPlacementCoordinates(placement);
       mapRef.current?.flyTo({
-        center: [Number(placement.longitude), Number(placement.latitude)],
+        center: [lon, lat],
         zoom: Math.max(mapRef.current?.getZoom() ?? 12, 15),
         duration: 700
       });

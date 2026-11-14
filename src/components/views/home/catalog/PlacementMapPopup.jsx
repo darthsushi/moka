@@ -5,6 +5,7 @@ import { Popup } from 'react-map-gl/mapbox';
 
 import { Card } from '@heroui/react';
 import { Animations } from '@/components/animations';
+import { getPlacementCoordinates } from '@/helpers/placement.helpers';
 
 function PlacementMapPopup({
   placement,
@@ -13,8 +14,7 @@ function PlacementMapPopup({
 }) {
   if (!placement) return null;
 
-  const latitude = Number(placement.latitude);
-  const longitude = Number(placement.longitude);
+  const { latitude, longitude } = getPlacementCoordinates(placement) ?? {};
 
   if (
     !Number.isFinite(latitude) ||

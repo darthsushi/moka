@@ -11,6 +11,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { useUI } from '@/hooks/contexts';
 import { usePublicPlacementMap } from '@/hooks/placements';
+import { getPlacementCoordinates } from '@/helpers/placement.helpers';
 
 import PlacementMapMarker from './PlacementMapMarker';
 import PlacementMapPopup from './PlacementMapPopup';
@@ -82,8 +83,7 @@ function Map({
     const map = mapRef.current;
     const container = containerRef.current;
 
-    const latitude = Number(placement.latitude);
-    const longitude = Number(placement.longitude);
+    const { latitude, longitude } = getPlacementCoordinates(placement) ?? {};
 
     if (
       !map ||

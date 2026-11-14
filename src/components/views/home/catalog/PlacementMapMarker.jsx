@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Marker } from 'react-map-gl/mapbox';
+import { getPlacementCoordinates } from '@/helpers/placement.helpers';
 
 function PlacementMapMarker({
   placement,
@@ -7,8 +8,7 @@ function PlacementMapMarker({
   onClick
 }) {
   const { t } = useTranslation();
-  const latitude = Number(placement.latitude);
-  const longitude = Number(placement.longitude);
+  const { latitude, longitude } = getPlacementCoordinates(placement) ?? {};
 
   if (
     !Number.isFinite(latitude) ||

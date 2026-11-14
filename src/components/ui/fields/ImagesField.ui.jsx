@@ -27,13 +27,11 @@ function ImagesVisualizer({ images = [], removeImage }) {
     >
       {
         images.map((image, index) => {
-          const isURL = typeof image === 'string';
+          const actualImageURL = typeof image === 'string' ? image : image instanceof File ? URL.createObjectURL(image) : null;
 
           if (!actualImageURL) {
             return <p key={ index }>{ t('placements:imageUnavailable') }</p>;
           }
-
-          const actualImageURL = URL.createObjectURL(image);
 
           return (
             <Card

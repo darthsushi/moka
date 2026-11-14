@@ -31,7 +31,8 @@ function InputImage({ id, label, defaultValue, onChange }) {
   });
 
   const handleOnChange = ({ target } = {}) => {
-    const image = target.files[0];
+    const image = target?.files?.[0];
+    if (!image) return;
 
     setActualImage(URL.createObjectURL(image));
     onChange({ [id]: image });

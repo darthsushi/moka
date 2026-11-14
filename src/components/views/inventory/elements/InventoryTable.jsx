@@ -5,6 +5,7 @@ import { Button, Dropdown, Label } from '@heroui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { isNil } from '@/helpers/ramda.helpers';
+import { getPlacementCoordinates } from '@/helpers/placement.helpers';
 import { getUnlistedPlacementUrl } from '@/helpers/utilities.helpers';
 import { useAuth } from '@/hooks/contexts';
 import { useInventoryFilterOptions, useInventoryPlacements, usePlacementStatus } from '@/hooks/placements';
@@ -401,7 +402,7 @@ function InventoryTable({ reviewStatuses }) {
       { isMapDialogOpen && <InventoryMapDialog
         userId={ user?.id }
         filters={ filters }
-        initialPlacement={ placements.find(item => Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude)) && item.latitude != null && item.longitude != null) }
+        initialPlacement={ placements.find(item => getPlacementCoordinates(item)) }
         onClose={ () => setIsMapDialogOpen(false) }
         onViewDetails={ (placement) => {
           setIsMapDialogOpen(false);

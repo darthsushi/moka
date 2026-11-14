@@ -1,17 +1,15 @@
 import { useState } from 'react';
 
 import { isNil } from '@/helpers/ramda.helpers';
-import { useCreatePlacement } from '@/hooks/placements';
 import { Animations } from '@/components/animations';
 
 import StructureAndLocation from './elements/StructureAndLocation';
 import FacesDetails from './elements/FacesDetails';
 import PlacementDetails from './elements/PlacementDetails';
 
-function PlacementManagerForm({ isEditing = false, placement = {} }) {
+function PlacementManagerForm({ isEditing = false, placement = {}, onCreate, isCreatingPlacement = false }) {
   const [currentPlacement, setCurrentPlacement] = useState(() => isEditing ? { ...placement } : {});
   const [currentStep, setCurrentStep] = useState(1);
-  const { /* create: createPlacement, */ isLoading: isCreatingPlacement } = useCreatePlacement();
   
   const nextStep = async (actualStepValues, isLastStep = false) => {
       if (isCreatingPlacement) return;
@@ -28,19 +26,7 @@ function PlacementManagerForm({ isEditing = false, placement = {} }) {
       });
   
       if (isLastStep === true) {
-         console.log('Fin del formulario', {
-          ...currentPlacement,
-          ...actualStepValues
-         });
-
-       /*  try {
-          const placementCreated = await createPlacement(placement);
-          console.log(placementCreated);
-
-          // toast.success(t('common:texts.addSuccessMessage'));
-        } catch (error)  {
-          // toast.danger(translateError(t, error));
-        } */
+        if (!isEditing) await onCreate?.({ ...currentPlacement, ...actualStepValues });
   
          return;
       }

@@ -7,6 +7,7 @@ import { Dialog, Icon } from '@/components/ui';
 import { useAuth } from '@/hooks/contexts';
 import { reviewHubService } from '@/services/review-hub.service';
 import { formatCurrency } from '@/i18n/formatters';
+import { placementImageList } from '@/helpers/placement.helpers';
 import ReviewSelect from './ReviewSelect';
 import ReviewStatus from './ReviewStatus';
 
@@ -88,7 +89,7 @@ export default function ReviewPlacementDialog({ placementId, onClose, onSuccess 
             <dl className="grid grid-cols-2 gap-3 rounded-xl bg-surface-secondary p-4 text-sm">
               { [[t('reviewHub:owner'), data.owner_name || t('reviewHub:unavailable')], [t('reviewHub:reviewer'), data.reviewer_name || t('reviewHub:unassignedLabel')], [t('reviewHub:availability'), t(`placements:ownerStatuses.${p.owner_status}`)], [t('reviewHub:visibility'), t(`placements:visibility.${p.visibility}`)], [t('reviewHub:height'), `${p.structure_height} m`], [t('reviewHub:assignedAt'), formatDate(data.assignment?.assigned_at, i18n.resolvedLanguage)]].map(([label, value]) => <div key={ label }><dt className="text-muted">{ label }</dt><dd className="wrap-break-word font-medium">{ value }</dd></div>) }
             </dl>
-            <p className="text-sm">{ t('reviewHub:coordinates') }: { p.latitude }, { p.longitude } · <a className="text-accent underline" href={ `https://www.google.com/maps?q=${encodeURIComponent(`${p.latitude},${p.longitude}`)}` } target="_blank" rel="noreferrer">{ t('reviewHub:viewMap') }</a></p>
+            <p className="text-sm">{ t('reviewHub:coordinates') }: { p.coordinates } · <a className="text-accent underline" href={ `https://www.google.com/maps?q=${encodeURIComponent(p.coordinates)}` } target="_blank" rel="noreferrer">{ t('reviewHub:viewMap') }</a></p>
           </section>
           <section><h3 className="mb-2 font-semibold">{ t('reviewHub:description') }</h3><p className="whitespace-pre-wrap text-sm leading-6">{ p.description || t('reviewHub:noDescription') }</p></section>
           <section className="space-y-4"><h3 className="font-semibold">{ t('reviewHub:faces') } ({ data.faces.length })</h3>
@@ -97,10 +98,10 @@ export default function ReviewPlacementDialog({ placementId, onClose, onSuccess 
               <h4 className="font-semibold">{ t('reviewHub:face') } { index + 1 }</h4>
               <div className="flex flex-wrap gap-4 text-sm"><p>{ t('reviewHub:dimensions') }: { face.display_width } × { face.display_height } m</p><p>{ t('reviewHub:price') }: { formatCurrency(face.period_price, 'MXN', i18n.resolvedLanguage) }</p><p>{ t('reviewHub:days') }: { formatDayRange(face.day_range) }</p></div>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                { (face.images ?? []).map((url, imageIndex) => <a key={ `${url}-${imageIndex}` } href={ /^https?:\/\//i.test(url) ? url : undefined } target="_blank" rel="noreferrer" className="overflow-hidden rounded-lg bg-surface-secondary">
+                { placementImageList(face.images).map((url, imageIndex) => <a key={ `${url}-${imageIndex}` } href={ /^https?:\/\//i.test(url) ? url : undefined } target="_blank" rel="noreferrer" className="overflow-hidden rounded-lg bg-surface-secondary">
                   <img src={ /^https?:\/\//i.test(url) ? url : undefined } alt={ `${t('reviewHub:face')} ${index + 1} · ${imageIndex + 1}` } loading="lazy" className="h-52 w-full object-contain" />
                 </a>) }
-                { !face.images?.length && <p className="text-sm text-muted">{ t('reviewHub:noImages') }</p> }
+                { !placementImageList(face.images).length && <p className="text-sm text-muted">{ t('reviewHub:noImages') }</p> }
               </div>
             </article>) }
           </section>

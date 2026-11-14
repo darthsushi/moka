@@ -4,6 +4,7 @@ import { not } from '@/helpers/ramda.helpers';
 import { useAuth } from '@/hooks/contexts';
 import { storageService } from '@/services/storage.service';
 import { placementsService } from '@/services/placements.service';
+import { IMAGE_VIEWS, parsePlacementCoordinates } from '@/helpers/placement.helpers';
 
 export const useCreatePlacement = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,17 +16,17 @@ export const useCreatePlacement = () => {
     type,
     faces,
     description,
-    latitude,
-    longitude,
+    coordinates,
     structure_height,
     location,
     visibility
   }) => {
     setIsLoading(true);
     setError(null);
+    const uploadedPaths = [];
 
     // TODO: Use hasRole or hasAnyRole
-    const isOwner = (profile.roles || []).includes('owner');
+    const isOwner = (profile?.roles || []).includes('owner');
 
     try {
       if (not(user?.id) || not(isOwner)) {
@@ -36,49 +37,47 @@ export const useCreatePlacement = () => {
         throw authError;
       };
 
+      parsePlacementCoordinates(coordinates);
+      if (!Array.isArray(faces) || !faces.length || faces.some(face => !face.images?.front)) {
+        throw new Error('FRONT_IMAGE_REQUIRED');
+      }
+
       const actualPlacement = {
         type,
-        faces,
         description,
-        latitude,
-        longitude,
+        coordinates,
         location,
         structure_height,
         visibility,
-        review_status: 'pending',
-         // TODO: Use incoming value, no use default
       };
 
-      await Promise.all(
-        actualPlacement.faces.map(async (face) => {
-          face.images = await Promise.all(
-            face.images.map(async (img) => {
-              const fileToUpload = img?.file ?? img;
+      const uploadedFaces = [];
+      for (const face of faces) {
+        const images = { front: null, approach: null, surrounding: null };
+        for (const view of IMAGE_VIEWS) {
+          const image = face.images?.[view];
+          const file = image?.file ?? image;
+          if (typeof File !== 'undefined' && file instanceof File) {
+            const upload = await storageService.uploadPlacementImage(file, user.id);
+            images[view] = upload.publicUrl;
+            uploadedPaths.push(upload.filePath);
+          } else {
+            images[view] = typeof image === 'string' ? image : image?.url ?? null;
+          }
+        }
+        if (!images.front) throw new Error('FRONT_IMAGE_REQUIRED');
+        uploadedFaces.push({ ...face, images });
+      }
 
-              if (fileToUpload instanceof File) {
-                return storageService.uploadPlacementImage(
-                  fileToUpload,
-                  user.id
-                );
-              }
-
-              return typeof img === 'object' && img !== null
-                ? img.url
-                : img;
-            })
-          );
-        })
-      );
-
-      const placementData = await placementsService.createPlacement(actualPlacement, user.id);
+      const placementData = await placementsService.createPlacement({ ...actualPlacement, faces: uploadedFaces });
       setIsLoading(false);
-
-      return {
-        ...placementData.placement,
-        faces: placementData.faces
-      };
+      return placementData;
 
     } catch (err) {
+      if (uploadedPaths.length) {
+        try { await storageService.removePlacementImages(uploadedPaths); }
+        catch (cleanupError) { console.error('Placement image cleanup failed', cleanupError); }
+      }
       setError(err);
       setIsLoading(false);
       throw err;

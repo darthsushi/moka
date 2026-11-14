@@ -11,19 +11,21 @@ import {
 
 import { formatCurrency } from '@/i18n/formatters';
 import { MIN_RENT_DAYS } from '@/settings/defaults.settings';
+import { placementImageList } from '@/helpers/placement.helpers';
 
 import { Animations } from '@/components/animations';
 import { Icon } from '@/components/ui';
 
-const obtainFaceData = ([{ images = [], day_range, period_price }], language) => {
-  const [firtImage] = images;
+const obtainFaceData = (faces, language) => {
+  const { images, day_range = [0, 0], period_price = 0 } = faces?.[0] ?? {};
+  const [firstImage] = placementImageList(images);
   const [minDays, maxDays] = day_range;
 
   const lowestPrice = formatCurrency(period_price * (minDays / MIN_RENT_DAYS), 'MXN', language);
   const higherPrice = formatCurrency(period_price * (maxDays / MIN_RENT_DAYS), 'MXN', language);
 
   return {
-    image: firtImage,
+    image: firstImage,
     priceRange: [lowestPrice, higherPrice],
   }
 };

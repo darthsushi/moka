@@ -5,6 +5,7 @@ import {
   normalizeRange,
   serializeDayRange
 } from '@/helpers/utilities.helpers';
+import { normalizeFaceImages, parsePlacementCoordinates } from '@/helpers/placement.helpers';
 
 const FULL_PLACEMENT_CODE_PATTERN = /^(?:[A-Z]{2}-[A-Z0-9]{1,3}|OTR)-\d+$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -34,7 +35,7 @@ const PUBLIC_PLACEMENT_SELECT = `
   created_at,
   faces:placement_faces (
     id,
-    images,
+    images:placement_face_images (view_type, url),
     day_range,
     period_price
   )
@@ -55,11 +56,12 @@ const PLACEMENT_DETAIL_SELECT = `
   display_name,
   description,
   visibility,
+  share_token,
   owner_status,
   review_status,
   faces:placement_faces (
     id,
-    images,
+    images:placement_face_images (view_type, url),
     display_width,
     display_height,
     day_range,
@@ -451,8 +453,10 @@ const applyPublicCursor = (query, cursor) => {
 
 const normalizePlacement = (placement) => placement && ({
   ...placement,
+  coordinates: `${placement.latitude},${placement.longitude}`,
   faces: (placement.faces ?? []).map(face => ({
     ...face,
+    images: normalizeFaceImages(face.images),
     day_range: normalizeRange(face.day_range)
   }))
 });
@@ -652,46 +656,23 @@ export const placementsService = {
     return normalizePlacement(data);
   },
 
-  async createPlacement(formattedData, userId) {
-    const { faces, ...placementData } = formattedData;
-
-    // TODO: Remove all LOGS:
-    console.log(placementData)
-
-    const { data: placement, error: placementError } = await supabase
-      .from('placements')
-      .insert({
-        ...placementData,
-        user_id: userId
-      })
-      .select()
-      .single();
-
-    if (placementError) throw placementError;
-
-    const facesToInsert = faces.map(face => ({
-      ...face,
-      day_range: serializeDayRange(face.day_range),
-      placement_id: placement.id 
-    }));
-
-    const { data: createdFaces, error: facesError } = await supabase
-      .from('placement_faces')
-      .insert(facesToInsert)
-      .select();
-
-    if (facesError) throw facesError;
-
-    return {
-      placement: {
-        ...placement,
-        face_count: createdFaces.length
-      },
-      faces: createdFaces.map(face => ({
-        ...face,
-        day_range: normalizeRange(face.day_range)
+  async createPlacement({ faces, coordinates, type, description, structure_height, location, visibility }) {
+    const { latitude, longitude } = parsePlacementCoordinates(coordinates);
+    if (!Array.isArray(faces) || !faces.length || faces.some(face => !face.images?.front)) {
+      throw new Error('FRONT_IMAGE_REQUIRED');
+    }
+    const { data, error } = await supabase.rpc('create_placement_with_faces', {
+      p_placement: { type, description, structure_height, location, visibility, latitude, longitude },
+      p_faces: faces.map(face => ({
+        display_width: face.display_width,
+        display_height: face.display_height,
+        period_price: face.period_price,
+        day_range: serializeDayRange(face.day_range),
+        images: face.images
       }))
-    };
+    });
+    if (error) throw error;
+    return { ...data, coordinates, faces };
   },
 
   async getPublicPlacementFilterOptions() {
@@ -839,7 +820,7 @@ export const placementsService = {
 
     if (error) throw error;
 
-    return data ?? [];
+    return (data ?? []).map(normalizePlacement);
   },
 
   async getInventoryFilterOptions() {
@@ -924,7 +905,7 @@ export const placementsService = {
           display_height,
           period_price,
           day_range,
-          images,
+          images:placement_face_images (view_type, url),
           updated_at,
           created_at
         )
@@ -1016,7 +997,7 @@ export const placementsService = {
 
     const { data, error } = await query.order('code').limit(limit);
     if (error) throw error;
-    return data ?? [];
+    return (data ?? []).map(normalizePlacement);
   },
 
   async updatePlacementOwnerStatus(placementId, ownerStatus) {

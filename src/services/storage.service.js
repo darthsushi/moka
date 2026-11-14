@@ -47,7 +47,14 @@ export const storageService = {
       .from(SUPABASE.STORAGE.PLACEMENTS_STORAGE)
       .getPublicUrl(filePath);
 
-    return publicData.publicUrl;
+    return { filePath, publicUrl: publicData.publicUrl };
+  },
+
+  async removePlacementImages(filePaths) {
+    if (!filePaths.length) return;
+    const { error } = await supabase.storage
+      .from(SUPABASE.STORAGE.PLACEMENTS_STORAGE).remove(filePaths);
+    if (error) throw error;
   },
 
   async uploadProfileAvatar(file, userId) {

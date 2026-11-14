@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { formatCurrency } from '@/i18n/formatters';
 import { not } from '@/helpers/ramda.helpers';
+import { getPlacementCoordinates, placementImageList } from '@/helpers/placement.helpers';
 import { useAuth } from '@/hooks/contexts';
 import { MIN_RENT_DAYS } from '@/settings/defaults.settings';
 import { placementsService } from '@/services/placements.service';
@@ -68,15 +69,13 @@ function PlacementDetails({ isDialog = false }) {
   );
   const selectedIndex = Math.max(0, faces.findIndex(face => face.id === selectedFaceId));
   const selectedFace = faces[selectedIndex];
-  const images = selectedFace?.images ?? [];
+  const images = placementImageList(selectedFace?.images);
   const selectedImage = images[selectedImageIndex] ?? images[0];
   const pricing = facePrice(selectedFace, i18n.resolvedLanguage);
   const location = [placement.display_name || placement.city, placement.state, placement.country]
     .filter(Boolean).filter((value, index, values) => values.indexOf(value) === index).join(', ');
-  const latitude = Number(placement.latitude);
-  const longitude = Number(placement.longitude);
-  const hasCoordinates = placement.latitude != null && placement.longitude != null
-    && Number.isFinite(latitude) && Number.isFinite(longitude);
+  const { latitude, longitude } = getPlacementCoordinates(placement) ?? {};
+  const hasCoordinates = latitude != null && longitude != null;
   const published = placement.owner_status === 'active' && placement.review_status === 'approved';
   const canShare = published && (
     placement.visibility === 'public' || (placement.visibility === 'unlisted' && Boolean(shareToken))
@@ -207,7 +206,7 @@ function PlacementDetails({ isDialog = false }) {
               { hasCoordinates &&
                 <GoogleMapsView
                   name={ `${placement.code}-map` }
-                  coordinates={ `${latitude},${longitude}` }
+                  coordinates={ placement.coordinates }
                   className="w-full flex flex-row gap-2 items-center"
                 >
                   <FlatCard
