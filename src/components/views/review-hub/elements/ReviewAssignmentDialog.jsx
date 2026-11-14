@@ -41,7 +41,7 @@ export default function ReviewAssignmentDialog({ placement, action, onClose, onS
       <p className="font-semibold">{ placement.code }</p>
       <p className="text-sm text-muted">{ transfer ? t('reviewHub:transferHint') : t('reviewHub:claimHint') }</p>
       { transfer && <>
-        { reviewers === null ? <p role="status">{ t('common:loading') }</p> : reviewers.length === 0 ? <p>{ t('reviewHub:noReviewers') }</p> :
+        { reviewers === null ? <p role="status">{ t('common:loading.loading') }</p> : reviewers.length === 0 ? <p>{ t('reviewHub:noReviewers') }</p> :
           <ReviewSelect label={ t('reviewHub:reviewer') } placeholder={ t('reviewHub:selectReviewer') } value={ reviewerId } onChange={ setReviewerId } isDisabled={ busy }
             options={ reviewers.map(item => ({ id: item.id, label: `${item.name || t('reviewHub:unavailable')} · ${item.id.slice(0, 8)}` })) } /> }
         <TextField isRequired value={ message } onChange={ setMessage } isDisabled={ busy } className="flex flex-col gap-2">

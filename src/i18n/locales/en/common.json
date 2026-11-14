@@ -78,7 +78,10 @@
   "language": {
     "choose": "Choose your language"
   },
-  "loading": "Loading…",
+  "loading": {
+    "fetchingLocation": "Fetching location...",
+    "loading": "Loading..."
+  },
   "errors": {
     "unexpected": "The request could not be completed. Please try again.",
     "AUTH_REQUIRED": "Sign in to perform this action.",

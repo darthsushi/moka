@@ -5,6 +5,7 @@ import { ROUNDED_CORNERS } from '@/settings/defaults.settings';
 function GoogleMapsView({
     coordinates = '0,0',
     className = '',
+    variant = 'tertiary',
     children,
   }) {
   const { t, i18n } = useTranslation();
@@ -14,7 +15,7 @@ function GoogleMapsView({
   return (
     <Card
       className="w-full"
-      variant="tertiary"
+      variant={ variant }
     >
       <Card.Header className={ `w-full ${className}` }>
         { children }

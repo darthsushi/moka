@@ -69,6 +69,7 @@ function DescriptionField({
         isRequired={ isRequired }
         isReadOnly={ isReadOnly }
         autoFocus={ autoFocus }
+        variant="secondary"
       >
         <Label>
           { label }

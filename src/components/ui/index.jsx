@@ -17,8 +17,10 @@ export { default as TextField } from './fields/TextField.ui';
 export { default as NumberField } from './fields/NumberField.ui';
 export { default as MetersField } from './fields/MetersField.ui';
 export { default as ImageField } from './fields/ImagesField.ui';
+export { default as MultiViewImageField } from './fields/MultiViewImageField.ui';
 export { default as DescriptionField } from './fields/DescriptionField.ui';
 export { default as RangeField } from './fields/RangeField.ui';
+export { default as DebouncedTextField } from './fields/DebouncedTextField.ui';
 
 export { default as SearchInput } from './filters/SearchInput.ui';
 export { default as FiltersList } from './filters/FiltersList.ui';

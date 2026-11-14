@@ -12,6 +12,7 @@ import FlatCard from '../containers/FlatCard.ui';
 import Icon from '../icons/Icon.ui';
 import Logo from '../brand/Logo.ui';
 import { isPositiveNumber } from '@/helpers/validators.helper';
+import Notifications from './elements/Notifications';
 
 function SideBar() {
   const { isAuthenticated, roles } = useAuth();
@@ -183,6 +184,7 @@ function SideBar() {
           </FlatCard>
         </div>
       </div>
+      <Notifications />
     </nav>
   );
 }

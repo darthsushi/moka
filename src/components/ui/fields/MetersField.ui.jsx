@@ -63,6 +63,7 @@ function MetersField({
       isDisabled={ isDisabled }
       isReadOnly={ isReadOnly }
       autoFocus={ autoFocus }
+      variant="secondary"
     >
       <Label>
         { label }

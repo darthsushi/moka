@@ -29,7 +29,7 @@ function ImagesVisualizer({ images = [], removeImage }) {
         images.map((image, index) => {
           const isURL = typeof image === 'string';
 
-          if (isURL) {
+          if (!actualImageURL) {
             return <p key={ index }>{ t('placements:imageUnavailable') }</p>;
           }
 

@@ -1,24 +1,26 @@
 import { useState } from 'react';
 
 import { isNil } from '@/helpers/ramda.helpers';
-
+import { useCreatePlacement } from '@/hooks/placements';
 import { Animations } from '@/components/animations';
 
 import StructureAndLocation from './elements/StructureAndLocation';
+import FacesDetails from './elements/FacesDetails';
+import PlacementDetails from './elements/PlacementDetails';
 
 function PlacementManagerForm({ isEditing = false, placement = {} }) {
   const [currentPlacement, setCurrentPlacement] = useState(() => isEditing ? { ...placement } : {});
   const [currentStep, setCurrentStep] = useState(1);
-  const [isPending, setIsPending] = useState(false); //Cambiar a "allowChangeStep"?
-
-  const nextStep = (actualStepValues, isLastStep) => {
-      if (isPending) return;
+  const { /* create: createPlacement, */ isLoading: isCreatingPlacement } = useCreatePlacement();
   
+  const nextStep = async (actualStepValues, isLastStep = false) => {
+      if (isCreatingPlacement) return;
+    
       setCurrentPlacement((prevPlacement) => {
         if (isNil(actualStepValues)) {
           return prevPlacement;
         }
-  
+        
         return {
           ...prevPlacement,
           ...actualStepValues
@@ -30,6 +32,15 @@ function PlacementManagerForm({ isEditing = false, placement = {} }) {
           ...currentPlacement,
           ...actualStepValues
          });
+
+       /*  try {
+          const placementCreated = await createPlacement(placement);
+          console.log(placementCreated);
+
+          // toast.success(t('common:texts.addSuccessMessage'));
+        } catch (error)  {
+          // toast.danger(translateError(t, error));
+        } */
   
          return;
       }
@@ -38,7 +49,7 @@ function PlacementManagerForm({ isEditing = false, placement = {} }) {
     };
   
     const previousStep = () => {
-      if (isPending || currentStep === 1) return;
+      if (isCreatingPlacement || currentStep === 1) return;
   
       setCurrentStep(currentStep - 1);
     };
@@ -46,7 +57,25 @@ function PlacementManagerForm({ isEditing = false, placement = {} }) {
   return (
     <>
       <Animations.VisibilityTransition visibility={ currentStep === 1 }>
-        <StructureAndLocation />
+        <StructureAndLocation
+          placement={ currentPlacement }
+          nextStep={ nextStep }
+        />
+      </Animations.VisibilityTransition>
+      <Animations.VisibilityTransition visibility={ currentStep === 2 }>
+        <FacesDetails
+          placement={ currentPlacement }
+          nextStep={ nextStep }
+          previousStep={ previousStep }
+        />
+      </Animations.VisibilityTransition>
+      <Animations.VisibilityTransition visibility={ currentStep === 3 }>
+        <PlacementDetails
+          placement={ currentPlacement }
+          nextStep={ nextStep }
+          previousStep={ previousStep }
+          isPending={ isCreatingPlacement }
+        />
       </Animations.VisibilityTransition>
     </>
   );

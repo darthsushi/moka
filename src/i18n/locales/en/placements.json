@@ -37,7 +37,7 @@
     "type": "Type of placement",
     "structureHeight": "Structure height",
     "structureDetails": "Structure Details",
-    "structureDetailsDescription": "Configure the technical information of your space",
+    "structureDescription": "Indicate the structure type and the number of faces available. Finally, enter the structure height; this value helps us calculate exactly how high your ad views will be placed",
     "latitudeLongitude": "Latitude and Longitude",
     "latitudeLongitudeDescription": "Set your ad space location using coordinates. Click Search Location to verify they are correct",
     "latitudeLongitudePlaceholder": "e.g., 20.967834, -89.648758",

@@ -37,7 +37,7 @@
     "type": "Tipo de espacio",
     "structureHeight": "Altura de la estructura",
     "structureDetails": "Datos de la estructura",
-    "structureDetailsDescription": "Configura la información técnica de tu espacio",
+    "structureDescription": "Indica el tipo de estructura y la cantidad de caras disponibles. Por último, ingresa el alto de la estructura; este valor nos ayuda a calcular a qué nivel quedarán exactamente las vistas de tus anuncios.",
     "latitudeLongitude": "Latitud y Longitud",
     "latitudeLongitudeDescription": "Configura la ubicación de tu espacio mediante coordenadas. Presiona Buscar Ubicación para verificar que sean correctas",
     "latitudeLongitudePlaceholder": "Ej. 20.967834, -89.648758",

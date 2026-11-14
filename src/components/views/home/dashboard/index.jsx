@@ -82,7 +82,7 @@ function DashboardContent({ role }) {
       }
       <section aria-label={ t('common:dashboard.next') } className="space-y-3">
         <h2 className="text-lg font-semibold">{ t('common:dashboard.next') }</h2>
-        { isLoading && <p role="status">{ t('common:loading') }</p> }
+        { isLoading && <p role="status">{ t('common:loading.loading') }</p> }
         { data && data.items.length === 0 && <p className="text-muted">{ t('common:dashboard.empty') }</p> }
         { data?.items.map(item =>
           <FlatCard key={ item.id } className="flex items-center justify-between gap-3">

@@ -58,6 +58,7 @@ function SelectField({
       placeholder={ placeholder || t('common:defaults.selectOne') }
       isDisabled={ isDisabled }
       autoFocus={ autoFocus }
+      variant="secondary"
     >
       <Label>
         { label }

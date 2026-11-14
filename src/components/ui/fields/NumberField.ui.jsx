@@ -74,6 +74,7 @@ function NumberInputField({
         isDisabled={ isDisabled }
         onChange={ handleOnChange }
         placeholder={ placeholder }
+        variant="secondary"
       >
         <Label>
           { label }

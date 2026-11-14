@@ -78,7 +78,10 @@
   "language": {
     "choose": "Selecciona tu idioma"
   },
-  "loading": "Cargando…",
+  "loading": {
+    "fetchingLocation": "Obteniendo ubicación...",
+    "loading": "Cargando..."
+  },
   "errors": {
     "unexpected": "No se pudo completar la solicitud. Inténtalo de nuevo.",
     "AUTH_REQUIRED": "Debes iniciar sesión para realizar esta acción.",

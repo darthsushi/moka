@@ -51,7 +51,7 @@ function PlacementDetails({ isDialog = false }) {
     return () => { active = false; };
   }, [code, id, shareToken, authLoading, user?.id, retry, requestKey]);
 
-  if (request.key !== requestKey) return <p role="status" className="p-8 text-muted">{ t('common:loading') }</p>;
+  if (request.key !== requestKey) return <p role="status" className="p-8 text-muted">{ t('common:loading.loading') }</p>;
 
   if (request.error) return (
     <div role="alert" className="flex flex-col items-start gap-3 p-8">

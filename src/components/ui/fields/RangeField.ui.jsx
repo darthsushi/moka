@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { useController } from 'react-hook-form';
-import { Input, Label, Slider } from '@heroui/react';
+import { Chip, Input, Label, Slider } from '@heroui/react';
 
-import { noop } from '@/helpers/ramda.helpers';
+import { isNil, isNotNil, noop } from '@/helpers/ramda.helpers';
 import FlatCard from '../containers/FlatCard.ui';
 
 function RangeField({
@@ -14,6 +14,7 @@ function RangeField({
   isDisabled = false,
   maxValue = 100,
   minValue = 100,
+  marks = [],
   defaultValue = [0, 100],
   onChange = noop,
 }) {
@@ -33,6 +34,7 @@ function RangeField({
   return (
     <FlatCard className="py-2">
       <Slider
+        aria-label={ `${field.name} range` }
         className="w-full"
         step={ step }
         maxValue={ maxValue }
@@ -41,15 +43,25 @@ function RangeField({
         defaultValue={ field.value || defaultValue }
         onChangeEnd={ handleOnChangeEnd }
       >
-        <Label>
-          { label }
-        </Label>
-        <Slider.Output />
-        <Slider.Track className="bg-overlay shadow">
+        { isNotNil(label) &&
+          <Label>
+            { label }
+          </Label>
+        }
+        <Chip
+          variant="soft"
+          color="accent"
+          size={ isNil(label) && 'lg' }
+          className={ isNil(label) && 'w-full flex justify-center' }
+        >
+          <Slider.Output />
+        </Chip>
+        <Slider.Track className="shadow">
           {
             ({state}) => (
               <>
                 <Slider.Fill />
+                <Slider.Steps />
                 {state.values.map((_, i) => (
                   <Slider.Thumb
                     key={ i }
@@ -60,6 +72,13 @@ function RangeField({
             )
           }
         </Slider.Track>
+        { marks.length >= 1 &&
+          <Slider.Marks>
+            { 
+              marks.map((markValue, index) => <Slider.Mark key={ index } value={ markValue } />)
+            }
+          </Slider.Marks>
+        }
       </Slider>
       <div
         className="hidden"

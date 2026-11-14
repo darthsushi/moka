@@ -77,7 +77,7 @@ export default function ReviewPlacementDialog({ placementId, onClose, onSuccess 
   return <Dialog isModalOpen setIsModalOpen={ open => { if (!open && !busy) onClose(); } } isLoading={ busy }
     title={ p?.code ?? t('reviewHub:review') } size="cover" placement="center" dismissOptions={ { enabled: true, showCloseButton: true } }>
     <div className="p-4 sm:p-6">
-      { request.key !== key && <p role="status">{ t('common:loading') }</p> }
+      { request.key !== key && <p role="status">{ t('common:loading.loading') }</p> }
       { request.key === key && request.error && <div role="alert"><p>{ translateError(t, request.error) }</p><Button onPress={ () => setRefresh(value => value + 1) }>{ t('common:actions.retry') }</Button></div> }
       { p && <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-6">

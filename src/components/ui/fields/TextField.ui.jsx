@@ -83,6 +83,7 @@ function InputField({
         minLength={ minLength }
         max={ max }
         min={ min }
+        variant="secondary"
       />
       { isNotNil(error) &&
         <FieldError>

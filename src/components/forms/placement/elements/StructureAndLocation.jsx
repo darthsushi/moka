@@ -4,19 +4,29 @@ import { useForm } from 'react-hook-form';
 import {
   Alert,
   Button,
+  Description,
   Fieldset,
   FieldGroup,
   Form,
   Spinner,
+  Tooltip,
   Typography,
+  toast,
 } from '@heroui/react';
 
-import { isNil, isNotNil, noop } from '@/helpers/ramda.helpers';
+import { isEmpty, /* isNil, */ isNotNil, noop, not } from '@/helpers/ramda.helpers';
 import { isValidCoodinates, isValidHeight } from '@/helpers/validators.helper';
 import { OOH_TYPES } from '@/settings/keys.settings';
 
 import { Animations } from '@/components/animations';
-import { FlatCard, Icon, MetersField, SelectField, TextField } from '@/components/ui';
+import {
+  DebouncedTextField,
+  FlatCard,
+  GoogleMapsView,
+  Icon,
+  MetersField,
+  SelectField
+} from '@/components/ui';
 
 const TYPE_X_FACES = {
   UNIPOLE_BILLBOARD: [1, 2, 3, 4],
@@ -25,19 +35,63 @@ const TYPE_X_FACES = {
   BUILDING_WRAP: [1, 2]
 };
 
-const getSingleStringCoor = ({ latitude, longitude }) => {
+/* const getSingleStringCoor = ({ latitude, longitude }) => {
   if (isNil(latitude) || isNil(longitude)) {
-    return undefined;
+    return null;
   }
 
   return `${latitude},${longitude}`;
+}; */
+
+function LocationViewer({
+    coordinates,
+    location,
+    editLocation = noop,
+  }) {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <GoogleMapsView
+        name="map_preview"
+        className="grid grid-cols-5"
+        variant="transparent"
+        coordinates={ coordinates }
+      >
+        <>
+          <div className="col-span-4">
+            <Typography type="body-sm" weight="normal" className="leading-3.5 mb-1 truncate">
+              { location.display_name }
+            </Typography>
+            <Description className="text-xs leading-4 truncate">
+              { location.city }, { location.state }, { location.country }
+            </Description>
+          </div>
+          <div className="col-span-1">
+            <Tooltip>
+              <Button
+                variant="tertiary"
+                className="w-full text-lg"
+                onPress={ editLocation }
+              >
+                <Icon name="edit" />
+              </Button>
+              <Tooltip.Content>
+                <p>
+                  { t('common:tooltips.edit') }
+                </p>
+              </Tooltip.Content>
+            </Tooltip>
+          </div>
+        </>
+      </GoogleMapsView>
+    </>
+  );
 };
 
 function StructureAndLocation({
   placement = {},
-  isLoading,
   nextStep = noop,
-  setIsLoading = noop,
 }) {
   // TODO: Remove "placement.face_count"
   const defaultValues = {
@@ -45,22 +99,21 @@ function StructureAndLocation({
     face_count: placement.face_count || placement.faces?.lenght || 1,
     structure_height: placement.structure_height || 0,
 
-    coordinates: getSingleStringCoor(placement),
+    coordinates: placement.coordinates || null,
     location: placement.location || {},
     code: placement.code || '',
   };
 
   const { t } = useTranslation();
-  const { handleSubmit, control } = useForm({ defaultValues });
+  const { resetField, handleSubmit, control } = useForm({ defaultValues });
 
-  const [selectedType, setSelectedType] = useState(defaultValues.type);
   const [facesOptions, setFacesOptions] = useState(TYPE_X_FACES[defaultValues.type]);
-
-  const [coordinates, setCoordinates] = useState(defaultValues.coordinates);
+  
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [location, setLocation] = useState(defaultValues.location);
-
+  const [actualCoordinates, setActualCoordinates] = useState(defaultValues.coordinates);
   const [isLocationError, setIsLocationError] = useState(false);
-  const [isValidated, setIsValidated] = useState(() => isNotNil(coordinates));
+  const [isValidated, setIsValidated] = useState(() => isNotNil(defaultValues.coordinates));
 
   const TYPE_OPTIONS = OOH_TYPES.map((type) => ({
     id: type,
@@ -68,189 +121,258 @@ function StructureAndLocation({
   }));
   
   const onTypeSelectedChange = (selectedType) => {
-    setSelectedType(selectedType);
     setFacesOptions(TYPE_X_FACES[selectedType]);
   };
 
-  const onCoordinatesInputChange = (actualCoordinates) => {
+  const fetchOpenStreetMap = async (coordinates) => {
+    setIsFetchingLocation(true);
+
+    try {
+      const [latitude, longitude] = coordinates.split(',');
+
+      const nominatimURL = new URL('https://nominatim.openstreetmap.org/reverse');
+      nominatimURL.search = new URLSearchParams({
+        lat: latitude,
+        lon: longitude,
+        format: 'jsonv2',
+        'accept-language': 'es-MX'
+      });
+
+      const nominatimResponse = await fetch(nominatimURL);
+
+      if (not(nominatimResponse.ok)) {
+        throw new Error(`Error HTTP: ${nominatimResponse.status}`);
+      }
+
+      const {
+        address: {
+          ["ISO3166-2-lvl4"]: isoCode,
+          county,
+          town,
+          city,
+          country,
+          country_code,
+          municipality,
+          neighbourhood,
+          postcode,
+          region,
+          road,
+          state,
+          village
+        },
+        display_name
+      } = await nominatimResponse.json();
+
+      setActualCoordinates(coordinates);
+      setLocation({
+        isoCode,
+        display_name,
+        country_code,
+        neighbourhood,
+        postcode,
+        road,
+        country,
+        state: state || region,
+        city: city || town || village || municipality || county,
+      });
+
+      setIsValidated(true);
+      setIsLocationError(false);
+    } catch {
+      setActualCoordinates(null);
+      setIsValidated(false);
+      setIsLocationError(true);
+    } finally {
+      setIsFetchingLocation(false);
+    }
+  };
+
+  const onLocationInputChange = (actualCoordinates) => {
+    setIsValidated(false); // Set 'false' on input change.
+
+    const showToastWithInvalidMessage = not(isValidCoodinates(actualCoordinates)) &&
+      not(isEmpty(actualCoordinates)); // Do not show if input is empty.
+
+    if (showToastWithInvalidMessage) {
+      toast.danger(t('validation:INVALID_COORDINATES'));
+
+      return;
+    }
+  
+    fetchOpenStreetMap(actualCoordinates);
+  };
+
+  const onResetLocation = () => {
+    setLocation(null);
+    setActualCoordinates(null);
     setIsValidated(false);
-    console.log('teest coor', actualCoordinates);
+    resetField('coordinates', { defaultValue: null });
   };
 
   const beforeSubmit = (values) => {
-    console.log('Antes de enviar:', values);
-    nextStep(values);
+    nextStep({
+      ...values,
+      location,
+      coordinates: actualCoordinates
+    });
   };
 
   return (
-    <>
-      <Form
-        aria-label="Structure and Location"
-        className="w-ful"
-        onSubmit={ handleSubmit(beforeSubmit) }
-      >
-        <Fieldset className="w-full">
-          <FieldGroup className="w-full grid grid-cols-5">
-            <div className="col-span-5">
-              <Typography.Heading level="5" color="muted">
-                { t('placements:form.structureDetails') }
-              </Typography.Heading>
-            </div>
-            <div className="col-span-3 grid grid-cols-2 gap-1 p-2">
-              <FlatCard
-                variant="transparent"
-                className="col-span-1 p-3"
-              >
-                <SelectField
-                  name="type"
-                  label={ t('placements:form.type') }
-                  control={ control }
-                  isRequired
-                  onChange={ onTypeSelectedChange }
-                  errors={{
-                    'required': t('validation:EMPTY_FIELD')
-                  }}
-                  placeholder={ t('common:defaults.selectOne') }
-                  options={ TYPE_OPTIONS }
-                />
-              </FlatCard>
-              <FlatCard
-                variant="transparent"
-                className="col-span-1 p-3"
-              >
-                <SelectField
-                  name="face_count"
-                  label={ t('placements:form.faces') }
-                  control={ control }
-                  isRequired
-                  options={ [...facesOptions] }
-                  errors={{
-                    'required': t('validation:EMPTY_FIELD'),
-                    'validate': t('validation:INVALID_VALUE')
-                  }}
-                  validate={ (actualValue) => {
-                    return [ ...facesOptions ].includes(actualValue);
-                  }}
-                />
-              </FlatCard>
-              <FlatCard
-                variant="transparent"
-                className="col-span-1 p-3"
-              >
-                <MetersField
-                  name="structure_height"
-                  control={ control }
-                  isRequired
-                  label={ t('placements:form.structureHeight') }
-                  errors={{
-                    'required': t('validation:EMPTY_FIELD'),
-                    'validate': t('validation:INVALID_VALUE')
-                  }}
-                  placeholder={ t('placements:form.inputMetersPlaceholder') }
-                  validate={ isValidHeight }
-                />
-              </FlatCard>
-            </div>
-            <div className="col-span-2">
-              Description de datos de estructura
-            </div>
-          </FieldGroup>
-          <FieldGroup className="w-full grid grid-cols-5">
-            <div className="col-span-5">
-              <Typography.Heading level="5" color="muted">
-                { t('placements:form.location') }
-              </Typography.Heading>
-            </div>
-            <div className="col-span-3 w-full p-4">
-              { isLocationError &&
-                <Alert status="danger" className='bg-danger-soft my-3'>
-                  <Alert.Indicator />
-                  <Alert.Content>
-                    <Alert.Title>
-                      { t('placements:form.errors.locationNotFoundTitle') }
-                    </Alert.Title>
-                    <Alert.Description>
-                      { t('placements:form.errors.locationNotFound') }
-                    </Alert.Description>
-                  </Alert.Content>
-                </Alert>
-              }
-              <Animations.DoubleCard animationId={ isValidated ? 'map-preview' : 'coordinates-input' }>
-                {
-                  isValidated ?
-                    <>
-                      VAlidado!
-                      {/* <LocationViewer
-                        coordinates={ coordinates }
-                        location={ location }
-                        actions={ { editLocation: () => setIsValidated(false) } }
-                      /> */}
-                    </>
-                  :
-                    <FlatCard
-                      variant="transparent"
-                      className="w-full p-3"
-                    >
-                      {/* <div className="w-full grid grid-cols-6">
-                        <div className="col-span-1 flex items-center justify-center">
-                          {
-                          isLoading ?
-                            <Spinner size="lg" />
-                          :
-                            <FlatCard
-                              rounded="sm"
-                              className="w-15 h-15 flex justify-center items-center text-3xl text-rose-900 bg-rose-400 border border-rose-500"
-                            >
-                              <Icon filled name="add-location" />
-                            </FlatCard>
-                          }
-                        </div>
-                        <div className="col-span-5 h-fit">
-                          <Typography.Heading level={ 6 }>
-                            { t('placements:form.latitudeLongitude') }
-                          </Typography.Heading>
-                          <Typography.Paragraph
-                            color="muted"
-                            size="xs"
-                            className="leading-3"
-                          >
-                            { t('placements:form.latitudeLongitudeDescription') }
-                          </Typography.Paragraph>
-                        </div>
-                      </div> */}
-                      <TextField
-                        label={ t('placements:form.latitudeLongitude') }
-                        name="coordinates"
-                        control={ control }
-                        isRequired
-                        onChange={ onCoordinatesInputChange }
-                        errors={{
-                          'required': t('validation:EMPTY_FIELD'),
-                          'validate': t('validation:INVALID_COORDINATES')
-                        }}
-                        isDisabled={ isLoading }
-                        placeholder={ t('placements:form.latitudeLongitudePlaceholder') }
-                        validate={ isValidCoodinates }
-                      />
-                    </FlatCard>
-                }
-              </Animations.DoubleCard>
-            </div>
-            <div className="col-span-2">
-              Description de datos de estructura
-            </div>
-          </FieldGroup>
-          <Fieldset.Actions className="w-full p-2">
-            <Button
-              type="submit"
-              size="lg"
+    <Form
+      id="structure-location-form"
+      aria-label="Structure and Location"
+      className="w-ful"
+      onSubmit={ handleSubmit(beforeSubmit) }
+    >
+      <Fieldset className="w-full">
+        {/* Structure inputs */}
+        <FieldGroup className="w-full grid grid-cols-5 gap-1">
+          <div className="col-span-5">
+            <Typography.Heading level="6" color="muted">
+              { t('placements:form.structureDetails') }
+            </Typography.Heading>
+          </div>
+          <FlatCard variant="default" className="col-span-3 grid grid-cols-2 gap-1 mr-5">
+            <FlatCard
+              variant="primary"
+              className="col-span-1 p-3"
             >
-              { t('common:actions.saveContinue') }
-            </Button>
-          </Fieldset.Actions>
-        </Fieldset>
-      </Form>
-    </>
+              <SelectField
+                name="type"
+                label={ t('placements:form.type') }
+                control={ control }
+                isRequired
+                onChange={ onTypeSelectedChange }
+                errors={{
+                  'required': t('validation:EMPTY_FIELD')
+                }}
+                placeholder={ t('common:defaults.selectOne') }
+                options={ TYPE_OPTIONS }
+              />
+            </FlatCard>
+            <FlatCard
+              variant="transparent"
+              className="col-span-1 p-3"
+            >
+              <SelectField
+                name="face_count"
+                label={ t('placements:form.faces') }
+                control={ control }
+                isRequired
+                options={ [...facesOptions] }
+                errors={{
+                  'required': t('validation:EMPTY_FIELD'),
+                  'validate': t('validation:INVALID_VALUE')
+                }}
+                validate={ (actualValue) => {
+                  return [ ...facesOptions ].includes(actualValue);
+                }}
+              />
+            </FlatCard>
+            <FlatCard
+              variant="transparent"
+              className="col-span-1 p-3"
+            >
+              <MetersField
+                name="structure_height"
+                control={ control }
+                isRequired
+                label={ t('placements:form.structureHeight') }
+                errors={{
+                  'required': t('validation:EMPTY_FIELD'),
+                  'validate': t('validation:INVALID_VALUE')
+                }}
+                placeholder={ t('placements:form.inputMetersPlaceholder') }
+                validate={ isValidHeight }
+              />
+            </FlatCard>
+          </FlatCard>
+          <div className="col-span-2 border-l-2 pl-3 h-fit">
+            <Description className="leading-5 text-md text-left">
+              { t('placements:form.structureDescription') }
+            </Description>
+          </div>
+        </FieldGroup>
+
+        {/* Location inputs */}
+        <FieldGroup className="w-full grid grid-cols-5 gap-1">
+          <div className="col-span-5">
+            <Typography.Heading level="6" color="muted">
+              { t('placements:form.location') }
+            </Typography.Heading>
+          </div>
+          <FlatCard variant="default" className="col-span-3 mr-5">
+            { isLocationError &&
+              <Alert status="danger" className='bg-danger-soft my-3'>
+                <Alert.Indicator />
+                <Alert.Content>
+                  <Alert.Title>
+                    { t('placements:form.errors.locationNotFoundTitle') }
+                  </Alert.Title>
+                  <Alert.Description>
+                    { t('placements:form.errors.locationNotFound') }
+                  </Alert.Description>
+                </Alert.Content>
+              </Alert>
+            }
+            <Animations.DoubleCard animationId={ isValidated ? 'map-preview' : 'coordinates-input' }>
+              {
+                isValidated ?
+                  <>
+                    <LocationViewer
+                      coordinates={ actualCoordinates }
+                      location={ location }
+                      editLocation={ onResetLocation }
+                    />
+                  </>
+                :
+                  <FlatCard
+                    variant="transparent"
+                    className="w-full p-3"
+                  >
+                    <DebouncedTextField
+                      label={ t('placements:form.latitudeLongitude') }
+                      name="coordinates"
+                      control={ control }
+                      isRequired
+                      onChange={ onLocationInputChange }
+                      errors={{
+                        'required': t('validation:EMPTY_FIELD'),
+                        'validate': t('validation:INVALID_COORDINATES')
+                      }}
+                      isDisabled={ isFetchingLocation }
+                      placeholder={ t('placements:form.latitudeLongitudePlaceholder') }
+                      validate={ isValidCoodinates }
+                    />
+                    { isFetchingLocation &&
+                      <Description className="mt-1.5 flex items-center gap-1">
+                        <Spinner size="sm" />
+                        { t('common:loading.fetchingLocation') }
+                      </Description>
+                    }
+                  </FlatCard>
+              }
+            </Animations.DoubleCard>
+          </FlatCard>
+          <div className="col-span-2 border-l-2 pl-3 h-fit">
+            <Description className="leading-5 text-md text-left">
+              { t('placements:form.locationDescription') }
+            </Description>
+          </div>
+        </FieldGroup>
+
+        {/* Actions: Buttons */}
+        <Fieldset.Actions className="w-full">
+          <Button
+            type="submit"
+            size="lg"
+            isDisabled={ isFetchingLocation || not(isValidated) }
+          >
+            { t('common:actions.saveContinue') }
+          </Button>
+        </Fieldset.Actions>
+      </Fieldset>
+    </Form>
   )
 };
 
