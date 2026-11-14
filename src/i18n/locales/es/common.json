@@ -1,4 +1,20 @@
 {
+  "notifications": {
+    "title": "Notificaciones",
+    "space": "tu espacio",
+    "unread": "{{count}} sin leer",
+    "markAllRead": "Marcar todas como leídas",
+    "unreadHeading": "Sin leer",
+    "previousHeading": "Anteriores",
+    "empty": "Aún no tienes notificaciones.",
+    "error": "No se pudieron cargar las notificaciones.",
+    "kinds": {
+      "review_decision": "El espacio {{code}} cambió a {{status}}.",
+      "review_assigned": "Se te asignó el espacio {{code}} para revisión.",
+      "review_reassigned": "Se te reasignó el espacio {{code}} para revisión.",
+      "review_requested": "El espacio {{code}} volvió a revisión."
+    }
+  },
   "sidebar": {
     "home": "Inicio",
     "inventory": "Inventario",

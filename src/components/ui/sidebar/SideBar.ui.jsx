@@ -6,6 +6,7 @@ import { ListBox, Tooltip } from '@heroui/react';
 import { not } from '@/helpers/ramda.helpers';
 import { canAccessModule, classNameParser } from '@/helpers/utilities.helpers';
 import { useAuth, useUI } from '@/hooks/contexts';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { NAVIGATION_ITEMS, PRIMARY_NAVEGATION_ITEMS } from '@/settings/navigation.settings';
 
 import FlatCard from '../containers/FlatCard.ui';
@@ -17,6 +18,7 @@ import Notifications from './elements/Notifications';
 function SideBar() {
   const { isAuthenticated, roles } = useAuth();
   const { isSidebarOpen } = useUI();
+  const isMobile = useIsMobile();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -184,7 +186,7 @@ function SideBar() {
           </FlatCard>
         </div>
       </div>
-      <Notifications />
+      { !isMobile && <Notifications /> }
     </nav>
   );
 }

@@ -1,4 +1,20 @@
 {
+  "notifications": {
+    "title": "Notifications",
+    "space": "your placement",
+    "unread": "{{count}} unread",
+    "markAllRead": "Mark all as read",
+    "unreadHeading": "Unread",
+    "previousHeading": "Earlier",
+    "empty": "You have no notifications yet.",
+    "error": "Notifications could not be loaded.",
+    "kinds": {
+      "review_decision": "Placement {{code}} is now {{status}}.",
+      "review_assigned": "Placement {{code}} was assigned to you for review.",
+      "review_reassigned": "Placement {{code}} was reassigned to you for review.",
+      "review_requested": "Placement {{code}} is ready for review again."
+    }
+  },
   "sidebar": {
     "home": "Home",
     "inventory": "Inventory",
