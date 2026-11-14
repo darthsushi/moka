@@ -112,6 +112,8 @@ export const AuthProvider = ({ children }) => {
     ),
 
     signUp: authService.signUp,
+    resetPassword: authService.resetPassword,
+    updatePassword: authService.updatePassword,
     signIn: authService.signIn,
     signOut: authService.signOut,
     updateProfile

@@ -6,13 +6,13 @@ import { Card } from '@heroui/react';
 import { APP_NAME } from '@/settings/keys.settings';
 
 import { Logo } from '@/components/ui';
-import { SignInForm, SignUpForm } from '@/components/forms';
+import { ForgotPasswordForm, ResetPasswordForm, SignInForm, SignUpForm } from '@/components/forms';
 
 function Auth() {
   const { t } = useTranslation();
-  const { hash } = useLocation();
-
-  const isSignUp = hash.includes('#signup');
+  const { hash, pathname } = useLocation();
+  const form = pathname === '/auth/reset-password' ? 'reset'
+    : hash === '#signup' ? 'signup' : hash === '#forgot-password' ? 'forgot' : 'signin';
 
   // TODO: Add terms and privacity.
   return (
@@ -22,10 +22,9 @@ function Auth() {
       </header>
       <Card variant="transparent" className="w-full min-w-80 max-w-100">
         {
-          isSignUp ?
-            <SignUpForm />
-          :
-            <SignInForm />
+          form === 'signup' ? <SignUpForm />
+            : form === 'forgot' ? <ForgotPasswordForm />
+              : form === 'reset' ? <ResetPasswordForm /> : <SignInForm />
         }
       </Card>
       <footer className="w-full p-2 flex justify-center sticky bottom-0">

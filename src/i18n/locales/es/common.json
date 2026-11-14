@@ -108,6 +108,10 @@
     "NO_PROFILE_CHANGES": "No hay cambios de perfil para guardar.",
     "invalid_credentials": "El correo electrónico o la contraseña no son correctos.",
     "email_not_confirmed": "Confirma tu correo electrónico antes de iniciar sesión.",
+    "weak_password": "Usa una contraseña más segura.",
+    "email_address_invalid": "Escribe un correo electrónico válido.",
+    "same_password": "La nueva contraseña debe ser diferente de la anterior.",
+    "otp_expired": "El enlace ha caducado. Solicita uno nuevo.",
     "over_request_rate_limit": "Has realizado demasiados intentos. Espera un momento y vuelve a intentarlo.",
     "BULK_UPDATE_FAILED": "Se actualizaron {{updated}} espacios; no se pudieron actualizar {{failed}}."
   },

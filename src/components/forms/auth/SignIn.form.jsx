@@ -2,6 +2,8 @@ import { translateError } from '@/i18n/errors';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { toast, Button, Fieldset, Form, Typography } from '@heroui/react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/hooks/contexts';
 import { APP_NAME } from '@/settings/keys.settings';
@@ -11,17 +13,21 @@ import { TextField } from '@/components/ui';
 function SignInForm() {
   const { t } = useTranslation();
   const { handleSubmit, control } = useForm();
-  const { loading, signIn } = useAuth()
+  const { loading, signIn } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const onSubmit = async ({ email, password }) => {
-    const { data, error } = await signIn(email, password);
-
-    if (data?.user) {
-      toast.success(t('auth:welcome'));
-      return;
+    setSubmitting(true);
+    try {
+      const { data, error } = await signIn(email.trim(), password);
+      if (error) throw error;
+      if (data?.user) toast.success(t('auth:welcome'));
+    } catch (error) {
+      toast.danger(translateError(t, error));
+    } finally {
+      setSubmitting(false);
     }
-
-    toast.danger(translateError(t, error));
   };
 
   return (
@@ -55,6 +61,7 @@ function SignInForm() {
                 control={ control }
                 placeholder={ t('auth:emailPlaceholder') }
                 isDisabled={ loading }
+                isRequired
               />
             </div>
             <div
@@ -68,6 +75,7 @@ function SignInForm() {
                 control={ control }
                 placeholder={ t('auth:password') }
                 isDisabled={ loading }
+                isRequired
               />
             </div>
           </div>
@@ -77,13 +85,20 @@ function SignInForm() {
               form="signin-form"
               type="submit"
               size="lg"
-              isPending={ loading }
+              isPending={ loading || submitting }
             >
               { t('auth:signIn') }
             </Button>
           </Fieldset.Actions>
         </Fieldset>
       </Form>
+      <Button size="sm" variant="ghost" onPress={ () => navigate('/auth#forgot-password') }>
+        { t('auth:forgotPassword') }
+      </Button>
+      <Typography type="body-xs" color="muted">{ t('auth:noAccount') }</Typography>
+      <Button size="sm" variant="secondary" onPress={ () => navigate('/auth#signup') }>
+        { t('auth:signUp') }
+      </Button>
     </div>
   )
 }

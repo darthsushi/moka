@@ -108,6 +108,10 @@
     "NO_PROFILE_CHANGES": "There are no profile changes to save.",
     "invalid_credentials": "The email or password is incorrect.",
     "email_not_confirmed": "Confirm your email before signing in.",
+    "weak_password": "Choose a stronger password.",
+    "email_address_invalid": "Enter a valid email address.",
+    "same_password": "Your new password must be different from the old one.",
+    "otp_expired": "The link has expired. Request a new one.",
     "over_request_rate_limit": "Too many attempts. Wait a moment and try again.",
     "BULK_UPDATE_FAILED": "Updated {{updated}} placements; {{failed}} could not be updated."
   },

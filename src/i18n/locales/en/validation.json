@@ -10,5 +10,6 @@
   "max": "The maximum value is {{max}}.",
   "minLength": "Enter at least {{min}} characters.",
   "maxLength": "Enter at most {{max}} characters.",
-  "invalid": "The value is invalid."
+  "invalid": "The value is invalid.",
+  "passwordMismatch": "Passwords do not match."
 }

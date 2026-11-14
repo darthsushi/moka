@@ -100,6 +100,7 @@ function App() {
             element={ <Auth /> }
           />
         </Route>
+        <Route path="auth/reset-password" element={ <Auth /> } />
       </Routes>
       { backgroundLocation && <Routes>
         <Route path="p/:code" element={ <PlacementDetailsDialog /> } />
