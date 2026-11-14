@@ -92,7 +92,7 @@ function StructureAndLocation({
   // TODO: Remove "placement.face_count"
   const defaultValues = {
     type: placement.type || OOH_TYPES[0],
-    face_count: placement.face_count || placement.faces?.lenght || 1,
+    face_count: placement.face_count || placement.faces?.length || 1,
     structure_height: placement.structure_height || 0,
 
     coordinates: placement.coordinates || null,

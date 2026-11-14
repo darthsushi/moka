@@ -28,8 +28,9 @@
     "update": "Could not update the placement. Please try again."
   },
   "tabs": {
+    "all": "All",
     "approved": "Approved",
     "reviewing": "In review",
-    "attention": "Flagged"
+    "attention": "Reviewed"
   }
 }

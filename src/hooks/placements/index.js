@@ -1,4 +1,5 @@
 import { useCreatePlacement } from './useCreatePlacement';
+import { useEditPlacement } from './useEditPlacement';
 import { useInventoryFilterOptions } from './useInventoryFilterOptions';
 import { useInventoryPlacements } from './useInventoryPlacements';
 import { usePlacementStatus } from './usePlacementStatus';
@@ -8,6 +9,7 @@ import { usePublicPlacementFilterOptions } from './usePublicPlacementFilterOptio
 
 export {
   useCreatePlacement,
+  useEditPlacement,
   useInventoryFilterOptions,
   useInventoryPlacements,
   usePlacementStatus,

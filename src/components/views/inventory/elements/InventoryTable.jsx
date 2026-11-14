@@ -191,7 +191,7 @@ function InventoryTable({ reviewStatuses }) {
                 >
                   <Label>{ t('inventory:copyUnlistedLink') }</Label>
                 </Dropdown.Item> }
-                <Dropdown.Item id="edit" textValue={ t('inventory:edit') }>
+                <Dropdown.Item id="edit" textValue={ t('inventory:edit') } isDisabled={ !canChangeAvailability || owner_status === 'withdrawn' } onPress={ () => navigate(`/placement-manager#edit?id=${id}`) }>
                   <Label>{ t('inventory:edit') }</Label>
                 </Dropdown.Item>
                 { owner_status !== 'withdrawn' && <Dropdown.Item

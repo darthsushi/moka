@@ -14,6 +14,7 @@ const normalizeFaces = (actualFaces, actualValues) => {
 
   actualFaces.forEach((_, index) => {
     newFaceArray[index] = {
+      id: actualFaces[index]?.id,
       day_range: actualValues[`day_range_face_${index + 1}`],
       display_height: actualValues[`display_height_face_${index + 1}`],
       display_width: actualValues[`display_width_face_${index + 1}`],

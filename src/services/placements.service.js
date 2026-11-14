@@ -51,9 +51,13 @@ const PLACEMENT_DETAIL_SELECT = `
   structure_height,
   face_count,
   country,
+  country_code,
   state,
+  subdivision_code,
   city,
+  postcode,
   display_name,
+  location,
   description,
   visibility,
   share_token,
@@ -454,6 +458,15 @@ const applyPublicCursor = (query, cursor) => {
 const normalizePlacement = (placement) => placement && ({
   ...placement,
   coordinates: `${placement.latitude},${placement.longitude}`,
+  location: placement.location ?? {
+    isoCode: placement.subdivision_code,
+    country_code: placement.country_code,
+    country: placement.country,
+    state: placement.state,
+    city: placement.city,
+    postcode: placement.postcode,
+    display_name: placement.display_name
+  },
   faces: (placement.faces ?? []).map(face => ({
     ...face,
     images: normalizeFaceImages(face.images),
@@ -623,6 +636,33 @@ const getPublicPlacementPageInView = async ({
 };
 
 export const placementsService = {
+  async getPlacementForEdit(id, userId) {
+    if (!UUID_PATTERN.test(id ?? '') || !userId) return null;
+    const { data, error } = await supabase.from('placements')
+      .select(PLACEMENT_DETAIL_SELECT).eq('id', id).eq('user_id', userId).maybeSingle();
+    if (error) throw error;
+    return normalizePlacement(data);
+  },
+
+  async editPlacement({ id, faces, type, structure_height, description, visibility }) {
+    if (!UUID_PATTERN.test(id ?? '') || !Array.isArray(faces) || !faces.length ||
+        faces.some(face => !face.images?.front)) throw new Error('FRONT_IMAGE_REQUIRED');
+    const { data, error } = await supabase.rpc('edit_placement_and_requeue', {
+      p_id: id,
+      p_placement: { type, structure_height, description, visibility },
+      p_faces: faces.map(face => ({
+        id: face.id ?? null,
+        display_width: face.display_width,
+        display_height: face.display_height,
+        period_price: face.period_price,
+        day_range: serializeDayRange(face.day_range),
+        images: face.images
+      }))
+    });
+    if (error) throw error;
+    return data;
+  },
+
   async getPlacementDetails({ code, id, shareToken }) {
     if (id || shareToken) {
       if (!UUID_PATTERN.test(id ?? '') || !UUID_PATTERN.test(shareToken ?? '')) {

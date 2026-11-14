@@ -7,6 +7,7 @@ import { Header, HeaderTitle } from '@/components/ui';
 import InventoryTable from './elements/InventoryTable';
 
 const INVENTORY_TABS = {
+  all: null,
   approved: ['approved'],
   reviewing: ['pending', 'in_review'],
   attention: ['rejected', 'suspended']
@@ -17,7 +18,7 @@ function Inventory() {
   const { hash } = useLocation();
   const navigate = useNavigate();
   const hashTab = hash.slice(1);
-  const selectedTab = Object.hasOwn(INVENTORY_TABS, hashTab) ? hashTab : 'approved';
+  const selectedTab = Object.hasOwn(INVENTORY_TABS, hashTab) ? hashTab : 'all';
 
   useEffect(() => {
     if (hashTab !== selectedTab) {

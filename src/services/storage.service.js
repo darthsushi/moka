@@ -57,6 +57,18 @@ export const storageService = {
     if (error) throw error;
   },
 
+  getPlacementImagePath(imageUrl, userId) {
+    if (!imageUrl || !userId) return null;
+    try {
+      const url = new URL(imageUrl);
+      const prefix = `/storage/v1/object/public/${SUPABASE.STORAGE.PLACEMENTS_STORAGE}/`;
+      const start = url.pathname.indexOf(prefix);
+      if (start < 0 || url.origin !== new URL(import.meta.env.VITE_SUPABASE_URL).origin) return null;
+      const path = decodeURIComponent(url.pathname.slice(start + prefix.length));
+      return path.startsWith(`${userId}/`) ? path : null;
+    } catch { return null; }
+  },
+
   async uploadProfileAvatar(file, userId) {
     const fileExtension = PROFILE_AVATAR_EXTENSIONS[file.type];
 

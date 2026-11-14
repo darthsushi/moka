@@ -7,12 +7,12 @@ import StructureAndLocation from './elements/StructureAndLocation';
 import FacesDetails from './elements/FacesDetails';
 import PlacementDetails from './elements/PlacementDetails';
 
-function PlacementManagerForm({ isEditing = false, placement = {}, onCreate, isCreatingPlacement = false }) {
+function PlacementManagerForm({ isEditing = false, placement = {}, onSubmitPlacement, isSaving = false }) {
   const [currentPlacement, setCurrentPlacement] = useState(() => isEditing ? { ...placement } : {});
   const [currentStep, setCurrentStep] = useState(1);
   
   const nextStep = async (actualStepValues, isLastStep = false) => {
-      if (isCreatingPlacement) return;
+      if (isSaving) return;
     
       setCurrentPlacement((prevPlacement) => {
         if (isNil(actualStepValues)) {
@@ -26,7 +26,7 @@ function PlacementManagerForm({ isEditing = false, placement = {}, onCreate, isC
       });
   
       if (isLastStep === true) {
-        if (!isEditing) await onCreate?.({ ...currentPlacement, ...actualStepValues });
+        await onSubmitPlacement?.({ ...currentPlacement, ...actualStepValues });
   
          return;
       }
@@ -35,7 +35,7 @@ function PlacementManagerForm({ isEditing = false, placement = {}, onCreate, isC
     };
   
     const previousStep = () => {
-      if (isCreatingPlacement || currentStep === 1) return;
+      if (isSaving || currentStep === 1) return;
   
       setCurrentStep(currentStep - 1);
     };
@@ -61,7 +61,7 @@ function PlacementManagerForm({ isEditing = false, placement = {}, onCreate, isC
           placement={ currentPlacement }
           nextStep={ nextStep }
           previousStep={ previousStep }
-          isPending={ isCreatingPlacement }
+          isPending={ isSaving }
         />
       </Animations.VisibilityTransition>
     </>
