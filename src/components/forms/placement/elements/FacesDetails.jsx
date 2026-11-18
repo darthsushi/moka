@@ -131,8 +131,8 @@ function FacesDetails({
                           control={ control }
                           ids={ [
                             { id: 'front', label: 'Frontal', required: true },
-                            { id: 'approach', label: 'Aproximación' },
-                            { id: 'surrounding', label: 'Entorno' },
+                            { id: 'approach', label: 'Aproximación', required: true },
+                            { id: 'surrounding', label: 'Entorno', required: true },
                           ] }
                           className="flex justify-between items-center gap-0"
                           errors={{

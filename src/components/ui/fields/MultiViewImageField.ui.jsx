@@ -41,7 +41,9 @@ function InputImage({ id, label, defaultValue, onChange }) {
   const removeImage = () => {
     setActualImage(null);
     onChange({ [id]: null });
-  }
+  };
+
+  const test = actualImage || `/assets/utils/formats/${id}.webp`;
 
   return (
     <div id={ id } className="flex flex-col items-center">
@@ -50,7 +52,7 @@ function InputImage({ id, label, defaultValue, onChange }) {
         id={ `button-upload-${id}` }
         className="w-37 h-37 flex-none cursor-pointer rounded-4xl bg-cover bg-center bg-no-repeat bg-surface-tertiary p-3"
         onClick={ (e) => { e.preventDefault(); fileInputRef.current?.click(); } }
-        style={ { backgroundImage: `url(${actualImage})` } }
+        style={ { backgroundImage: `url(${test})` } }
       >
         { isNil(actualImage) &&
           <div className="w-full text-3xl text-accent-soft h-full flex justify-center items-center border-3 border-dashed border-accent-soft rounded-3xl">
